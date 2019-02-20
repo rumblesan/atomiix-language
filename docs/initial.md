@@ -47,6 +47,15 @@ mytune -> marimba[1  232 4]/1.5
 ```
 **Note: currently, multiply slows the playback speed and divide speeds it up. This is the reverse of the equivalent behaviour in Tidal - propose bringing it into line with Tidal?**
 
+
+### Post-score arguments: per-note amplitude
+
+`<agentname> -> <pattern><amplitude>`
+
+```
+mytune -> marimba[1  232 4]^1386^
+```
+
 ### Create a group
 
 `group <groupname> -> <agentnames>`
