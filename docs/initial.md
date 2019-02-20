@@ -10,9 +10,19 @@ This is the basic functionality that will be targeted for the MVP.
 
 Patterns can be the standard percussive, melodic or concrète modes.
 
+Percussive (letters represent samples):
 ```
-mytune -> |a  bcb d|
+mydrums -> |a  bcb d|
 ```
+Melodic (numbers represent pitch):
+```
+mytune -> [1  232 4]
+```
+Concrete (numbers represent amplitude):
+```
+mysound -> {1  232 4}
+```
+
 
 ### Add and remove effects
 
@@ -48,4 +58,3 @@ tempo 120
 ```
 grid 5
 ```
-
