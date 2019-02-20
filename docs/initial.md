@@ -8,6 +8,8 @@ This is the basic functionality that will be targeted for the MVP.
 
 `<agentname> -> <pattern>`
 
+`<agentname> -> <samplename><pattern>`
+
 Patterns can be the standard percussive, melodic or concrète modes.
 
 Percussive (letters represent samples):
