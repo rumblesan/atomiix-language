@@ -6,7 +6,11 @@ This is the basic functionality that will be targeted for the MVP.
 
 ### Create and run an agent
 
+Percussive
+
 `<agentname> -> <pattern>`
+
+Melodic/concrete
 
 `<agentname> -> <samplename><pattern>`
 
