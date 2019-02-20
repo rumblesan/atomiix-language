@@ -73,6 +73,19 @@ mytune -> marimba[1  232 4]-12
 ```
 mytune -> marimba[1  232 4]+2
 ```
+### Post-score arguments: note length
+
+`<agentname> -> <pattern>(<notelength>)`
+
+```
+mytune -> marimba[1  232 4](0.2)
+```
+
+Envelopes longer than 1 are multiplied with a tilde.
+
+```
+mytune -> marimba[1  232 4](1~4)
+```
 
 ### Create a group
 
