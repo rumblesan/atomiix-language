@@ -63,6 +63,16 @@ mytune -> marimba[1  232 4]^1386^
 ```
 mytune -> marimba[1  232 4]<18>
 ```
+### Post-score arguments: transposition in semitones
+
+`<agentname> -> <pattern><transposition>`
+
+```
+mytune -> marimba[1  232 4]-12
+```
+```
+mytune -> marimba[1  232 4]+2
+```
 
 ### Create a group
 
