@@ -74,6 +74,11 @@ Number of seconds to change tempo is dictated by number after the tempo number:
 tempo 120:4
 ```
 
+### Change the root note of the scale
+
+Determined by midi number:
+`tonic 60`
+
 ### Create a grid in the editor
 
 `grid <gridspacing>`
