@@ -79,6 +79,10 @@ tempo 120:4
 Determined by midi number:
 `tonic 60`
 
+### Change the global tonality
+
+`scale major`
+
 ### Create a grid in the editor
 
 `grid <gridspacing>`
