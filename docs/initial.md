@@ -56,6 +56,14 @@ mytune -> marimba[1  232 4]/1.5
 mytune -> marimba[1  232 4]^1386^
 ```
 
+### Post-score arguments: per-note panning
+
+`<agentname> -> <pattern><amplitude>`
+
+```
+mytune -> marimba[1  232 4]<18>
+```
+
 ### Create a group
 
 `group <groupname> -> <agentnames>`
