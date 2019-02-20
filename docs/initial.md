@@ -18,11 +18,11 @@ mydrums -> |a  bcb d|
 ```
 Melodic (numbers represent pitch):
 ```
-mytune -> [1  232 4]
+mytune -> marimba[1  232 4]
 ```
 Concrete (numbers represent amplitude):
 ```
-mysound -> {1  232 4}
+mysound -> waves{1  232 4}
 ```
 
 ### Add and remove effects
@@ -59,3 +59,5 @@ tempo 120
 ```
 grid 5
 ```
+
+###
