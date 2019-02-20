@@ -55,6 +55,11 @@ mytune ))
 ```
 tempo 120
 ```
+Number of seconds to change tempo is dictated by number after the tempo number:
+
+```
+tempo 120:4
+```
 
 ### Create a grid in the editor
 
