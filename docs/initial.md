@@ -28,6 +28,9 @@ Concrete (numbers represent amplitude):
 ```
 mysound -> waves{1  232 4}
 ```
+### Create a group
+
+`group <groupname> -> <agentnames>`
 
 ### Add and remove effects
 
