@@ -10,27 +10,36 @@ Percussive
 
 `<agentname> -> <pattern>`
 
+
 Melodic/concrete
 
 `<agentname> -> <samplename><pattern>`
 
+
 Patterns can be the standard percussive, melodic or concrète modes.
 
 Percussive (letters represent samples):
+
 ```
 mydrums -> |a  bcb d|
 ```
+
 Melodic (numbers represent pitch):
+
 ```
 mytune -> marimba[1  232 4]
 ```
+
 Concrete (numbers represent amplitude):
+
 ```
 mysound -> waves{1  232 4}
 ```
 ### Create a group
 
 `group <groupname> -> <agentnames>`
+
+`group mygroup -> myagent myotheragent`
 
 ### Add and remove effects
 
@@ -41,6 +50,7 @@ myagent >> reverb >> lowpass
 
 myagent << reverb
 ```
+`mygroup >> techno`
 
 ### Increase and decrease amplitude
 
