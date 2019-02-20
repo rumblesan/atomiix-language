@@ -23,13 +23,12 @@ Concrete (numbers represent amplitude):
 mysound -> {1  232 4}
 ```
 
-
 ### Add and remove effects
 
 `<agentname> >> <effectname>`
 
 ```
-myagent >> reverb >> lopass
+myagent >> reverb >> lowpass
 
 myagent << reverb
 ```
