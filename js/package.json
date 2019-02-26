@@ -1,0 +1,41 @@
+{
+  "name": "@atomiix/atomiix",
+  "version": "0.1.0",
+  "description": "A live coding language based on Ixilang",
+  "main": "lib/atomiix.min.js",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/rumblesan/atomiix/issues"
+  },
+  "repository": "rumblesan/atomiix",
+  "scripts": {
+    "lint": "eslint src",
+    "build": "webpack-cli --mode production",
+    "build:dev": "webpack-cli --mode development",
+    "dev": "webpack-cli --progress --colors --watch --mode development",
+    "test": "jest test",
+    "posttest": "npm run lint",
+    "test:watch": "jest test --watch",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@babel/core": "7.3.4",
+    "@babel/preset-env": "7.3.4",
+    "babel-eslint": "10.0.1",
+    "babel-loader": "8.0.5",
+    "eslint": "5.14.1",
+    "eslint-config-prettier": "4.0.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "prettier": "1.16.4",
+    "webpack": "4.29.5",
+    "webpack-cli": "3.2.3"
+  },
+  "dependencies": {
+    "canto34": "2.0.1"
+  },
+  "jest": {
+    "modulePaths": [
+      "src"
+    ]
+  }
+}
