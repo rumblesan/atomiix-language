@@ -13,19 +13,23 @@
     "build": "webpack-cli --mode production",
     "build:dev": "webpack-cli --mode development",
     "dev": "webpack-cli --progress --colors --watch --mode development",
-    "test": "jest test",
+    "test": "jest",
     "posttest": "npm run lint",
     "test:watch": "jest test --watch",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "cli": "node scripts/atomiix-cli.js"
   },
   "devDependencies": {
     "@babel/core": "7.3.4",
     "@babel/preset-env": "7.3.4",
     "babel-eslint": "10.0.1",
+    "babel-jest": "^24.1.0",
     "babel-loader": "8.0.5",
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",
+    "jest": "^24.1.0",
+    "osc-min": "^1.1.1",
     "prettier": "1.16.4",
     "webpack": "4.29.5",
     "webpack-cli": "3.2.3"
