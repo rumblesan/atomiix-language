@@ -20,19 +20,28 @@ const identifier = () => ({
   regexp: /^[a-zA-Z][a-zA-Z0-9]*/,
 });
 
-const sequence = () => ({
-  name: 'sequence',
+const score = () => ({
+  name: 'score',
   regexp: /^[{[\\|][a-zA-Z0-9 ]*[}\]\\|]/,
 });
 
-const sequenceEffect = () => ({
-  name: 'peffect',
-  regexp: /^"[<^][Z0-9 ]*[>^]"/,
+const scoreModifier = () => ({
+  name: 'score modifier',
+  regexp: /^[<\\^][Z0-9 ]*[>\\^]/,
 });
 
 const operator = () => ({
   name: 'operator',
   regexp: /^[*/+-]+/,
+});
+
+const number = () => ({
+  name: 'number',
+  regexp: /^\d+(\.\d+)?/,
+  role: ['constant', 'numeric'],
+  interpret(content) {
+    return parseFloat(content);
+  },
 });
 
 lexer.addTokenType(types.whitespace());
@@ -48,11 +57,10 @@ lexer.addTokenType(types.closeParen());
 
 lexer.addTokenType(operator());
 
-lexer.addTokenType(types.floatingPoint());
-lexer.addTokenType(types.integer());
+lexer.addTokenType(number());
 
 lexer.addTokenType(identifier());
-lexer.addTokenType(sequence());
-lexer.addTokenType(sequenceEffect());
+lexer.addTokenType(score());
+lexer.addTokenType(scoreModifier());
 
 export default lexer;

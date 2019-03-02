@@ -19,11 +19,10 @@ export function statementToOSC(statement) {
   }
 }
 
-export function playStmtToOSC({ agent, pattern }) {
-  const { sequence } = pattern;
+export function playStmtToOSC({ agent, score }) {
   const address = '/play/pattern';
   let patternType;
-  switch (sequence.seqType) {
+  switch (score.scoreType) {
     case t.PERCUSSIVE:
       patternType = 'percussive';
       break;
@@ -37,13 +36,13 @@ export function playStmtToOSC({ agent, pattern }) {
   const msgArgs = [
     agent.name, // agentName
     patternType, // patternType
-    { type: 'array', value: sequence.notes }, // noteArray
-    { type: 'array', value: sequence.durations }, // durArray
-    { type: 'array', value: [] }, // instrumentArray
-    { type: 'array', value: [] }, // sustainArray
+    { type: 'array', value: score.notes }, // noteArray
+    { type: 'array', value: score.durations }, // durArray
+    { type: 'array', value: score.instruments }, // instrumentArray
+    { type: 'array', value: score.sustain }, // sustainArray
     { type: 'array', value: [] }, // attackArray
-    { type: 'array', value: [] }, // panArray
-    sequence.offset, // quantPhase,
+    { type: 'array', value: score.panning }, // panArray
+    score.offset, // quantPhase,
     0, // repeats
     false, // newInstrFlag
   ];

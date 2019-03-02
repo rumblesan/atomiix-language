@@ -3,9 +3,9 @@ import {
   PLAY,
   FXCHAIN,
   AGENT,
-  PATTERN,
-  SEQUENCE,
-  SEQEFFECT,
+  SCORE,
+  SCOREOPERATOR,
+  SCOREMODIFIER,
   EFFECT,
 } from './types';
 
@@ -21,13 +21,13 @@ export function Program(statements) {
 
 /**
  *  agent: Agent
- *  pattern: Pattern
+ *  score: Score
  */
-export function Play(agent, pattern) {
+export function Play(agent, score) {
   return {
     type: PLAY,
     agent,
-    pattern,
+    score,
   };
 }
 
@@ -54,44 +54,54 @@ export function Agent(name) {
 }
 
 /**
- *  sequence: Sequence
- *  effects: SequenceEffects
- */
-export function Pattern(sequence, effects) {
-  return {
-    type: PATTERN,
-    sequence,
-    effects,
-  };
-}
-
-/**
- *  seqType: SequenceType
+ *  scoreType: ScoreType
  *  instruments: [string]
  *  notes: [string | integer]
  *  durations: [integer]
  *  offset: integer
  */
-export function Sequence(seqType, instruments, notes, durations, offset) {
+export function Score(
+  scoreType,
+  instruments,
+  notes,
+  durations,
+  offset,
+  sustain,
+  panning
+) {
   return {
-    type: SEQUENCE,
-    seqType,
+    type: SCORE,
+    scoreType,
     instruments,
     notes,
     durations,
     offset,
+    sustain: sustain || [],
+    panning: panning || [],
   };
 }
 
 /**
- *  eType: EffectType
- *  eString: string
+ *  operator: string
+ *  value: float
  */
-export function SequenceEffect(eType, eString) {
+export function ScoreOperator(operator, value) {
   return {
-    type: SEQEFFECT,
-    eType,
-    eString,
+    type: SCOREOPERATOR,
+    operator,
+    value,
+  };
+}
+
+/**
+ *  modifierType: ScoreModifier
+ *  values: [integer]
+ */
+export function ScoreModifier(modifierType, values) {
+  return {
+    type: SCOREMODIFIER,
+    modifierType,
+    values,
   };
 }
 

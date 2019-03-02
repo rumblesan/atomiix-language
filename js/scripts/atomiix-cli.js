@@ -30,9 +30,7 @@ process.stdin.on('readable', function() {
 
 process.stdin.on('end', function() {
   const ast = atomiix.parser.parse(input);
-  console.log(ast);
   const oscMessages = atomiix.transport.toOSC(ast);
-  console.log(oscMessages);
   Promise.all(
     oscMessages.map(om => {
       return new Promise(resolve => {

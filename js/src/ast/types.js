@@ -5,15 +5,15 @@ export const FXCHAIN = 'FXCHAIN';
 
 export const AGENT = 'AGENT';
 
-export const PATTERN = 'PATTERN';
-
-export const SEQUENCE = 'SEQUENCE';
+export const SCORE = 'SCORE';
 export const PERCUSSIVE = 'PERCUSSIVE';
 export const MELODIC = 'MELODIC';
 export const CONCRETE = 'CONCRETE';
 
-export const SEQEFFECT = 'SEQEFFECT';
+export const SCOREOPERATOR = 'SCOREOPERATOR';
+
+export const SCOREMODIFIER = 'SCOREMODIFIER';
 export const PANNING = 'PANNING';
-export const VOLUME = 'VOLUME';
+export const SUSTAIN = 'SUSTAIN';
 
 export const EFFECT = 'EFFECT';

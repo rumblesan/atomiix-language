@@ -4,9 +4,15 @@ import lexer from './lexer';
 
 import * as ast from '../ast';
 
-import { sequenceParser } from './patternParser';
+import { scoreParser, scoreModifierParser } from './scoreParser';
 
 const parser = new Parser();
+
+parser.parse = function(program) {
+  const tokens = lexer.tokenize(program);
+  this.initialize(tokens);
+  return this.program();
+};
 
 parser.program = function() {
   const statements = [];
@@ -41,8 +47,8 @@ parser.statement = function() {
 
   if (this.la1('play arrow')) {
     this.match('play arrow');
-    const pattern = this.pattern();
-    return ast.Play(agentName, pattern);
+    const score = this.score();
+    return ast.Play(agentName, score);
   } else if (this.la1('add effect arrow')) {
     throw new ParserException("Don't support adding effects yet");
   } else if (this.la1('remove effect arrow')) {
@@ -50,27 +56,52 @@ parser.statement = function() {
   }
 };
 
-parser.pattern = function() {
+parser.score = function() {
   let instrument = '';
   if (this.la1('identifier')) {
     instrument = this.match('identifier').content;
   }
-  const seqString = this.match('sequence').content;
-  const sequence = sequenceParser(instrument, seqString);
+  const scoreString = this.match('score').content;
 
-  const effects = this.patternEffects();
+  const modifiers = this.scoreModifiers();
 
-  return ast.Pattern(sequence, effects);
+  return scoreParser(instrument, scoreString, modifiers);
 };
 
-parser.patternEffects = function() {
-  return [];
+// TODO
+// handle the following modifiers
+// * note length
+// * whatever the tilde does
+parser.scoreModifiers = function() {
+  const modifiers = [];
+  while (!this.eof() && !this.la1('newline')) {
+    if (this.la1('operator')) {
+      const operator = this.scoreOperator();
+      modifiers.push(operator);
+    } else if (this.la1('score modifier')) {
+      const modifier = scoreModifierParser(
+        this.match('score modifier').content
+      );
+      modifiers.push(modifier);
+    } else {
+      throw new ParserException(
+        'Unexpected token: Expecting operator or score modifier'
+      );
+    }
+  }
+  return modifiers;
 };
 
-parser.parse = function(program) {
-  const tokens = lexer.tokenize(program);
-  this.initialize(tokens);
-  return this.program();
+parser.scoreOperator = function() {
+  const operator = this.match('operator').content;
+  const number = this.match('number').content;
+  return ast.ScoreOperator(operator, number);
+};
+
+parser.scoreOperator = function() {
+  const operator = this.match('operator').content;
+  const number = this.match('number').content;
+  return ast.ScoreOperator(operator, number);
 };
 
 export default parser;
