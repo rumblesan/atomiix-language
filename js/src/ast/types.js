@@ -15,5 +15,6 @@ export const SCOREOPERATOR = 'SCOREOPERATOR';
 export const SCOREMODIFIER = 'SCOREMODIFIER';
 export const PANNING = 'PANNING';
 export const SUSTAIN = 'SUSTAIN';
+export const ATTACK = 'ATTACK';
 
 export const EFFECT = 'EFFECT';

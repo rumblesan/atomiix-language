@@ -27,7 +27,6 @@ export function scoreParser(instrument, scoreString, modifiers) {
     );
   }
 
-  let score;
   const scoreChars = scoreString.slice(1, -1);
   switch (first) {
     case '|':
@@ -36,68 +35,109 @@ export function scoreParser(instrument, scoreString, modifiers) {
           `Percussive score shouldn't have instrument: ${instrument}`
         );
       }
-      score = parsePercussiveScore(scoreChars);
-      break;
+      return parsePercussiveScore(scoreChars, modifiers);
     case '[':
-      score = parseMelodicScore(instrument, scoreChars);
-      break;
+      return parseMelodicScore(instrument, scoreChars, modifiers);
     case '{':
-      score = parseConcreteScore(instrument, scoreChars);
-      break;
+      return parseConcreteScore(instrument, scoreChars, modifiers);
     default:
       throw new ParserException(`${first} is not a supported score delimiters`);
   }
-  applyModifiers(score, modifiers);
-  return score;
 }
 
-export function parsePercussiveScore(scoreChars) {
+export function parsePercussiveScore(scoreChars, modifiers) {
   const scoreType = astTypes.PERCUSSIVE;
   const { chars, durations, offset } = scoreStringParser(scoreChars);
   const instruments = chars;
   const notes = Array(chars.length).fill(60);
-  return ast.Score(scoreType, instruments, notes, durations, offset);
+  return applyModifiers(
+    scoreType,
+    notes,
+    durations,
+    instruments,
+    offset,
+    modifiers
+  );
 }
 
-export function parseMelodicScore(instrument, scoreChars) {
+export function parseMelodicScore(instrument, scoreChars, modifiers) {
   const scoreType = astTypes.MELODIC;
   const { chars, durations, offset } = scoreStringParser(scoreChars);
   const notes = chars.map(c => parseInt(c, 10));
-  return ast.Score(scoreType, [instrument], notes, durations, offset);
+  return applyModifiers(
+    scoreType,
+    notes,
+    durations,
+    [instrument],
+    offset,
+    modifiers
+  );
 }
 
-export function parseConcreteScore(instrument, scoreChars) {
+export function parseConcreteScore(instrument, scoreChars, modifiers) {
   const scoreType = astTypes.CONCRETE;
   const { chars, durations, offset } = scoreStringParser(scoreChars);
   const notes = chars.map(c => parseInt(c, 10));
-  return ast.Score(scoreType, [instrument], notes, durations, offset);
+  return applyModifiers(
+    scoreType,
+    notes,
+    durations,
+    [instrument],
+    offset,
+    modifiers
+  );
 }
 
-export function applyModifiers(score, modifiers) {
+export function applyModifiers(
+  scoreType,
+  notes,
+  durations,
+  instruments,
+  offset,
+  modifiers
+) {
+  let sustain = [];
+  let attack = [];
+  let panning = [];
+  let repeats = 'inf';
+
   for (let i = 0; i < modifiers.length; i += 1) {
     const m = modifiers[i];
     if (m.type === astTypes.SCOREMODIFIER) {
       switch (m.modifierType) {
         case astTypes.PANNING:
-          score.panning = m.values;
+          panning = m.values;
           break;
         case astTypes.SUSTAIN:
-          score.sustain = m.values;
+          sustain = m.values;
+          break;
+        case astTypes.ATTACK:
+          attack = m.values;
           break;
       }
     } else if (m.type === astTypes.SCOREOPERATOR) {
       // TODO handle * and / operators
       switch (m.operator) {
         case '+':
-          score.notes = score.notes.map(n => n + m.value);
+          notes = notes.map(n => n + m.value);
           break;
         case '-':
-          score.notes = score.notes.map(n => n - m.value);
+          notes = notes.map(n => n - m.value);
           break;
       }
     }
   }
-  return score;
+  return ast.Score(
+    scoreType,
+    notes,
+    durations,
+    instruments,
+    sustain,
+    attack,
+    panning,
+    offset,
+    repeats
+  );
 }
 
 export function scoreStringParser(scoreChars) {
@@ -147,7 +187,7 @@ export function scoreModifierParser(modifier) {
       matched = last === '>';
       break;
     case '^':
-      modifierType = astTypes.SUSTAIN;
+      modifierType = astTypes.ATTACK;
       matched = last === '^';
       break;
   }

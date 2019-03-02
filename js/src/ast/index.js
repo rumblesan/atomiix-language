@@ -62,22 +62,26 @@ export function Agent(name) {
  */
 export function Score(
   scoreType,
-  instruments,
   notes,
   durations,
-  offset,
+  instruments,
   sustain,
-  panning
+  attack,
+  panning,
+  offset,
+  repeats
 ) {
   return {
     type: SCORE,
     scoreType,
-    instruments,
     notes,
     durations,
+    instruments,
+    sustain,
+    attack,
+    panning,
     offset,
-    sustain: sustain || [],
-    panning: panning || [],
+    repeats,
   };
 }
 

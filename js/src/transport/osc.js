@@ -33,6 +33,10 @@ export function playStmtToOSC({ agent, score }) {
       patternType = 'concrete';
       break;
   }
+  const repeats =
+    score.repeats === 'inf'
+      ? { type: 'bang' }
+      : { type: 'integer', value: score.repeats };
   const msgArgs = [
     agent.name, // agentName
     patternType, // patternType
@@ -40,11 +44,10 @@ export function playStmtToOSC({ agent, score }) {
     { type: 'array', value: score.durations }, // durArray
     { type: 'array', value: score.instruments }, // instrumentArray
     { type: 'array', value: score.sustain }, // sustainArray
-    { type: 'array', value: [] }, // attackArray
+    { type: 'array', value: score.attack }, // attackArray
     { type: 'array', value: score.panning }, // panArray
     score.offset, // quantPhase,
-    0, // repeats
-    false, // newInstrFlag
+    repeats, // repeats
   ];
   return OSCMessage(address, msgArgs);
 }

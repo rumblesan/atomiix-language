@@ -5,39 +5,51 @@ import * as astTypes from '../ast/types';
 
 test('parses a percussive score', () => {
   const seqString = '|  a b  cd  |';
-  const seq = scoreParser('', seqString);
+  const seq = scoreParser('', seqString, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
-    ['a', 'b', 'c', 'd'],
     [60, 60, 60, 60],
     [2, 3, 1, 3],
-    2
+    ['a', 'b', 'c', 'd'],
+    [],
+    [],
+    [],
+    2,
+    'inf'
   );
   expect(seq).toEqual(expected);
 });
 
 test('parses a melodic score', () => {
   const seqString = '[  1 3  57  ]';
-  const seq = scoreParser('foo', seqString);
+  const seq = scoreParser('foo', seqString, []);
   const expected = ast.Score(
     astTypes.MELODIC,
-    ['foo'],
     [1, 3, 5, 7],
     [2, 3, 1, 3],
-    2
+    ['foo'],
+    [],
+    [],
+    [],
+    2,
+    'inf'
   );
   expect(seq).toEqual(expected);
 });
 
 test('parses a concrete score', () => {
   const seqString = '{  1 3  57  }';
-  const seq = scoreParser('foo', seqString);
+  const seq = scoreParser('foo', seqString, []);
   const expected = ast.Score(
     astTypes.CONCRETE,
-    ['foo'],
     [1, 3, 5, 7],
     [2, 3, 1, 3],
-    2
+    ['foo'],
+    [],
+    [],
+    [],
+    2,
+    'inf'
   );
   expect(seq).toEqual(expected);
 });
@@ -49,9 +61,9 @@ test('parses a panning score modifier', () => {
   expect(modifier).toEqual(expected);
 });
 
-test('parses a sustain score modifier', () => {
+test('parses an attack score modifier', () => {
   const smString = '^1358^';
   const modifier = scoreModifierParser(smString);
-  const expected = ast.ScoreModifier(astTypes.SUSTAIN, [1, 3, 5, 8]);
+  const expected = ast.ScoreModifier(astTypes.ATTACK, [1, 3, 5, 8]);
   expect(modifier).toEqual(expected);
 });
