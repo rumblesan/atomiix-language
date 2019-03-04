@@ -1,5 +1,5 @@
 (
 
-	Atomiix.start(2, s);
+	Atomiix.start("atomiix/", 2, s);
 
 )

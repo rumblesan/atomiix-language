@@ -1,12 +1,12 @@
 
 
-AtomiixPatterns {
+AtomiixSequencer {
 
   var proxyspace;
   var agentDict;
   var numChan;
 
-  init{| numChannels = 2|
+  init{|numChannels = 2|
     TempoClock.default.tempo = 120/60;
     proxyspace = ProxySpace.new.know_(true);
     agentDict = IdentityDictionary.new;

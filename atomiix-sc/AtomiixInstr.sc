@@ -4,17 +4,17 @@
 AtomiixInstr {
 
   var configFolder;
-  var sampleNames, samplePaths, nrOfSampleSynthDefs;
+  var sampleNames, sampleFolder, samplePaths, nrOfSampleSynthDefs;
   var defaultsynthdesclib, synthdesclib;
   var bufferPool, bufferDict;
   var numChan;
 
-  *new {| projectName, numChannels |
-    ^super.new.initXiiLangInstr(projectName, numChannels);
+  *new {| configPath, project, numChannels |
+    ^super.new.initAtomiixInstr(project, numChannels);
   }
 
-  initAtomiixInstr {| projectName, numChannels |
-    this.makeSynthDefs(projectName, numChannels);
+  initAtomiixInstr {| project, numChannels |
+    this.makeSynthDefs(project, numChannels);
   }
 
   makeSynthDefs {| project, numChannels |
@@ -45,7 +45,8 @@ AtomiixInstr {
 
 
     // ---------------------- sample based instruments ---------------------
-    samplePaths = (configFolder++project++"/samples/*").pathMatch;
+    sampleFolder = (configFolder++project++"/samples/*");
+    samplePaths = sampleFolder.pathMatch;
     sampleNames = samplePaths.collect({ |path| path.basename.splitext[0]});
 
     [\samplenames, sampleNames].postln;
@@ -74,9 +75,13 @@ AtomiixInstr {
             player = Select.ar(noteamp,
               [ // playMode 2 - the sample player mode
               if(chnum==1, {
-                LoopBuf.ar(1, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10)
+                LoopBuf.ar(
+					1, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10
+				)
                 }, {
-                  LoopBuf.ar(2, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10).sum
+                  LoopBuf.ar(
+					  2, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10
+				  ).sum
                 })
               * EnvGen.ar(Env.linen(0.0001, 60*60, 0.0001))
               , // playMode 1 - the rhythmic mode
@@ -89,11 +94,12 @@ AtomiixInstr {
               ]
               );
 
-            // I use DetectSilence rather than doneAction in Env.perc, as a doneAction in Env.perc
-            // would also be running (in Select) thus killing the synth even in {} mode
-            // I therefore add 0.02 so the
+            // I use DetectSilence rather than doneAction in Env.perc, as a
+			// doneAction in Env.perc would also be running (in Select) thus
+			// killing the synth even in {} mode I therefore add 0.02 so the
             DetectSilence.ar(player, 0.001, 0.5, 2);
-            //signal = player * amp * Lag.kr(noteamp, dur); // works better without lag
+			// works better without lag
+            //signal = player * amp * Lag.kr(noteamp, dur);
             signal = player * amp * noteamp;
             Out.ar(out, Pan2.ar(signal, pan));
           }).add;
