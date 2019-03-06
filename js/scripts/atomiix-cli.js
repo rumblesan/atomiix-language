@@ -30,9 +30,11 @@ process.stdin.on('readable', function() {
 
 process.stdin.on('end', function() {
   const ast = atomiix.parser.parse(input);
-  const oscMessages = atomiix.transport.toOSC(ast);
+  const initialState = atomiix.interpreter.createState();
+  const { messages } = atomiix.interpreter.interpret(initialState, ast);
+
   Promise.all(
-    oscMessages.map(om => {
+    messages.map(om => {
       return new Promise(resolve => {
         const msg = osc.toBuffer(om);
         sock.send(msg, 0, msg.length, scPort, scServer, () => {
