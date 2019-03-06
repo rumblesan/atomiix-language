@@ -71,4 +71,16 @@ AtomiixSequencer {
     });
     ^pdef;
   }
+
+  playPercussiveScore{| agentName, notes, durations, instruments, sustain, attack, panning, offset, repeats |
+    [\ptype, "percussive", \agentname, agentName, \notes, notes, \durations, durations, \instruments, instruments, \sustain, sustain, \attack, attack, \panning, panning, \offset, offset, \repeats, repeats].postln
+  }
+
+  playMelodicScore{| agentName, notes, durations, instrument, sustain, attack, panning, offset, repeats |
+    [\ptype, "melodic", \agentname, agentName, \notes, notes, \durations, durations, \instrument, instrument, \sustain, sustain, \attack, attack, \panning, panning, \offset, offset, \repeats, repeats].postln
+  }
+
+  playConcreteScore{| agentName, pitch, amplitudes, durations, instrument, panning, offset, repeats |
+    [\ptype, "concrete", \agentname, agentName, \pitch, pitch, \amplitudes, amplitudes, \durations, durations, \instrument, instrument, \panning, panning, \offset, offset, \repeats, repeats].postln
+  }
 }

@@ -4,6 +4,9 @@ import {
   FXCHAIN,
   AGENT,
   SCORE,
+  PERCUSSIVE,
+  MELODIC,
+  CONCRETE,
   SCOREOPERATOR,
   SCOREMODIFIER,
   EFFECT,
@@ -54,14 +57,43 @@ export function Agent(name) {
 }
 
 /**
- *  scoreType: ScoreType
- *  instruments: [string]
- *  notes: [string | integer]
+ *  scoreType: string
+ *  instrument: string | undefined
+ *  values: [string] | [integer]
  *  durations: [integer]
  *  offset: integer
+ *  modifiers: [ScoreOperator | ScoreModifer]
  */
 export function Score(
   scoreType,
+  instrument,
+  values,
+  durations,
+  offset,
+  modifiers
+) {
+  return {
+    type: SCORE,
+    scoreType,
+    instrument,
+    values,
+    durations,
+    offset,
+    modifiers,
+  };
+}
+
+/**
+ *  notes: [integer]
+ *  durations: [integer]
+ *  instruments: [string]
+ *  sustain: [integer]
+ *  attack: [integer]
+ *  panning: [integer]
+ *  offset: integer
+ *  repeats: integer | string
+ */
+export function PercussiveScore(
   notes,
   durations,
   instruments,
@@ -73,12 +105,77 @@ export function Score(
 ) {
   return {
     type: SCORE,
-    scoreType,
+    scoreType: PERCUSSIVE,
     notes,
     durations,
     instruments,
     sustain,
     attack,
+    panning,
+    offset,
+    repeats,
+  };
+}
+
+/**
+ *  notes: [integer]
+ *  durations: [integer]
+ *  instrument: string
+ *  sustain: [integer]
+ *  attack: [integer]
+ *  panning: [integer]
+ *  offset: integer
+ *  repeats: integer | string
+ */
+export function MelodicScore(
+  notes,
+  durations,
+  instrument,
+  sustain,
+  attack,
+  panning,
+  offset,
+  repeats
+) {
+  return {
+    type: SCORE,
+    scoreType: MELODIC,
+    notes,
+    durations,
+    instrument,
+    sustain,
+    attack,
+    panning,
+    offset,
+    repeats,
+  };
+}
+
+/**
+ *  pitch: integer // TODO might be a float?
+ *  amplitudes: [integer] // TODO might be floats?
+ *  durations: [integer]
+ *  instrument: string
+ *  panning: [integer]
+ *  offset: integer
+ *  repeats: integer | string
+ */
+export function ConcreteScore(
+  pitch,
+  amplitudes,
+  durations,
+  instrument,
+  panning,
+  offset,
+  repeats
+) {
+  return {
+    type: SCORE,
+    scoreType: CONCRETE,
+    pitch,
+    amplitudes,
+    durations,
+    instrument,
     panning,
     offset,
     repeats,

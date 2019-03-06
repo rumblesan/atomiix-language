@@ -17,9 +17,10 @@
     "posttest": "npm run lint",
     "test:watch": "jest test --watch",
     "prepublish": "npm run build",
-    "cli": "node scripts/atomiix-cli.js"
+    "cli": "babel-node scripts/atomiix-cli.js"
   },
   "devDependencies": {
+    "@babel/node": "7.2.2",
     "@babel/core": "7.3.4",
     "@babel/preset-env": "7.3.4",
     "babel-eslint": "10.0.1",

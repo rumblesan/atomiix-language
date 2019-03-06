@@ -1,12 +1,14 @@
-import parser from 'language/parser';
-import { programToOSC } from 'transport/osc';
+import parser from './language/parser';
+
+import { createState, interpret } from './language/interpreter';
 
 const language = 'atomiix';
 
 export default {
   language,
   parser,
-  transport: {
-    toOSC: programToOSC,
+  interpreter: {
+    createState,
+    interpret,
   },
 };

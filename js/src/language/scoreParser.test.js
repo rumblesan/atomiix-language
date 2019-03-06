@@ -8,14 +8,11 @@ test('parses a percussive score', () => {
   const seq = scoreParser('', seqString, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
-    [60, 60, 60, 60],
-    [2, 3, 1, 3],
+    null,
     ['a', 'b', 'c', 'd'],
-    [],
-    [],
-    [],
+    [2, 3, 1, 3],
     2,
-    'inf'
+    []
   );
   expect(seq).toEqual(expected);
 });
@@ -25,14 +22,11 @@ test('parses a melodic score', () => {
   const seq = scoreParser('foo', seqString, []);
   const expected = ast.Score(
     astTypes.MELODIC,
+    'foo',
     [1, 3, 5, 7],
     [2, 3, 1, 3],
-    ['foo'],
-    [],
-    [],
-    [],
     2,
-    'inf'
+    []
   );
   expect(seq).toEqual(expected);
 });
@@ -42,14 +36,11 @@ test('parses a concrete score', () => {
   const seq = scoreParser('foo', seqString, []);
   const expected = ast.Score(
     astTypes.CONCRETE,
+    'foo',
     [1, 3, 5, 7],
     [2, 3, 1, 3],
-    ['foo'],
-    [],
-    [],
-    [],
     2,
-    'inf'
+    []
   );
   expect(seq).toEqual(expected);
 });

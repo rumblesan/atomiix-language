@@ -7,7 +7,7 @@
   echo "foo -> bar[1 2   3 2]" | npm run cli
 */
 
-const atomiix = require('../lib/atomiix.min.js').default;
+const atomiix = require('../src/index.js').default;
 
 const osc = require('osc-min');
 const dgram = require('dgram');

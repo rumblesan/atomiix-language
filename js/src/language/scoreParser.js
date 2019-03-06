@@ -28,6 +28,7 @@ export function scoreParser(instrument, scoreString, modifiers) {
   }
 
   const scoreChars = scoreString.slice(1, -1);
+  let scoreStringData;
   switch (first) {
     case '|':
       if (instrument) {
@@ -35,69 +36,51 @@ export function scoreParser(instrument, scoreString, modifiers) {
           `Percussive score shouldn't have instrument: ${instrument}`
         );
       }
-      return parsePercussiveScore(scoreChars, modifiers);
+      scoreStringData = scoreStringParser(scoreChars);
+      return ast.Score(
+        astTypes.PERCUSSIVE,
+        null,
+        scoreStringData.chars,
+        scoreStringData.durations,
+        scoreStringData.offset,
+        modifiers
+      );
     case '[':
-      return parseMelodicScore(instrument, scoreChars, modifiers);
+      if (!instrument) {
+        throw new ParserException('Melodic score should have an instrument');
+      }
+      scoreStringData = scoreStringParser(scoreChars);
+      return ast.Score(
+        astTypes.MELODIC,
+        instrument,
+        scoreStringData.chars.map(n => parseInt(n, 10)),
+        scoreStringData.durations,
+        scoreStringData.offset,
+        modifiers
+      );
     case '{':
-      return parseConcreteScore(instrument, scoreChars, modifiers);
+      if (!instrument) {
+        throw new ParserException('Concrete score should have an instrument');
+      }
+      scoreStringData = scoreStringParser(scoreChars);
+      return ast.Score(
+        astTypes.CONCRETE,
+        instrument,
+        scoreStringData.chars.map(n => parseInt(n, 10)),
+        scoreStringData.durations,
+        scoreStringData.offset,
+        modifiers
+      );
     default:
       throw new ParserException(`${first} is not a supported score delimiters`);
   }
 }
 
-export function parsePercussiveScore(scoreChars, modifiers) {
-  const scoreType = astTypes.PERCUSSIVE;
-  const { chars, durations, offset } = scoreStringParser(scoreChars);
-  const instruments = chars;
-  const notes = Array(chars.length).fill(60);
-  return applyModifiers(
-    scoreType,
-    notes,
-    durations,
-    instruments,
-    offset,
-    modifiers
-  );
-}
-
-export function parseMelodicScore(instrument, scoreChars, modifiers) {
-  const scoreType = astTypes.MELODIC;
-  const { chars, durations, offset } = scoreStringParser(scoreChars);
-  const notes = chars.map(c => parseInt(c, 10));
-  return applyModifiers(
-    scoreType,
-    notes,
-    durations,
-    [instrument],
-    offset,
-    modifiers
-  );
-}
-
 export function parseConcreteScore(instrument, scoreChars, modifiers) {
-  const scoreType = astTypes.CONCRETE;
   const { chars, durations, offset } = scoreStringParser(scoreChars);
-  const notes = chars.map(c => parseInt(c, 10));
-  return applyModifiers(
-    scoreType,
-    notes,
-    durations,
-    [instrument],
-    offset,
-    modifiers
-  );
-}
+  const amplitudes = chars.map(c => parseInt(c, 10));
 
-export function applyModifiers(
-  scoreType,
-  notes,
-  durations,
-  instruments,
-  offset,
-  modifiers
-) {
-  let sustain = [];
-  let attack = [];
+  let pitch = 60;
   let panning = [];
   let repeats = 'inf';
 
@@ -108,32 +91,24 @@ export function applyModifiers(
         case astTypes.PANNING:
           panning = m.values;
           break;
-        case astTypes.SUSTAIN:
-          sustain = m.values;
-          break;
-        case astTypes.ATTACK:
-          attack = m.values;
-          break;
       }
     } else if (m.type === astTypes.SCOREOPERATOR) {
       // TODO handle * and / operators
       switch (m.operator) {
         case '+':
-          notes = notes.map(n => n + m.value);
+          pitch = pitch + m.value;
           break;
         case '-':
-          notes = notes.map(n => n - m.value);
+          pitch = pitch - m.value;
           break;
       }
     }
   }
-  return ast.Score(
-    scoreType,
-    notes,
+  return ast.ConcreteScore(
+    pitch,
+    amplitudes,
     durations,
-    instruments,
-    sustain,
-    attack,
+    instrument,
     panning,
     offset,
     repeats
