@@ -10,8 +10,8 @@ class AtomiixRuntimeError extends Error {
   }
 }
 
-export function intervalToNote(scaleName, interval) {
-  return scales.notes[scaleName][interval];
+export function intervalToNote(state, interval) {
+  return state.tonic + scales.notes[state.scale][interval];
 }
 
 export function createState() {
@@ -96,7 +96,7 @@ export function interpretPercussiveScore(state, agent, score) {
 }
 
 export function interpretMelodicScore(state, agent, score) {
-  const scoreNotes = score.values.map(n => n + state.tonic - 1);
+  const scoreNotes = score.values.map(i => intervalToNote(state, i));
   const { notes, sustain, attack, panning, repeats } = interpretModifiers(
     state,
     scoreNotes,

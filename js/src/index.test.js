@@ -104,7 +104,7 @@ test('basic end to end test', () => {
     createMelodicMsg(
       '/play/pattern',
       'foo',
-      [62, 64, 66],
+      [64, 67, 71],
       [3, 2, 1],
       'harp',
       [],
