@@ -144,9 +144,9 @@ export function interpretConcreteScore(state, agent, score) {
 
 export function interpretModifiers(state, scoreNotes, modifiers) {
   let notes = scoreNotes;
-  let sustain = [];
-  let attack = [];
-  let panning = [];
+  let sustain = [4];
+  let attack = [5];
+  let panning = [5];
   let repeats = 'inf';
   for (let i = 0; i < modifiers.length; i += 1) {
     const m = modifiers[i];
@@ -176,9 +176,9 @@ export function interpretModifiers(state, scoreNotes, modifiers) {
   }
   return {
     notes,
-    sustain,
-    attack,
-    panning,
+    sustain: sustain.map(n => 1 / n),
+    attack: attack.map(n => n / 9),
+    panning: panning.map(n => (n - 1) / 4 - 1),
     repeats,
   };
 }
