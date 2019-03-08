@@ -124,7 +124,7 @@ export function interpretConcreteScore(state, agent, score) {
   // TODO should this be a float?
   const pitch = 60;
   const { panning, repeats } = interpretModifiers(state, [], score.modifiers);
-  const amplitudes = score.values;
+  const amplitudes = score.values.map(v => v / 10);
   const durations = score.durations;
   const instrument = score.instrument;
   const offset = score.offset;
