@@ -4,24 +4,14 @@ Atomiix {
 
 	var instruments, sequencer;
 
-	*start {|configPath = "atomiix/", numChannels = 2, server|
-		server = server ? Server.default;
-		server.waitForBoot {
-			Routine.run {
-				"Booting Atomiix...".postln;
-				~atomiix = Atomiix.new.init(configPath, "default", numChannels);
-				"Atomiix-SC: Listening on port %\n".format(NetAddr.langPort).postln;
-			}
-		};
+	init {| configPath, project, oscPort, numChannels |
+		"Booting Atomiix...".postln;
+		instruments = AtomiixInstr.new.init(configPath, project, numChannels);
+		sequencer = AtomiixSequencer.new.init(instruments.makeInstrDict, numChannels);
+		this.setupOSC(oscPort);
 	}
 
-	init {|configPath, project, numChannels|
-		instruments = AtomiixInstr.new(configPath, project, numChannels);
-		sequencer = AtomiixSequencer.new(numChannels);
-		this.setupOSC();
-	}
-
-  setupOSC {
+  setupOSC {| oscPort |
     "Setting up OSC listeners".postln;
 
     OSCFunc({|msg, time, addr, recvPort|
@@ -33,54 +23,53 @@ Atomiix {
         \concrete, { this.playConcreteScore(values[2..]) },
         { ("unknown score type: " ++ scoreType).postln }
       )
-    }, '/play/pattern');
+    }, '/play/pattern', NetAddr("localhost"), oscPort);
+
+    "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
   }
 
   playPercussiveScore {|scoreData|
-		var agentName = scoreData[0];
-		var notes = scoreData[1];
-		var durations = scoreData[2];
-		var instruments = scoreData[3];
-		var sustain = scoreData[4];
-		var attack = scoreData[5];
-		var panning = scoreData[6];
-		var offset = scoreData[7];
-		var repeats = scoreData[8];
-		sequencer.playPercussiveScore(
-			agentName, notes, durations, instruments,
-			sustain, attack, panning, offset, repeats
-		);
+    var agentName, args;
+		agentName = scoreData[0];
+    args = ();
+		args.notes = scoreData[1];
+		args.durations = scoreData[2];
+		args.instrumentNames = scoreData[3];
+		args.sustainArray = scoreData[4];
+		args.attackArray = scoreData[5];
+		args.panArray = scoreData[6];
+		args.quantphase = scoreData[7];
+		args.repeats = scoreData[8];
+		sequencer.playPercussiveScore(agentName, args);
   }
 
   playMelodicScore {|scoreData|
-		var agentName = scoreData[0];
-		var notes = scoreData[1];
-		var durations = scoreData[2];
-		var instrument = scoreData[3];
-		var sustain = scoreData[4];
-		var attack = scoreData[5];
-		var panning = scoreData[6];
-		var offset = scoreData[7];
-		var repeats = scoreData[8];
-		sequencer.playMelodicScore(
-			agentName, notes, durations, instrument,
-			sustain, attack, panning, offset, repeats
-		);
+		var agentName, args;
+		agentName = scoreData[0];
+    args = ();
+		args.notes = scoreData[1];
+		args.durations = scoreData[2];
+		args.instrument = scoreData[3];
+		args.sustainArray = scoreData[4];
+		args.attackArray = scoreData[5];
+		args.panArray = scoreData[6];
+		args.quantphase = scoreData[7];
+		args.repeats = scoreData[8];
+		sequencer.playMelodicScore(agentName, args);
   }
 
   playConcreteScore {|scoreData|
-		var agentName = scoreData[0];
-		var pitch = scoreData[1];
-		var amplitudes = scoreData[2];
-		var durations = scoreData[3];
-		var instrument = scoreData[3];
-		var panning = scoreData[6];
-		var offset = scoreData[7];
-		var repeats = scoreData[8];
-		sequencer.playConcreteScore(
-			agentName, pitch, amplitudes, durations,
-      instrument, panning, offset, repeats
-		);
+		var agentName, args;
+		agentName = scoreData[0];
+    args = ();
+		args.pitch = scoreData[1];
+		args.amplitudes = scoreData[2];
+		args.durations = scoreData[3];
+		args.instrument = scoreData[4];
+		args.panArray = scoreData[5];
+		args.quantphase = scoreData[6];
+		args.repeats = scoreData[7];
+		sequencer.playConcreteScore(agentName, args);
   }
 
 }

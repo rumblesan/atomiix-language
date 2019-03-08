@@ -3,22 +3,57 @@
 
 AtomiixInstr {
 
-  var configFolder;
+  var configFolder, project;
   var sampleNames, sampleFolder, samplePaths, nrOfSampleSynthDefs;
   var defaultsynthdesclib, synthdesclib;
   var bufferPool, bufferDict;
   var numChan;
 
-  *new {| configPath, project, numChannels |
-    ^super.new.initAtomiixInstr(project, numChannels);
+  init {| configPath, projectName, numChannels |
+    configFolder = configPath;
+    project = projectName;
+    this.makeSynthDefs(numChannels);
   }
 
-  initAtomiixInstr {| project, numChannels |
-    this.makeSynthDefs(project, numChannels);
-  }
+  // this is where keys are mapped to instruments (better done by hand and design)
+	makeInstrDict{
+    var instrDict;
 
-  makeSynthDefs {| project, numChannels |
-    configFolder = "atomiix/";
+		// if sounds folder contains a key mapping file, then it is used,
+		// else, the instrDict is created by mapping random sound files onto the letters
+
+		if(Object.readArchive(configFolder++project++"/keyMapping.ixi").isNil, {
+			instrDict = IdentityDictionary.new;
+			[\A, \a, \B, \b, \C, \c, \D, \d, \E, \e, \F, \f, \G, \g, \H, \h, \I, \i, \J, \j,
+			\K, \k, \L, \l, \M, \m, \N, \n, \O, \o, \P, \p, \Q, \q, \R, \r, \S, \s, \T, \t,
+			\U, \u, \V, \v, \W, \w, \X, \x, \Y, \y, \Z, \z].do({arg letter, i;
+				instrDict[letter] = sampleNames.wrapAt(i).asSymbol;
+			});
+			"No key mappings were found, so samples will be randomly assigned to keys".postln;
+		}, {
+			instrDict = Object.readArchive(configFolder++project++"/keyMapping.ixi");
+		});
+
+		"The keys of your keyboard are mapped to the following samples :".postln;
+		Post << this.getSamplesSynthdefs(instrDict);
+		if(sampleNames.size == 0, {
+			"There were no samples in your samples folder, please put some there!".postln;
+		});
+		^instrDict;
+	}
+
+	getSamplesSynthdefs {| instrDict |
+		var string, sortedkeys, sortedvals;
+		sortedkeys = instrDict.keys.asArray.sort;
+		sortedvals = instrDict.atAll(instrDict.order);
+		string = " ";
+		sortedkeys.do({arg item, i;
+			string = string++item++"  :  "++sortedvals[i]++"\n"++" ";
+		});
+		^string;
+	}
+
+  makeSynthDefs {| numChannels |
     defaultsynthdesclib = SynthDescLib(\xiilang);
     bufferPool = []; // here in order to free buffers when doc is closed
     bufferDict = (); // used for morphing synths
@@ -72,34 +107,26 @@ AtomiixInstr {
           SynthDef(sampleNames.wrapAt(i).asSymbol, {arg out=0, freq=261.63, amp=0.3, pan=0, noteamp=1, sustain=0.4;
             var buffer, player, env, signal, killer;
             bufferPool = bufferPool.add(buffer = Buffer.read(Server.default, filepath));
-            player = Select.ar(noteamp,
-              [ // playMode 2 - the sample player mode
+            player = Select.ar(noteamp, [
+              // playMode 2 - the sample player mode
               if(chnum==1, {
-                LoopBuf.ar(
-					1, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10
-				)
-                }, {
-                  LoopBuf.ar(
-					  2, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10
-				  ).sum
-                })
-              * EnvGen.ar(Env.linen(0.0001, 60*60, 0.0001))
+                LoopBuf.ar(1, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10)
+              }, {
+                LoopBuf.ar(2, buffer, (freq.cpsmidi-60).midiratio, 1, 0, 0, 44100*60*10).sum
+              }) * EnvGen.ar(Env.linen(0.0001, 60*60, 0.0001))
               , // playMode 1 - the rhythmic mode
               if(chnum==1, {
                 PlayBuf.ar(1, buffer, (freq.cpsmidi-60).midiratio)
-                }, {
-                  PlayBuf.ar(2, buffer, (freq.cpsmidi-60).midiratio).sum
-                })
-              * EnvGen.ar(Env.perc(0.01, sustain))
-              ]
-              );
+              }, {
+                PlayBuf.ar(2, buffer, (freq.cpsmidi-60).midiratio).sum
+              }) * EnvGen.ar(Env.perc(0.01, sustain))
+            ]);
 
             // I use DetectSilence rather than doneAction in Env.perc, as a
-			// doneAction in Env.perc would also be running (in Select) thus
-			// killing the synth even in {} mode I therefore add 0.02 so the
+            // doneAction in Env.perc would also be running (in Select) thus
+            // killing the synth even in {} mode I therefore add 0.02 so the
             DetectSilence.ar(player, 0.001, 0.5, 2);
-			// works better without lag
-            //signal = player * amp * Lag.kr(noteamp, dur);
+            // works better without lag
             signal = player * amp * noteamp;
             Out.ar(out, Pan2.ar(signal, pan));
           }).add;

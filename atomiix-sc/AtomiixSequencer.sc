@@ -4,83 +4,264 @@ AtomiixSequencer {
 
   var proxyspace;
   var agentDict;
+  var instrumentDict;
   var numChan;
 
-  init{|numChannels = 2|
+  init{| instrDict, numChannels = 2 |
     TempoClock.default.tempo = 120/60;
     proxyspace = ProxySpace.new.know_(true);
     agentDict = IdentityDictionary.new;
+    instrumentDict = instrDict;
     numChan = numChannels
   }
 
-  newAgent{| agentName |
-    agentDict[agentName] = [(), ().add(\amp->0.5), []];
+  setAgent{| agentName |
+    if(agentDict[agentName].isNil, {
+      // 1st = effectRegistryDict, 2nd = scoreInfoDict, 3rd = placeholder for a routine
+      agentDict[agentName] = [(), ().add(\amp->0.5), []];
+    });
     ^agentDict[agentName];
   }
 
-  playPercussionScore{| agentName, noteArray, durArray, instArray, sustainArray, attackArray, panArray, quantPhase, repeats, newInstFlag |
-    var pdef;
-    if(proxyspace[agentName].isNeutral || (repeats != inf), { // check if the object exists already
-      proxyspace[agentName].free; // needed because of repeats (free proxyspace timing)
-      10.do({arg i; proxyspace[agentName][i+1] =  nil }); // oh dear. Proxyspace forces this, as one might want to put an effect again on a repeat pat
-      agentName[agentName][0].clear; // clear the effect references
+  playPercussiveScore{| agentName, scoreInfo |
+    var pdef, agent, instruments, newInstrFlag;
+    ["percussive", agentName, scoreInfo].postln;
+
+    agent = this.setAgent(agentName);
+    newInstrFlag = false;
+    instruments = [];
+
+    // trick to free if the agent was { instr (Pmono is always on)
+    if(agent[1].mode == \concrete, { newInstrFlag = true });
+
+    scoreInfo.instrumentNames.collect({arg instr, i; instruments = instruments.add(instrumentDict[instr.asSymbol]) });
+    instruments.postln;
+
+    agent[1].mode = \percussive;
+    agent[1].notes = scoreInfo.notes;
+    agent[1].durations = scoreInfo.durations;
+    agent[1].instruments = instruments;
+    agent[1].sustainArray = scoreInfo.sustainArray;
+    agent[1].attackArray = scoreInfo.attackArray;
+    agent[1].panArray = scoreInfo.panArray;
+    agent[1].quantphase = scoreInfo.quantphase;
+    agent[1].repeats = scoreInfo.repeats;
+
+    if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
+      // needed because of repeats (free proxyspace timing)
+      proxyspace[agentName].free;
+      // oh dear. Proxyspace forces this, as one might want to put an
+      // effect again on a repeat pat
+      10.do({arg i; proxyspace[agentName][i+1] =  nil });
+      // clear the effect references
+      agent[0].clear;
 
       pdef = Pdef(agentName, Pbind(
-          \instrument, Pseq(instArray, inf), 
-          \midinote, Pseq(noteArray, inf), 
-          \dur, Pseq(durArray, repeats),
-          \amp, Pseq(attackArray*agentName[agentName][1].amp, inf),
-          \sustain, Pseq(sustainArray, inf),
-          \pan, Pseq(panArray, inf)
+        \instrument, Pseq(instruments, inf), 
+        \midinote, Pseq(scoreInfo.notes, inf), 
+        \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+        \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+        \sustain, Pseq(scoreInfo.sustainArray, inf),
+        \pan, Pseq(scoreInfo.panArray, inf)
       ));
 
       {
-          proxyspace[agentName].quant = [durArray.sum, quantPhase, 0, 1];
-          proxyspace[agentName].defineBus(numChannels: numChan);
-          proxyspace[agentName] = Pdef(agentName);
-          proxyspace[agentName].play;
+        proxyspace[agentName].quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+        proxyspace[agentName].defineBus(numChannels: numChan);
+        proxyspace[agentName] = Pdef(agentName);
+        proxyspace[agentName].play;
       }.defer(0.5);
     }, {
-        if(newInstFlag, { // only if instrument was {, where Pmono bufferplayer synthdef needs to be shut down (similar to above, but no freeing of effects)
-            proxyspace[agentName].free; // needed in order to swap instrument in Pmono
-            pdef = Pdef(agentName, Pbind(
-                \instrument, Pseq(instArray, inf), 
-                \midinote, Pseq(noteArray, inf), 
-                \dur, Pseq(durArray, repeats),
-                \amp, Pseq(attackArray*agentDict[agentName][1].amp, inf),
-                \sustain, Pseq(sustainArray, inf),
-                \pan, Pseq(panArray, inf)
-            )).quant = [durArray.sum, quantPhase];
-            {
-              proxyspace[agentName].play
-            }.defer(0.5); // defer needed as the free above and play immediately doesn't work
-        }, {  
-            // default behavior
-            pdef = Pdef(agentName, Pbind(
-                \instrument, Pseq(instArray, inf), 
-                \midinote, Pseq(noteArray, inf), 
-                \dur, Pseq(durArray, repeats),
-                \amp, Pseq(attackArray*agentDict[agentName][1].amp, inf),
-                \sustain, Pseq(sustainArray, inf),
-                \pan, Pseq(panArray, inf)
-            )).quant = [durArray.sum, quantPhase];
-            if(agentDict[agentName][1].playstate == false, {
-                proxyspace[agentName].play; // this would build up synths on server on commands such as yoyo agent
-            });
+      if(newInstrFlag, {
+        // only if instrument was concrete where Pmono bufferplayer synthdef needs
+        // to be shut down (similar to above, but no freeing of effects)
+
+        // needed in order to swap instrument in Pmono
+        proxyspace[agentName].free;
+
+        pdef = Pdef(agentName, Pbind(
+          \instrument, Pseq(instruments, inf), 
+          \midinote, Pseq(scoreInfo.notes, inf), 
+          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \sustain, Pseq(scoreInfo.sustainArray, inf),
+          \pan, Pseq(scoreInfo.panArray, inf)
+        )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase];
+
+        // defer needed as the free above and play immediately doesn't work
+        { proxyspace[agentName].play }.defer(0.5);
+      }, {  
+        pdef = Pdef(agentName, Pbind(
+          \instrument, Pseq(instruments, inf), 
+          \midinote, Pseq(scoreInfo.notes, inf), 
+          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \sustain, Pseq(scoreInfo.sustainArray, inf),
+          \pan, Pseq(scoreInfo.panArray, inf)
+        )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase];
+        if(agent[1].playstate == false, {
+          // this would build up synths on server on commands such as yoyo agent
+          proxyspace[agentName].play;
         });
+      });
     });
     ^pdef;
   }
 
-  playPercussiveScore{| agentName, notes, durations, instruments, sustain, attack, panning, offset, repeats |
-    [\ptype, "percussive", \agentname, agentName, \notes, notes, \durations, durations, \instruments, instruments, \sustain, sustain, \attack, attack, \panning, panning, \offset, offset, \repeats, repeats].postln
+  playMelodicScore {| agentName, scoreInfo |
+    var pdef, agent, newInstrFlag;
+    ["melodic", agentName, scoreInfo].postln;
+
+    agent = this.setAgent(agentName);
+    newInstrFlag = false;
+    // trick to free if the agent was { instr (Pmono is always on)
+    if(agent[1].mode == \concrete, { newInstrFlag = true });
+
+    agent[1].mode = \melodic;
+    agent[1].notes = scoreInfo.notes;
+    agent[1].durations = scoreInfo.durations;
+    agent[1].instrument = scoreInfo.instrument;
+    agent[1].sustainArray = scoreInfo.sustainArray;
+    agent[1].attackArray = scoreInfo.attackArray;
+    agent[1].panArray = scoreInfo.panArray;
+    agent[1].quantphase = scoreInfo.quantphase;
+    agent[1].repeats = scoreInfo.repeats;
+
+    if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
+      // needed because of repeats (free proxyspace timing)
+      proxyspace[agentName].free;
+      // oh dear. Proxyspace forces this, as one might want to put an
+      // effect again on a repeat pat
+      10.do({arg i; proxyspace[agentName][i+1] =  nil });
+      // clear the effect references
+      agent[0].clear;
+
+      pdef = Pdef(agentName, Pbind(
+        \instrument, scoreInfo.instrument,
+        \type, \note,
+        \midinote, Pseq(scoreInfo.notes, inf),
+        \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+        \sustain, Pseq(scoreInfo.sustainArray, inf),
+        \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+        \pan, Pseq(scoreInfo.panArray, inf)
+      ));
+
+      {
+        proxyspace[agentName].quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+        proxyspace[agentName].defineBus(numChannels: numChan);
+        proxyspace[agentName] = Pdef(agentName);
+        proxyspace[agentName].play;
+      }.defer(0.5);
+    },{
+      if(newInstrFlag, {
+        // only if instrument was concrete where Pmono bufferplayer synthdef needs
+        // to be shut down (similar to above, but no freeing of effects)
+
+        // needed in order to swap instrument in Pmono
+        proxyspace[agentName].free;
+
+        pdef = Pdef(agentName, Pbind(
+          \instrument, scoreInfo.instrument,
+          \midinote, Pseq(scoreInfo.notes, inf),
+          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \sustain, Pseq(scoreInfo.sustainArray, inf),
+          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \pan, Pseq(scoreInfo.panArray, inf)
+        )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+
+        proxyspace[agentName].defineBus(numChannels: numChan);
+
+        // defer needed as the free above and play immediately doesn't work
+        { proxyspace[agentName].play }.defer(0.5);
+      }, {
+        pdef = Pdef(agentName, Pbind(
+          \instrument, scoreInfo.instrument,
+          \midinote, Pseq(scoreInfo.notes, inf),
+          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \sustain, Pseq(scoreInfo.sustainArray, inf),
+          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \pan, Pseq(scoreInfo.panArray, inf)
+        )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+
+        if(agent[1].playstate == false, {
+          proxyspace[agentName].defineBus(numChannels: numChan);
+          // this would build up synths on server on commands such as yoyo agent
+          proxyspace[agentName].play;
+        });
+      });
+    });
+    agent[1].playstate = true;
+    ^pdef
   }
 
-  playMelodicScore{| agentName, notes, durations, instrument, sustain, attack, panning, offset, repeats |
-    [\ptype, "melodic", \agentname, agentName, \notes, notes, \durations, durations, \instrument, instrument, \sustain, sustain, \attack, attack, \panning, panning, \offset, offset, \repeats, repeats].postln
+  playConcreteScore{| agentName, scoreInfo|
+    var pdef, agent, newInstrFlag;
+    ["concrete", agentName, scoreInfo].postln;
+
+    agent = this.setAgent(agentName);
+    newInstrFlag = false;
+    // due to Pmono not being able to load a new instr, check
+    // if it is a new one and free the old one if it is
+    if(agent[1].instrument != scoreInfo.instrument, { newInstrFlag = true });
+    if(agent[1].pitch != scoreInfo.pitch, { newInstrFlag = true });
+
+    agent[1].mode = \concrete;
+    agent[1].pitch = scoreInfo.pitch;
+    agent[1].amplitudes = scoreInfo.amplitudes;
+    agent[1].durations = scoreInfo.durations;
+    agent[1].instrument = scoreInfo.instrument;
+    agent[1].panArray = scoreInfo.panArray;
+    agent[1].quantphase = scoreInfo.quantphase;
+    agent[1].repeats = scoreInfo.repeats;
+
+    if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
+      // needed because of repeats (free proxyspace timing)
+      proxyspace[agentName].free;
+      // oh dear. Proxyspace forces this, as one might want to put an
+      // effect again on a repeat pat
+      10.do({arg i; proxyspace[agentName][i+1] =  nil });
+
+      // clear the effect references
+      agentDict[agentName][0].clear;
+
+      Pdefn((agentName++"durations").asSymbol, Pseq(scoreInfo.durations, scoreInfo.repeats));
+      Pdefn((agentName++"amplitudes").asSymbol, Pseq(scoreInfo.amplitudes, scoreInfo.repeats));
+      pdef = Pdef(agentName, Pmono(scoreInfo.instrument,
+            \dur, Pdefn((agentName++"durations").asSymbol),
+            \freq, scoreInfo.pitch.midicps,
+            \noteamp, Pdefn((agentName++"amplitudes").asSymbol),
+            \pan, Pseq(scoreInfo.panArray, inf)
+      ));
+      {
+        proxyspace[agentName].quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+        proxyspace[agentName].defineBus(numChannels: numChan);
+        proxyspace[agentName] = Pdef(agentName);
+        proxyspace[agentName].play
+      }.defer(0.5);
+    }, {
+      Pdefn((agentName++"durations").asSymbol, Pseq(scoreInfo.durations, scoreInfo.repeats)).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+      Pdefn((agentName++"amplitudes").asSymbol, Pseq(scoreInfo.amplitudes, scoreInfo.repeats)).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+      if(newInstrFlag, {
+        // needed in order to swap instrument in Pmono
+        proxyspace[agentName].free;
+        pdef = Pdef(agentName, Pmono(scoreInfo.instrument,
+              \dur, Pdefn((agentName++"durations").asSymbol),
+              \freq, scoreInfo.pitch.midicps,
+              \noteamp, Pdefn((agentName++"amplitudes").asSymbol),
+              \pan, Pseq(scoreInfo.panArray, inf)
+        ));
+        // defer needed as the free above and play immediately doesn't work
+        {
+          proxyspace[agentName].defineBus(numChannels: numChan);
+          proxyspace[agentName] = Pdef(agentName);
+          proxyspace[agentName].play
+        }.defer(0.5);
+      });
+    });
+    // proxyspace quirk: amp set from outside
+    Pdef(agentName).set(\amp, agent[1].amp);
+    agent[1].playstate = true;
+    ^pdef;
   }
 
-  playConcreteScore{| agentName, pitch, amplitudes, durations, instrument, panning, offset, repeats |
-    [\ptype, "concrete", \agentname, agentName, \pitch, pitch, \amplitudes, amplitudes, \durations, durations, \instrument, instrument, \panning, panning, \offset, offset, \repeats, repeats].postln
-  }
 }
