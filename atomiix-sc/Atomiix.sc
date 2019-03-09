@@ -4,13 +4,12 @@ Atomiix {
 
   var instruments, sequencer;
 
-  init {| configPath, project, oscPort, numChannels |
+  init {| configPath, project, oscPort |
     "Booting Atomiix...".postln;
-    instruments = AtomiixInstr.new.init(configPath, project, numChannels);
-    sequencer = AtomiixSequencer.new.init(
+    instruments = AtomiixInstruments.new.init(configPath, project);
+    sequencer = AtomiixAudio.new.init(
       instruments.makeInstrDict,
-      instruments.makeEffectDict,
-      numChannels
+      instruments.makeEffectDict
     );
     this.setupOSC(oscPort);
   }
@@ -18,7 +17,7 @@ Atomiix {
   setupOSC {| oscPort |
     "Setting up OSC listeners".postln;
 
-    OSCFunc({|msg, time, addr, recvPort|
+    OSCFunc({| msg |
       var values = msg.unfoldOSC();
       var scoreType = values[1];
       switch (scoreType,
@@ -29,11 +28,11 @@ Atomiix {
       )
     }, '/play/pattern', NetAddr("localhost"), oscPort);
 
-    OSCFunc({|msg, time, addr, recvPort|
+    OSCFunc({| msg |
       sequencer.freeAgent(msg[1]);
     }, '/free', NetAddr("localhost"), oscPort);
 
-    OSCFunc({|msg, time, addr, recvPort|
+    OSCFunc({| msg |
       var values, agentName, effects;
       values = msg.unfoldOSC();
       agentName = values[1];
@@ -41,7 +40,7 @@ Atomiix {
       sequencer.addEffect(agentName, effects);
     }, '/agent/effects/add', NetAddr("localhost"), oscPort);
 
-    OSCFunc({|msg, time, addr, recvPort|
+    OSCFunc({| msg |
       var values, agentName, effects;
       values = msg.unfoldOSC();
       agentName = values[1];
@@ -52,7 +51,7 @@ Atomiix {
     "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
   }
 
-  playPercussiveScore {|scoreData|
+  playPercussiveScore {| scoreData |
     var agentName, args;
     agentName = scoreData[0];
     args = ();
@@ -67,7 +66,7 @@ Atomiix {
     sequencer.playPercussiveScore(agentName, args);
   }
 
-  playMelodicScore {|scoreData|
+  playMelodicScore {| scoreData |
     var agentName, args;
     agentName = scoreData[0];
     args = ();
@@ -82,7 +81,7 @@ Atomiix {
     sequencer.playMelodicScore(agentName, args);
   }
 
-  playConcreteScore {|scoreData|
+  playConcreteScore {| scoreData |
     var agentName, args;
     agentName = scoreData[0];
     args = ();

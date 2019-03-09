@@ -1,6 +1,6 @@
 
 
-AtomiixSequencer {
+AtomiixAudio {
 
   var proxyspace;
   var agentDict;
