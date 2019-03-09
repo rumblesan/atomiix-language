@@ -8,6 +8,11 @@ export function OSCMessage(address, args) {
   };
 }
 
+export function freeAgentToOSC(address, agentName) {
+  const msgArgs = [{ type: 'string', value: agentName }];
+  return OSCMessage(address, msgArgs);
+}
+
 export function playStmtToOSC(address, agent, score) {
   let msgArgs;
   switch (score.scoreType) {

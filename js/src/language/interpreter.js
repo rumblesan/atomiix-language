@@ -20,8 +20,44 @@ export function createState() {
     tonic: 60,
     oscAddresses: {
       playPattern: '/play/pattern',
+      freeAgent: '/free',
     },
   };
+}
+
+export function freeAgents(state, programAST) {
+  const { agentNames } = getAgentNames(state, programAST);
+  const messages = agentNames.map(n =>
+    osc.freeAgentToOSC(state.oscAddresses.freeAgent, n)
+  );
+  return {
+    newState: state,
+    messages,
+  };
+}
+
+export function getAgentNames(state, programAST) {
+  let agentNames = [];
+  for (let i = 0; i < programAST.statements.length; i += 1) {
+    const s = programAST.statements[i];
+    const agent = getStatementAgent(state, s);
+    if (agent) {
+      agentNames.push(agent.name);
+    }
+  }
+  return {
+    newState: state,
+    agentNames,
+  };
+}
+
+export function getStatementAgent(state, statementAST) {
+  switch (statementAST.type) {
+    case astTypes.PLAY:
+      return statementAST.agent;
+    default:
+      return null;
+  }
 }
 
 // Turns a program AST into a new state object and

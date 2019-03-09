@@ -23,6 +23,18 @@ AtomiixSequencer {
     ^agentDict[agentName];
   }
 
+  freeAgent{| agentName |
+    var agent;
+    if (agentDict[agentName].notNil, {
+      "Freeing agent: %\n".format(agentName).postln;
+      agentDict[agentName][1].playstate = false;
+      proxyspace[agentName].clear;
+      agentDict[agentName] = nil;
+    }, {
+      "No agent named %\n".format(agentName).postln;
+    });
+  }
+
   playPercussiveScore{| agentName, scoreInfo |
     var pdef, agent, instruments, newInstrFlag;
     ["percussive", agentName, scoreInfo].postln;
@@ -35,7 +47,6 @@ AtomiixSequencer {
     if(agent[1].mode == \concrete, { newInstrFlag = true });
 
     scoreInfo.instrumentNames.collect({arg instr, i; instruments = instruments.add(instrumentDict[instr.asSymbol]) });
-    instruments.postln;
 
     agent[1].mode = \percussive;
     agent[1].notes = scoreInfo.notes;

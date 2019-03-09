@@ -58,6 +58,11 @@ function createMelodicMsg(
   return OSCMessage(addr, msgArgs);
 }
 
+function createFreeMsg(addr, agentName) {
+  const msgArgs = [{ type: 'string', value: agentName }];
+  return OSCMessage(addr, msgArgs);
+}
+
 function createConcreteMsg(
   addr,
   agentName,
@@ -116,13 +121,27 @@ test('basic end to end test', () => {
     createConcreteMsg(
       '/play/pattern',
       'bar',
-      [2, 6],
+      [0.2, 0.6],
       [3, 1],
       'sea',
       [-0.5, 0.5],
       1,
       'inf'
     ),
+  ];
+  expect(messages).toEqual(expected);
+});
+
+test('can free agents', () => {
+  const program =
+    'baz -> |  a b  c|\nfoo -> harp[1  3 5]^23^+2\nbar -> sea{ 2  6}<37>';
+  const ast = parser.parse(program);
+  const initialState = interpreter.createState();
+  const { messages } = interpreter.freeAgents(initialState, ast);
+  const expected = [
+    createFreeMsg('/free', 'baz'),
+    createFreeMsg('/free', 'foo'),
+    createFreeMsg('/free', 'bar'),
   ];
   expect(messages).toEqual(expected);
 });

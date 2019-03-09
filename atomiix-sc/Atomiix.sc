@@ -21,9 +21,13 @@ Atomiix {
         \percussive, { this.playPercussiveScore(values[2..]) },
         \melodic, { this.playMelodicScore(values[2..]) },
         \concrete, { this.playConcreteScore(values[2..]) },
-        { ("unknown score type: " ++ scoreType).postln }
+        { "unknown score type: %\n".format(scoreType).postln }
       )
     }, '/play/pattern', NetAddr("localhost"), oscPort);
+
+    OSCFunc({|msg, time, addr, recvPort|
+      sequencer.freeAgent(msg[1]);
+    }, '/free', NetAddr("localhost"), oscPort);
 
     "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
   }

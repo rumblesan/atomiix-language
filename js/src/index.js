@@ -1,6 +1,6 @@
 import parser from './language/parser';
 
-import { createState, interpret } from './language/interpreter';
+import { createState, interpret, freeAgents } from './language/interpreter';
 
 const language = 'atomiix';
 
@@ -10,5 +10,6 @@ export default {
   interpreter: {
     createState,
     interpret,
+    freeAgents,
   },
 };
