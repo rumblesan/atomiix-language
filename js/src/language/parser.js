@@ -83,6 +83,9 @@ parser.scoreModifiers = function() {
         this.match('score modifier').content
       );
       modifiers.push(modifier);
+    } else if (this.la1('open paren')) {
+      const modifier = this.sustainModifier();
+      modifiers.push(modifier);
     } else {
       throw new ParserException(
         'Unexpected token: Expecting operator or score modifier'
@@ -90,6 +93,18 @@ parser.scoreModifiers = function() {
     }
   }
   return modifiers;
+};
+
+parser.sustainModifier = function() {
+  let multiplier = 1;
+  this.match('open paren');
+  const noteLength = this.match('number').content;
+  if (this.la1('sustain multiplier')) {
+    this.match('sustain multiplier');
+    multiplier = this.match('number').content;
+  }
+  this.match('close paren');
+  return ast.ScoreSustainModifier(noteLength, multiplier);
 };
 
 parser.scoreOperator = function() {

@@ -27,12 +27,17 @@ const score = () => ({
 
 const scoreModifier = () => ({
   name: 'score modifier',
-  regexp: /^[<\\^][Z0-9 ]*[>\\^]/,
+  regexp: /^[<\\^][0-9]*[>\\^]/,
 });
 
 const operator = () => ({
   name: 'operator',
-  regexp: /^[*/+-]+/,
+  regexp: /^[*/+\-!@]+/,
+});
+
+const sustainMultiplier = () => ({
+  name: 'sustain multiplier',
+  regexp: /^[_~]/,
 });
 
 const number = () => ({
@@ -51,6 +56,8 @@ lexer.addTokenType(comment());
 lexer.addTokenType(types.constant('->', 'play arrow'));
 lexer.addTokenType(types.constant('>>', 'add effect arrow'));
 lexer.addTokenType(types.constant('<<', 'remove effect arrow'));
+
+lexer.addTokenType(sustainMultiplier());
 
 lexer.addTokenType(types.openParen());
 lexer.addTokenType(types.closeParen());

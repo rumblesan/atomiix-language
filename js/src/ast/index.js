@@ -9,6 +9,7 @@ import {
   CONCRETE,
   SCOREOPERATOR,
   SCOREMODIFIER,
+  SUSTAIN,
   EFFECT,
 } from './types';
 
@@ -203,6 +204,19 @@ export function ScoreModifier(modifierType, values) {
     type: SCOREMODIFIER,
     modifierType,
     values,
+  };
+}
+
+/**
+ *  noteLength: integer
+ *  multiplier: integer
+ */
+export function ScoreSustainModifier(noteLength, multiplier) {
+  return {
+    type: SCOREMODIFIER,
+    modifierType: SUSTAIN,
+    noteLength,
+    multiplier,
   };
 }
 

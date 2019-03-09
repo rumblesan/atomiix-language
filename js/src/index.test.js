@@ -89,7 +89,7 @@ function createConcreteMsg(
 
 test('basic end to end test', () => {
   const program =
-    'baz -> |  a b  c|\nfoo -> harp[1  3 5]^23^+2\nbar -> sea{ 2  6}<37>';
+    'baz -> |  a b  c|!8@2\nfoo -> harp[1  3 5]^23^+2(4~2)\nbar -> sea{ 2  6}<37>';
   const ast = parser.parse(program);
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
@@ -98,21 +98,21 @@ test('basic end to end test', () => {
       '/play/pattern',
       'baz',
       [60],
-      [2, 3, 1],
+      [2 / 4, 3 / 4, 9 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
       [0],
-      2,
-      'inf'
+      2 / 4,
+      2
     ),
     createMelodicMsg(
       '/play/pattern',
       'foo',
       [64, 67, 71],
-      [3, 2, 1],
+      [3 / 4, 2 / 4, 1 / 4],
       'harp',
-      [0.25],
+      [0.5],
       [2 / 9, 3 / 9],
       [0],
       0,
@@ -122,10 +122,10 @@ test('basic end to end test', () => {
       '/play/pattern',
       'bar',
       [0.2, 0.6],
-      [3, 1],
+      [3 / 4, 1 / 4],
       'sea',
       [-0.5, 0.5],
-      1,
+      1 / 4,
       'inf'
     ),
   ];

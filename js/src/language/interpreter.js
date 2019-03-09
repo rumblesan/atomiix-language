@@ -108,14 +108,16 @@ export function interpretPlay(state, { agent, score }) {
 export function interpretPercussiveScore(state, agent, score) {
   // TODO does note pull anything from the default state tonic?
   const scoreNotes = [60];
-  const { notes, sustain, attack, panning, repeats } = interpretModifiers(
-    state,
-    scoreNotes,
-    score.modifiers
-  );
-  const durations = score.durations;
+  const {
+    notes,
+    durations,
+    sustain,
+    attack,
+    panning,
+    repeats,
+  } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
   const instruments = score.values;
-  const offset = score.offset;
+  const quantphase = score.offset / 4;
 
   const ps = ast.PercussiveScore(
     notes,
@@ -124,7 +126,7 @@ export function interpretPercussiveScore(state, agent, score) {
     sustain,
     attack,
     panning,
-    offset,
+    quantphase,
     repeats
   );
   const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ps);
@@ -133,14 +135,16 @@ export function interpretPercussiveScore(state, agent, score) {
 
 export function interpretMelodicScore(state, agent, score) {
   const scoreNotes = score.values.map(i => intervalToNote(state, i));
-  const { notes, sustain, attack, panning, repeats } = interpretModifiers(
-    state,
-    scoreNotes,
-    score.modifiers
-  );
-  const durations = score.durations;
+  const {
+    notes,
+    durations,
+    sustain,
+    attack,
+    panning,
+    repeats,
+  } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
   const instrument = score.instrument;
-  const offset = score.offset;
+  const quantphase = score.offset / 4;
 
   const ms = ast.MelodicScore(
     notes,
@@ -149,7 +153,7 @@ export function interpretMelodicScore(state, agent, score) {
     sustain,
     attack,
     panning,
-    offset,
+    quantphase,
     repeats
   );
   const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ms);
@@ -159,11 +163,15 @@ export function interpretMelodicScore(state, agent, score) {
 export function interpretConcreteScore(state, agent, score) {
   // TODO should this be a float?
   const pitch = 60;
-  const { panning, repeats } = interpretModifiers(state, [], score.modifiers);
+  const { durations, panning, repeats } = interpretModifiers(
+    state,
+    [],
+    score.durations,
+    score.modifiers
+  );
   const amplitudes = score.values.map(v => v / 10);
-  const durations = score.durations;
   const instrument = score.instrument;
-  const offset = score.offset;
+  const quantphase = score.offset / 4;
 
   const ms = ast.ConcreteScore(
     pitch,
@@ -171,28 +179,36 @@ export function interpretConcreteScore(state, agent, score) {
     durations,
     instrument,
     panning,
-    offset,
+    quantphase,
     repeats
   );
   const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ms);
   return [msg];
 }
 
-export function interpretModifiers(state, scoreNotes, modifiers) {
+export function interpretModifiers(
+  state,
+  scoreNotes,
+  scoreDurations,
+  modifiers
+) {
   let notes = scoreNotes;
-  let sustain = [4];
+  let durations = scoreDurations;
+  let sustain = [1 / 4];
   let attack = [5];
-  let panning = [5];
+  let panning = [0];
+  let timestretch = 1;
+  let silences = 0;
   let repeats = 'inf';
   for (let i = 0; i < modifiers.length; i += 1) {
     const m = modifiers[i];
     if (m.type === astTypes.SCOREMODIFIER) {
       switch (m.modifierType) {
         case astTypes.PANNING:
-          panning = m.values;
+          panning = m.values.map(n => (n - 1) / 4 - 1);
           break;
         case astTypes.SUSTAIN:
-          sustain = m.values;
+          sustain = [(1 / m.noteLength) * m.multiplier];
           break;
         case astTypes.ATTACK:
           attack = m.values;
@@ -207,14 +223,35 @@ export function interpretModifiers(state, scoreNotes, modifiers) {
         case '-':
           notes = notes.map(n => n - m.value);
           break;
+        case '*':
+          timestretch = m.value;
+          break;
+        case '/':
+          timestretch = 1 / m.value;
+          break;
+        case '!':
+          silences = m.value;
+          break;
+        case '@':
+          repeats = m.value;
+          break;
       }
     }
   }
+  // add silence onto last duration
+  durations[durations.length - 1] += silences;
+  // make everything quarter notes
+  // then multiply my timestretch
+  durations = durations.map(n => n / 4).map(n => n * timestretch);
+  attack = attack.map(n => n / 9);
   return {
     notes,
-    sustain: sustain.map(n => 1 / n),
-    attack: attack.map(n => n / 9),
-    panning: panning.map(n => (n - 1) / 4 - 1),
+    durations,
+    sustain,
+    attack,
+    panning,
+    silences,
+    timestretch,
     repeats,
   };
 }
