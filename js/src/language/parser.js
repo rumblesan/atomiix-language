@@ -39,20 +39,16 @@ parser.statement = function() {
   if (this.la1('grid')) {
     throw new ParserException("Don't support grid changes yet");
   }
-  if (this.la1('group')) {
-    throw new ParserException("Don't support grid changes yet");
-  }
-
-  const agentName = ast.Agent(this.match('identifier').content);
+  const identifier = this.match('identifier').content;
 
   if (this.la1('play arrow')) {
     this.match('play arrow');
     const score = this.score();
-    return ast.Play(agentName, score);
+    return ast.Play(ast.Agent(identifier), score);
   } else if (this.la1('add effect arrow')) {
-    throw new ParserException("Don't support adding effects yet");
+    return this.addEffectsChain(identifier);
   } else if (this.la1('remove effect arrow')) {
-    throw new ParserException("Don't support removing effects yet");
+    return this.removeEffectsChain(identifier);
   }
 };
 
@@ -113,10 +109,31 @@ parser.scoreOperator = function() {
   return ast.ScoreOperator(operator, number);
 };
 
-parser.scoreOperator = function() {
-  const operator = this.match('operator').content;
-  const number = this.match('number').content;
-  return ast.ScoreOperator(operator, number);
+parser.addEffectsChain = function(agentName) {
+  let effects = [];
+  while (!this.eof() && this.la1('add effect arrow')) {
+    this.match('add effect arrow');
+    const effectName = this.match('identifier').content;
+    effects.push(ast.Effect(effectName));
+  }
+  return ast.AddFXChain(ast.Agent(agentName), effects);
+};
+
+parser.removeEffectsChain = function(agentName) {
+  let effects = [];
+  while (!this.eof() && this.la1('remove effect arrow')) {
+    this.match('remove effect arrow');
+    if (this.eof() || !this.la1('identifier')) {
+      if (effects.length === 0) {
+        // if this is the first attempt at getting an effect name
+        // and there isn't one, then we're removing all effects
+        break;
+      }
+    }
+    const effectName = this.match('identifier').content;
+    effects.push(ast.Effect(effectName));
+  }
+  return ast.RemoveFXChain(ast.Agent(agentName), effects);
 };
 
 export default parser;

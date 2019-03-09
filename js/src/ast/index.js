@@ -1,7 +1,8 @@
 import {
   PROGRAM,
   PLAY,
-  FXCHAIN,
+  ADDFXCHAIN,
+  RMFXCHAIN,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -39,9 +40,21 @@ export function Play(agent, score) {
  *  agent: Agent
  *  effects: [Effect]
  */
-export function FXChain(agent, effects) {
+export function AddFXChain(agent, effects) {
   return {
-    type: FXCHAIN,
+    type: ADDFXCHAIN,
+    agent,
+    effects,
+  };
+}
+
+/**
+ *  agent: Agent
+ *  effects: [Effect]
+ */
+export function RemoveFXChain(agent, effects) {
+  return {
+    type: RMFXCHAIN,
     agent,
     effects,
   };

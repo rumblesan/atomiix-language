@@ -2,14 +2,18 @@
 
 Atomiix {
 
-	var instruments, sequencer;
+  var instruments, sequencer;
 
-	init {| configPath, project, oscPort, numChannels |
-		"Booting Atomiix...".postln;
-		instruments = AtomiixInstr.new.init(configPath, project, numChannels);
-		sequencer = AtomiixSequencer.new.init(instruments.makeInstrDict, numChannels);
-		this.setupOSC(oscPort);
-	}
+  init {| configPath, project, oscPort, numChannels |
+    "Booting Atomiix...".postln;
+    instruments = AtomiixInstr.new.init(configPath, project, numChannels);
+    sequencer = AtomiixSequencer.new.init(
+      instruments.makeInstrDict,
+      instruments.makeEffectDict,
+      numChannels
+    );
+    this.setupOSC(oscPort);
+  }
 
   setupOSC {| oscPort |
     "Setting up OSC listeners".postln;
@@ -29,51 +33,67 @@ Atomiix {
       sequencer.freeAgent(msg[1]);
     }, '/free', NetAddr("localhost"), oscPort);
 
+    OSCFunc({|msg, time, addr, recvPort|
+      var values, agentName, effects;
+      values = msg.unfoldOSC();
+      agentName = values[1];
+      effects = values[2];
+      sequencer.addEffect(agentName, effects);
+    }, '/agent/effects/add', NetAddr("localhost"), oscPort);
+
+    OSCFunc({|msg, time, addr, recvPort|
+      var values, agentName, effects;
+      values = msg.unfoldOSC();
+      agentName = values[1];
+      effects = values[2];
+      sequencer.removeEffect(agentName, effects);
+    }, '/agent/effects/remove', NetAddr("localhost"), oscPort);
+
     "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
   }
 
   playPercussiveScore {|scoreData|
     var agentName, args;
-		agentName = scoreData[0];
+    agentName = scoreData[0];
     args = ();
-		args.notes = scoreData[1];
-		args.durations = scoreData[2];
-		args.instrumentNames = scoreData[3];
-		args.sustainArray = scoreData[4];
-		args.attackArray = scoreData[5];
-		args.panArray = scoreData[6];
-		args.quantphase = scoreData[7];
-		args.repeats = scoreData[8];
-		sequencer.playPercussiveScore(agentName, args);
+    args.notes = scoreData[1];
+    args.durations = scoreData[2];
+    args.instrumentNames = scoreData[3];
+    args.sustainArray = scoreData[4];
+    args.attackArray = scoreData[5];
+    args.panArray = scoreData[6];
+    args.quantphase = scoreData[7];
+    args.repeats = scoreData[8];
+    sequencer.playPercussiveScore(agentName, args);
   }
 
   playMelodicScore {|scoreData|
-		var agentName, args;
-		agentName = scoreData[0];
+    var agentName, args;
+    agentName = scoreData[0];
     args = ();
-		args.notes = scoreData[1];
-		args.durations = scoreData[2];
-		args.instrument = scoreData[3];
-		args.sustainArray = scoreData[4];
-		args.attackArray = scoreData[5];
-		args.panArray = scoreData[6];
-		args.quantphase = scoreData[7];
-		args.repeats = scoreData[8];
-		sequencer.playMelodicScore(agentName, args);
+    args.notes = scoreData[1];
+    args.durations = scoreData[2];
+    args.instrument = scoreData[3];
+    args.sustainArray = scoreData[4];
+    args.attackArray = scoreData[5];
+    args.panArray = scoreData[6];
+    args.quantphase = scoreData[7];
+    args.repeats = scoreData[8];
+    sequencer.playMelodicScore(agentName, args);
   }
 
   playConcreteScore {|scoreData|
-		var agentName, args;
-		agentName = scoreData[0];
+    var agentName, args;
+    agentName = scoreData[0];
     args = ();
-		args.pitch = scoreData[1];
-		args.amplitudes = scoreData[2];
-		args.durations = scoreData[3];
-		args.instrument = scoreData[4];
-		args.panArray = scoreData[5];
-		args.quantphase = scoreData[6];
-		args.repeats = scoreData[7];
-		sequencer.playConcreteScore(agentName, args);
+    args.pitch = scoreData[1];
+    args.amplitudes = scoreData[2];
+    args.durations = scoreData[3];
+    args.instrument = scoreData[4];
+    args.panArray = scoreData[5];
+    args.quantphase = scoreData[6];
+    args.repeats = scoreData[7];
+    sequencer.playConcreteScore(agentName, args);
   }
 
 }

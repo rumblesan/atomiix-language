@@ -21,6 +21,8 @@ export function createState() {
     oscAddresses: {
       playPattern: '/play/pattern',
       freeAgent: '/free',
+      addFX: '/agent/effects/add',
+      rmFX: '/agent/effects/remove',
     },
   };
 }
@@ -81,11 +83,23 @@ export function interpretStatement(state, statementAST) {
   switch (statementAST.type) {
     case astTypes.PLAY:
       return interpretPlay(state, statementAST);
+    case astTypes.ADDFXCHAIN:
+      return interpretAddFX(state, statementAST);
+    case astTypes.RMFXCHAIN:
+      return interpretRemoveFX(state, statementAST);
     default:
       throw new AtomiixRuntimeError(
         `${statementAST.type} is not a supported statement type`
       );
   }
+}
+
+export function interpretAddFX(state, { agent, effects }) {
+  return [osc.fxChainToOSC(state.oscAddresses.addFX, agent, effects)];
+}
+
+export function interpretRemoveFX(state, { agent, effects }) {
+  return [osc.fxChainToOSC(state.oscAddresses.rmFX, agent, effects)];
 }
 
 export function interpretPlay(state, { agent, score }) {

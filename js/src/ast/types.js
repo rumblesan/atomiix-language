@@ -1,7 +1,8 @@
 export const PROGRAM = 'PROGRAM';
 
 export const PLAY = 'PLAY';
-export const FXCHAIN = 'FXCHAIN';
+export const ADDFXCHAIN = 'ADDFXCHAIN';
+export const RMFXCHAIN = 'RMFXCHAIN';
 
 export const AGENT = 'AGENT';
 

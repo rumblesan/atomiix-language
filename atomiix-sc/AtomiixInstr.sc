@@ -16,42 +16,62 @@ AtomiixInstr {
   }
 
   // this is where keys are mapped to instruments (better done by hand and design)
-	makeInstrDict{
+  makeInstrDict{
     var instrDict;
 
-		// if sounds folder contains a key mapping file, then it is used,
-		// else, the instrDict is created by mapping random sound files onto the letters
+    // if sounds folder contains a key mapping file, then it is used,
+    // else, the instrDict is created by mapping random sound files onto the letters
 
-		if(Object.readArchive(configFolder++project++"/keyMapping.ixi").isNil, {
-			instrDict = IdentityDictionary.new;
-			[\A, \a, \B, \b, \C, \c, \D, \d, \E, \e, \F, \f, \G, \g, \H, \h, \I, \i, \J, \j,
-			\K, \k, \L, \l, \M, \m, \N, \n, \O, \o, \P, \p, \Q, \q, \R, \r, \S, \s, \T, \t,
-			\U, \u, \V, \v, \W, \w, \X, \x, \Y, \y, \Z, \z].do({arg letter, i;
-				instrDict[letter] = sampleNames.wrapAt(i).asSymbol;
-			});
-			"No key mappings were found, so samples will be randomly assigned to keys".postln;
-		}, {
-			instrDict = Object.readArchive(configFolder++project++"/keyMapping.ixi");
-		});
+    if(Object.readArchive(configFolder++project++"/keyMapping.ixi").isNil, {
+      instrDict = IdentityDictionary.new;
+      [\A, \a, \B, \b, \C, \c, \D, \d, \E, \e, \F, \f, \G, \g, \H, \h, \I, \i, \J, \j,
+      \K, \k, \L, \l, \M, \m, \N, \n, \O, \o, \P, \p, \Q, \q, \R, \r, \S, \s, \T, \t,
+      \U, \u, \V, \v, \W, \w, \X, \x, \Y, \y, \Z, \z].do({arg letter, i;
+        instrDict[letter] = sampleNames.wrapAt(i).asSymbol;
+      });
+      "No key mappings were found, so samples will be randomly assigned to keys".postln;
+    }, {
+      instrDict = Object.readArchive(configFolder++project++"/keyMapping.ixi");
+    });
 
-		"The keys of your keyboard are mapped to the following samples :".postln;
-		Post << this.getSamplesSynthdefs(instrDict);
-		if(sampleNames.size == 0, {
-			"There were no samples in your samples folder, please put some there!".postln;
-		});
-		^instrDict;
-	}
+    "The keys of your keyboard are mapped to the following samples :".postln;
+    Post << this.getSamplesSynthdefs(instrDict);
+    if(sampleNames.size == 0, {
+      "There were no samples in your samples folder, please put some there!".postln;
+    });
+    ^instrDict;
+  }
 
-	getSamplesSynthdefs {| instrDict |
-		var string, sortedkeys, sortedvals;
-		sortedkeys = instrDict.keys.asArray.sort;
-		sortedvals = instrDict.atAll(instrDict.order);
-		string = " ";
-		sortedkeys.do({arg item, i;
-			string = string++item++"  :  "++sortedvals[i]++"\n"++" ";
-		});
-		^string;
-	}
+  makeEffectDict {
+    var effectDict;
+    // for your own effects, simply add a new line to here
+    effectDict = IdentityDictionary.new;
+    effectDict[\reverb]   = {arg sig; (sig*0.6)+FreeVerb.ar(sig, 0.85, 0.86, 0.3)};
+    effectDict[\reverbL]   = {arg sig; (sig*0.6)+FreeVerb.ar(sig, 0.95, 0.96, 0.7)};
+    effectDict[\reverbS]   = {arg sig; (sig*0.6)+FreeVerb.ar(sig, 0.45, 0.46, 0.2)};
+    effectDict[\delay]    = {arg sig; sig + AllpassC.ar(sig, 1, 0.15, 1.3 )};
+    effectDict[\lowpass]   = {arg sig; RLPF.ar(sig, 1000, 0.2)};
+    effectDict[\tremolo]  = {arg sig; (sig * SinOsc.ar(2.1, 0, 5.44, 0))*0.5};
+    effectDict[\vibrato]  = {arg sig; PitchShift.ar(sig, 0.008, SinOsc.ar(2.1, 0, 0.11, 1))};
+    effectDict[\techno]   = {arg sig; RLPF.ar(sig, SinOsc.ar(0.1).exprange(880,12000), 0.2)};
+    effectDict[\technosaw]   = {arg sig; RLPF.ar(sig, LFSaw.ar(0.2).exprange(880,12000), 0.2)};
+    effectDict[\distort]   = {arg sig; (3111.33*sig.distort/(1+(2231.23*sig.abs))).distort*0.02};
+    effectDict[\cyberpunk]  = {arg sig; Squiz.ar(sig, 4.5, 5, 0.1)};
+    effectDict[\bitcrush]  = {arg sig; Latch.ar(sig, Impulse.ar(11000*0.5)).round(0.5 ** 6.7)};
+    effectDict[\antique]  = {arg sig; LPF.ar(sig, 1700) + Dust.ar(7, 0.6)};
+    ^effectDict;
+  }
+
+  getSamplesSynthdefs {| instrDict |
+    var string, sortedkeys, sortedvals;
+    sortedkeys = instrDict.keys.asArray.sort;
+    sortedvals = instrDict.atAll(instrDict.order);
+    string = " ";
+    sortedkeys.do({arg item, i;
+      string = string++item++"  :  "++sortedvals[i]++"\n"++" ";
+    });
+    ^string;
+  }
 
   makeSynthDefs {| numChannels |
     defaultsynthdesclib = SynthDescLib(\xiilang);

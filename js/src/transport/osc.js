@@ -13,6 +13,14 @@ export function freeAgentToOSC(address, agentName) {
   return OSCMessage(address, msgArgs);
 }
 
+export function fxChainToOSC(address, agent, effects) {
+  const msgArgs = [
+    { type: 'string', value: agent.name },
+    { type: 'array', value: effects.map(e => e.name) },
+  ];
+  return OSCMessage(address, msgArgs);
+}
+
 export function playStmtToOSC(address, agent, score) {
   let msgArgs;
   switch (score.scoreType) {

@@ -58,11 +58,6 @@ function createMelodicMsg(
   return OSCMessage(addr, msgArgs);
 }
 
-function createFreeMsg(addr, agentName) {
-  const msgArgs = [{ type: 'string', value: agentName }];
-  return OSCMessage(addr, msgArgs);
-}
-
 function createConcreteMsg(
   addr,
   agentName,
@@ -83,6 +78,19 @@ function createConcreteMsg(
     { type: 'array', value: panning },
     { type: 'integer', value: offset },
     repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
+  ];
+  return OSCMessage(addr, msgArgs);
+}
+
+function createFreeMsg(addr, agentName) {
+  const msgArgs = [{ type: 'string', value: agentName }];
+  return OSCMessage(addr, msgArgs);
+}
+
+function createFXMsg(addr, agentName, effects) {
+  const msgArgs = [
+    { type: 'string', value: agentName },
+    { type: 'array', value: effects },
   ];
   return OSCMessage(addr, msgArgs);
 }
@@ -142,6 +150,75 @@ test('can free agents', () => {
     createFreeMsg('/free', 'baz'),
     createFreeMsg('/free', 'foo'),
     createFreeMsg('/free', 'bar'),
+  ];
+  expect(messages).toEqual(expected);
+});
+
+test('can add effects', () => {
+  const program = 'baz -> |  a b  c|\nbaz >> reverb >> distortion';
+  const ast = parser.parse(program);
+  const initialState = interpreter.createState();
+  const { messages } = interpreter.interpret(initialState, ast);
+  const expected = [
+    createPercussiveMsg(
+      '/play/pattern',
+      'baz',
+      [60],
+      [2 / 4, 3 / 4, 1 / 4],
+      ['a', 'b', 'c'],
+      [0.25],
+      [5 / 9],
+      [0],
+      2 / 4,
+      'inf'
+    ),
+    createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
+  ];
+  expect(messages).toEqual(expected);
+});
+
+test('can remove effects', () => {
+  const program = 'baz -> |  a b  c|\nbaz << reverb << distortion';
+  const ast = parser.parse(program);
+  const initialState = interpreter.createState();
+  const { messages } = interpreter.interpret(initialState, ast);
+  const expected = [
+    createPercussiveMsg(
+      '/play/pattern',
+      'baz',
+      [60],
+      [2 / 4, 3 / 4, 1 / 4],
+      ['a', 'b', 'c'],
+      [0.25],
+      [5 / 9],
+      [0],
+      2 / 4,
+      'inf'
+    ),
+    createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
+  ];
+  expect(messages).toEqual(expected);
+});
+
+test('can remove all effects', () => {
+  const program = 'baz -> |  a b  c|\nbaz <<';
+  const ast = parser.parse(program);
+  const initialState = interpreter.createState();
+  const { messages } = interpreter.interpret(initialState, ast);
+  const expected = [
+    createPercussiveMsg(
+      '/play/pattern',
+      'baz',
+      [60],
+      [2 / 4, 3 / 4, 1 / 4],
+      ['a', 'b', 'c'],
+      [0.25],
+      [5 / 9],
+      [0],
+      2 / 4,
+      'inf'
+    ),
+    createFXMsg('/agent/effects/remove', 'baz', []),
   ];
   expect(messages).toEqual(expected);
 });

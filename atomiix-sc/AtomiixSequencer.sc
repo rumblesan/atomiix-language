@@ -4,14 +4,16 @@ AtomiixSequencer {
 
   var proxyspace;
   var agentDict;
+  var effectsDict;
   var instrumentDict;
   var numChan;
 
-  init{| instrDict, numChannels = 2 |
+  init{| instrDict, fxDict, numChannels = 2 |
     TempoClock.default.tempo = 120/60;
     proxyspace = ProxySpace.new.know_(true);
     agentDict = IdentityDictionary.new;
     instrumentDict = instrDict;
+    effectsDict = fxDict;
     numChan = numChannels
   }
 
@@ -30,6 +32,57 @@ AtomiixSequencer {
       agentDict[agentName][1].playstate = false;
       proxyspace[agentName].clear;
       agentDict[agentName] = nil;
+    }, {
+      "No agent named %\n".format(agentName).postln;
+    });
+  }
+
+  addEffect{| agentName, effects |
+    var agent, agentFX, fx;
+    agent = agentDict[agentName];
+    if (agent.notNil, {
+      agentFX = agent[0];
+
+      effects.do({|effect|
+        if(agentFX[effect.asSymbol].isNil, {
+          // add 1 (the source is 1)
+          agentFX[effect.asSymbol] = agentFX.size+1;
+
+          fx = effectsDict[effect.asSymbol];
+          if(fx.notNil, {
+            "Adding effect % to %\n".format(effect, agentName).postln;
+            proxyspace[agentName][agentFX.size] = \filter -> fx;
+          }, {
+            "No effect named %\n".format(effect).postln;
+          });
+        });
+      });
+
+    }, {
+      "No agent named %\n".format(agentName).postln;
+    });
+  }
+
+  removeEffect{| agentName, effects |
+    var agent, agentFX, fx;
+    agent = agentDict[agentName];
+    if (agent.notNil, {
+      agentFX = agent[0];
+
+      if (effects.isNil, {
+        // remove all effects (10 max) (+1 as 0 is Pdef)
+        10.do({arg i; proxyspace[agentName][i+1] =  nil });
+        agentFX.clear;
+      }, {
+        effects.do({|effect|
+          if (agentFX[effect.asSymbol].notNil, {
+            // TODO should this handle the gaps it creates?
+            proxyspace[agentName][(agentFX[effect.asSymbol]).clip(1,10)] =  nil;
+            agentFX.removeAt(effect.asSymbol);
+          });
+        });
+      });
+
     }, {
       "No agent named %\n".format(agentName).postln;
     });
