@@ -21,6 +21,14 @@ export function fxChainToOSC(address, agent, effects) {
   return OSCMessage(address, msgArgs);
 }
 
+export function ampChangeToOSC(address, agent, change) {
+  const msgArgs = [
+    { type: 'string', value: agent.name },
+    { type: 'float', value: change },
+  ];
+  return OSCMessage(address, msgArgs);
+}
+
 export function playStmtToOSC(address, agent, score) {
   let msgArgs;
   switch (score.scoreType) {

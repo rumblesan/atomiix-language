@@ -46,9 +46,15 @@ parser.statement = function() {
     const score = this.score();
     return ast.Play(ast.Agent(identifier), score);
   } else if (this.la1('add effect arrow')) {
-    return this.addEffectsChain(identifier);
+    return this.addEffectsChain(ast.Agent(identifier));
   } else if (this.la1('remove effect arrow')) {
-    return this.removeEffectsChain(identifier);
+    return this.removeEffectsChain(ast.Agent(identifier));
+  } else if (this.la1('increase amplitude')) {
+    this.match('increase amplitude');
+    return ast.IncreaseAmplitude(ast.Agent(identifier));
+  } else if (this.la1('decrease amplitude')) {
+    this.match('decrease amplitude');
+    return ast.DecreaseAmplitude(ast.Agent(identifier));
   }
 };
 
@@ -109,17 +115,17 @@ parser.scoreOperator = function() {
   return ast.ScoreOperator(operator, number);
 };
 
-parser.addEffectsChain = function(agentName) {
+parser.addEffectsChain = function(agent) {
   let effects = [];
   while (!this.eof() && this.la1('add effect arrow')) {
     this.match('add effect arrow');
     const effectName = this.match('identifier').content;
     effects.push(ast.Effect(effectName));
   }
-  return ast.AddFXChain(ast.Agent(agentName), effects);
+  return ast.AddFXChain(agent, effects);
 };
 
-parser.removeEffectsChain = function(agentName) {
+parser.removeEffectsChain = function(agent) {
   let effects = [];
   while (!this.eof() && this.la1('remove effect arrow')) {
     this.match('remove effect arrow');
@@ -133,7 +139,7 @@ parser.removeEffectsChain = function(agentName) {
     const effectName = this.match('identifier').content;
     effects.push(ast.Effect(effectName));
   }
-  return ast.RemoveFXChain(ast.Agent(agentName), effects);
+  return ast.RemoveFXChain(agent, effects);
 };
 
 export default parser;

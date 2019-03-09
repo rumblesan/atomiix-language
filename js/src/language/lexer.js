@@ -56,6 +56,8 @@ lexer.addTokenType(comment());
 lexer.addTokenType(types.constant('->', 'play arrow'));
 lexer.addTokenType(types.constant('>>', 'add effect arrow'));
 lexer.addTokenType(types.constant('<<', 'remove effect arrow'));
+lexer.addTokenType(types.constant('))', 'increase amplitude'));
+lexer.addTokenType(types.constant('((', 'decrease amplitude'));
 
 lexer.addTokenType(sustainMultiplier());
 

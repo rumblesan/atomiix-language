@@ -2,12 +2,12 @@
 
 Atomiix {
 
-  var instruments, sequencer;
+  var instruments, audioEngine;
 
   init {| configPath, project, oscPort |
     "Booting Atomiix...".postln;
     instruments = AtomiixInstruments.new.init(configPath, project);
-    sequencer = AtomiixAudio.new.init(
+    audioEngine = AtomiixAudio.new.init(
       instruments.makeInstrDict,
       instruments.makeEffectDict
     );
@@ -29,15 +29,23 @@ Atomiix {
     }, '/play/pattern', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
-      sequencer.freeAgent(msg[1]);
+      audioEngine.freeAgent(msg[1]);
     }, '/free', NetAddr("localhost"), oscPort);
+
+    OSCFunc({| msg |
+      var agentName, change;
+      msg.postln;
+      agentName = msg[1];
+      change = msg[2];
+      audioEngine.changeAgentAmplitude(agentName, change);
+    }, '/agent/amplitude', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
       var values, agentName, effects;
       values = msg.unfoldOSC();
       agentName = values[1];
       effects = values[2];
-      sequencer.addEffect(agentName, effects);
+      audioEngine.addEffect(agentName, effects);
     }, '/agent/effects/add', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
@@ -45,7 +53,7 @@ Atomiix {
       values = msg.unfoldOSC();
       agentName = values[1];
       effects = values[2];
-      sequencer.removeEffect(agentName, effects);
+      audioEngine.removeEffect(agentName, effects);
     }, '/agent/effects/remove', NetAddr("localhost"), oscPort);
 
     "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
@@ -63,7 +71,7 @@ Atomiix {
     args.panArray = scoreData[6];
     args.quantphase = scoreData[7];
     args.repeats = scoreData[8];
-    sequencer.playPercussiveScore(agentName, args);
+    audioEngine.playPercussiveScore(agentName, args);
   }
 
   playMelodicScore {| scoreData |
@@ -78,7 +86,7 @@ Atomiix {
     args.panArray = scoreData[6];
     args.quantphase = scoreData[7];
     args.repeats = scoreData[8];
-    sequencer.playMelodicScore(agentName, args);
+    audioEngine.playMelodicScore(agentName, args);
   }
 
   playConcreteScore {| scoreData |
@@ -92,7 +100,7 @@ Atomiix {
     args.panArray = scoreData[5];
     args.quantphase = scoreData[6];
     args.repeats = scoreData[7];
-    sequencer.playConcreteScore(agentName, args);
+    audioEngine.playConcreteScore(agentName, args);
   }
 
 }

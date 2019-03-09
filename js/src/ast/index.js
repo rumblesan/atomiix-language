@@ -3,6 +3,8 @@ import {
   PLAY,
   ADDFXCHAIN,
   RMFXCHAIN,
+  INCRAMP,
+  DECRAMP,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -57,6 +59,28 @@ export function RemoveFXChain(agent, effects) {
     type: RMFXCHAIN,
     agent,
     effects,
+  };
+}
+
+/**
+ *  agent: Agent
+ *  effects: [Effect]
+ */
+export function IncreaseAmplitude(agent) {
+  return {
+    type: INCRAMP,
+    agent,
+  };
+}
+
+/**
+ *  agent: Agent
+ *  effects: [Effect]
+ */
+export function DecreaseAmplitude(agent) {
+  return {
+    type: DECRAMP,
+    agent,
   };
 }
 

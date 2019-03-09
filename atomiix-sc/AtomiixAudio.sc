@@ -26,12 +26,21 @@ AtomiixAudio {
   }
 
   freeAgent{| agentName |
-    var agent;
     if (agentDict[agentName].notNil, {
       "Freeing agent: %\n".format(agentName).postln;
       agentDict[agentName][1].playstate = false;
       proxyspace[agentName].clear;
       agentDict[agentName] = nil;
+    }, {
+      "No agent named %\n".format(agentName).postln;
+    });
+  }
+
+  changeAgentAmplitude{| agentName, change |
+    var agent = agentDict[agentName];
+    if (agent.notNil, {
+      agent[1].amp = agent[1].amp + change;
+      "Changing % amp by % to %\n".format(agentName, change, agent[1].amp).postln;
     }, {
       "No agent named %\n".format(agentName).postln;
     });

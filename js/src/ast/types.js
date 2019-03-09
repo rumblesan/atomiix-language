@@ -3,6 +3,8 @@ export const PROGRAM = 'PROGRAM';
 export const PLAY = 'PLAY';
 export const ADDFXCHAIN = 'ADDFXCHAIN';
 export const RMFXCHAIN = 'RMFXCHAIN';
+export const INCRAMP = 'INCRAMP';
+export const DECRAMP = 'DECRAMP';
 
 export const AGENT = 'AGENT';
 
