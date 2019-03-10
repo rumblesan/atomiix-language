@@ -3,12 +3,9 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 import * as osc from '../transport/osc';
 
-class AtomiixRuntimeError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'AtomiixRuntimeError';
-  }
-}
+import * as stdlib from './stdlib';
+
+import { AtomiixRuntimeError } from './runtime';
 
 export function intervalToNote(state, interval) {
   return state.tonic + scales.notes[state.scale][interval];
@@ -18,9 +15,10 @@ export function createState() {
   return {
     scale: scales.names.Maj,
     tonic: 60,
+    stdlib,
     oscAddresses: {
       playPattern: '/play/pattern',
-      freeAgent: '/free',
+      command: '/command',
       agentAmplitude: '/agent/amplitude',
       addFX: '/agent/effects/add',
       rmFX: '/agent/effects/remove',
@@ -31,7 +29,7 @@ export function createState() {
 export function freeAgents(state, programAST) {
   const { agentNames } = getAgentNames(state, programAST);
   const messages = agentNames.map(n =>
-    osc.freeAgentToOSC(state.oscAddresses.freeAgent, n)
+    osc.freeAgentToOSC(state.oscAddresses.command, n)
   );
   return {
     newState: state,
@@ -92,6 +90,8 @@ export function interpretStatement(state, statementAST) {
       return interpretAmplitudeChange(state, statementAST, 0.1);
     case astTypes.DECRAMP:
       return interpretAmplitudeChange(state, statementAST, -0.1);
+    case astTypes.COMMAND:
+      return interpretCommand(state, statementAST);
     default:
       throw new AtomiixRuntimeError(
         `${statementAST.type} is not a supported statement type`
@@ -109,6 +109,14 @@ export function interpretRemoveFX(state, { agent, effects }) {
 
 export function interpretAmplitudeChange(state, { agent }, change) {
   return [osc.ampChangeToOSC(state.oscAddresses.agentAmplitude, agent, change)];
+}
+
+export function interpretCommand(state, { command, args }) {
+  const cmd = state.stdlib[command];
+  if (!cmd) {
+    throw new AtomiixRuntimeError(`${command} is not an existing command`);
+  }
+  return cmd(state, args);
 }
 
 export function interpretPlay(state, { agent, score }) {

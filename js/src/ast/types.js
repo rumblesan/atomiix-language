@@ -5,6 +5,7 @@ export const ADDFXCHAIN = 'ADDFXCHAIN';
 export const RMFXCHAIN = 'RMFXCHAIN';
 export const INCRAMP = 'INCRAMP';
 export const DECRAMP = 'DECRAMP';
+export const COMMAND = 'COMMAND';
 
 export const AGENT = 'AGENT';
 
@@ -21,3 +22,6 @@ export const SUSTAIN = 'SUSTAIN';
 export const ATTACK = 'ATTACK';
 
 export const EFFECT = 'EFFECT';
+
+export const NUMBER = 'NUMBER';
+export const STRING = 'STRING';

@@ -5,6 +5,7 @@ import {
   RMFXCHAIN,
   INCRAMP,
   DECRAMP,
+  COMMAND,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -14,6 +15,8 @@ import {
   SCOREMODIFIER,
   SUSTAIN,
   EFFECT,
+  NUMBER,
+  STRING,
 } from './types';
 
 /**
@@ -81,6 +84,18 @@ export function DecreaseAmplitude(agent) {
   return {
     type: DECRAMP,
     agent,
+  };
+}
+
+/**
+ *  command: String
+ *  args: [string | integer]
+ */
+export function Command(command, args) {
+  return {
+    type: COMMAND,
+    command,
+    args,
   };
 }
 
@@ -264,5 +279,25 @@ export function Effect(name) {
   return {
     type: EFFECT,
     name,
+  };
+}
+
+/**
+ *  value: number
+ */
+export function Num(value) {
+  return {
+    type: NUMBER,
+    value,
+  };
+}
+
+/**
+ *  value: number
+ */
+export function Str(value) {
+  return {
+    type: STRING,
+    value,
   };
 }

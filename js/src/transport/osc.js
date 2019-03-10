@@ -8,8 +8,19 @@ export function OSCMessage(address, args) {
   };
 }
 
+export function agentMethodToOSC(address, method, agentName) {
+  const msgArgs = [
+    { type: 'string', value: method },
+    { type: 'string', value: agentName },
+  ];
+  return OSCMessage(address, msgArgs);
+}
+
 export function freeAgentToOSC(address, agentName) {
-  const msgArgs = [{ type: 'string', value: agentName }];
+  const msgArgs = [
+    { type: 'string', value: 'free' },
+    { type: 'string', value: agentName },
+  ];
   return OSCMessage(address, msgArgs);
 }
 

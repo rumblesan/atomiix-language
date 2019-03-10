@@ -56,6 +56,9 @@ parser.statement = function() {
     this.match('decrease amplitude');
     return ast.DecreaseAmplitude(ast.Agent(identifier));
   }
+
+  // must be a command
+  return this.command(identifier);
 };
 
 parser.score = function() {
@@ -140,6 +143,22 @@ parser.removeEffectsChain = function(agent) {
     effects.push(ast.Effect(effectName));
   }
   return ast.RemoveFXChain(agent, effects);
+};
+
+parser.command = function(commandName) {
+  let args = [];
+  while (!(this.eof() || this.la1('newline'))) {
+    if (this.la1('number')) {
+      const num = this.match('number').content;
+      args.push(ast.Num(num));
+    } else if (this.la1('identifier')) {
+      const str = this.match('identifier').content;
+      args.push(ast.Str(str));
+    } else {
+      throw new ParserException('Expected number or string');
+    }
+  }
+  return ast.Command(commandName, args);
 };
 
 export default parser;

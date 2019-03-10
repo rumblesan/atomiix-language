@@ -82,8 +82,11 @@ function createConcreteMsg(
   return OSCMessage(addr, msgArgs);
 }
 
-function createFreeMsg(addr, agentName) {
-  const msgArgs = [{ type: 'string', value: agentName }];
+function createCommandMsg(addr, command, agentName) {
+  const msgArgs = [
+    { type: 'string', value: command },
+    { type: 'string', value: agentName },
+  ];
   return OSCMessage(addr, msgArgs);
 }
 
@@ -147,9 +150,9 @@ test('can free agents', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.freeAgents(initialState, ast);
   const expected = [
-    createFreeMsg('/free', 'baz'),
-    createFreeMsg('/free', 'foo'),
-    createFreeMsg('/free', 'bar'),
+    createCommandMsg('/command', 'free', 'baz'),
+    createCommandMsg('/command', 'free', 'foo'),
+    createCommandMsg('/command', 'free', 'bar'),
   ];
   expect(messages).toEqual(expected);
 });
@@ -219,6 +222,30 @@ test('can remove all effects', () => {
       'inf'
     ),
     createFXMsg('/agent/effects/remove', 'baz', []),
+  ];
+  expect(messages).toEqual(expected);
+});
+
+test('can doze and wake agents', () => {
+  const program = 'baz -> |  a b  c|\ndoze baz\nwake baz';
+  const ast = parser.parse(program);
+  const initialState = interpreter.createState();
+  const { messages } = interpreter.interpret(initialState, ast);
+  const expected = [
+    createPercussiveMsg(
+      '/play/pattern',
+      'baz',
+      [60],
+      [2 / 4, 3 / 4, 1 / 4],
+      ['a', 'b', 'c'],
+      [0.25],
+      [5 / 9],
+      [0],
+      2 / 4,
+      'inf'
+    ),
+    createCommandMsg('/command', 'doze', 'baz'),
+    createCommandMsg('/command', 'wake', 'baz'),
   ];
   expect(messages).toEqual(expected);
 });
