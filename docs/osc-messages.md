@@ -54,3 +54,40 @@ arguments
 * offset: integer
 * repeats: integer or inf
 
+## Freeing Agents
+
+address
+* /free
+
+arguments
+* agentName: string
+
+## Changing Agent Amplitude
+
+address
+* /agent/amplitude
+
+arguments
+* agentName: string
+* change: float
+
+## Adding Agent Effects
+
+address
+* /agent/effects/add
+
+arguments
+* agentName: string
+* effects: [string] 
+
+## Removing Agent Effects
+
+address
+* /agent/effects/remove
+
+arguments
+* agentName: string
+* effects: [string] 
+
+If effects is an empty array then all effects are removed
+

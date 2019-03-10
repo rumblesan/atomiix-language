@@ -21,8 +21,9 @@ export function createState() {
     oscAddresses: {
       playPattern: '/play/pattern',
       freeAgent: '/free',
-      addFX: '/agent/effects/add',
       agentAmplitude: '/agent/amplitude',
+      addFX: '/agent/effects/add',
+      rmFX: '/agent/effects/remove',
     },
   };
 }
