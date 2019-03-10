@@ -36,10 +36,28 @@ AtomiixAudio {
     });
   }
 
+  reinitScore {| agentName |
+    var agent, scoreType;
+    agent = agentDict[agentName];
+    if (agent.notNil, {
+      scoreType = agent[1].mode;
+      switch (scoreType,
+        \percussive, { this.playPercussiveScore(agentName, agent[1]) },
+        \melodic, { this.playMelodicScore(agentName, agent[1]) },
+        \concrete, { this.playConcreteScore(agentName, agent[1]) },
+        { "unknown score type: %\n".format(scoreType).postln }
+      )
+    }, {
+      "No agent named %\n".format(agentName).postln;
+    });
+  }
+
+
   changeAgentAmplitude{| agentName, change |
     var agent = agentDict[agentName];
     if (agent.notNil, {
-      agent[1].amp = agent[1].amp + change;
+      agent[1].amp = (agent[1].amp + change).clip(0, 2);
+      this.reinitScore(agentName);
       "Changing % amp by % to %\n".format(agentName, change, agent[1].amp).postln;
     }, {
       "No agent named %\n".format(agentName).postln;
@@ -113,6 +131,7 @@ AtomiixAudio {
     agent[1].mode = \percussive;
     agent[1].notes = scoreInfo.notes;
     agent[1].durations = scoreInfo.durations;
+    agent[1].instrumentNames = scoreInfo.instrumentNames;
     agent[1].instruments = instruments;
     agent[1].sustainArray = scoreInfo.sustainArray;
     agent[1].attackArray = scoreInfo.attackArray;
