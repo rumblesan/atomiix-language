@@ -25,52 +25,64 @@ AtomiixAudio {
     ^agentDict[agentName];
   }
 
-  freeAgent{| agentName |
+  actionAgent{| agentName, action |
     if (agentDict[agentName].notNil, {
-      "Freeing agent: %\n".format(agentName).postln;
-      agentDict[agentName][1].playstate = false;
-      proxyspace[agentName].clear;
-      agentDict[agentName] = nil;
+      action.value(agentName, agentDict[agentName]);
     }, {
       "No agent named %\n".format(agentName).postln;
     });
   }
 
+  freeAgent{| agentName |
+    this.actionAgent(agentName, {| agentName |
+      "Freeing agent: %\n".format(agentName).postln;
+      agentDict[agentName][1].playstate = false;
+      proxyspace[agentName].clear;
+      agentDict[agentName] = nil;
+    });
+  }
+
+  dozeAgent{| agentName |
+    this.actionAgent(agentName, {| name |
+      "Dozing agent: %\n".format(name).postln;
+      agentDict[name][1].playstate = false;
+      proxyspace[name].stop;
+    });
+  }
+
+  wakeAgent{| agentName |
+    this.actionAgent(agentName, {| agentName |
+      "Waking agent: %\n".format(agentName).postln;
+      agentDict[agentName][1].playstate = true;
+      proxyspace[agentName].play;
+    });
+  }
+
   reinitScore {| agentName |
-    var agent, scoreType;
-    agent = agentDict[agentName];
-    if (agent.notNil, {
-      scoreType = agent[1].mode;
+    this.actionAgent(agentName, {| agentName, agent |
+      var scoreType = agent[1].mode;
       switch (scoreType,
         \percussive, { this.playPercussiveScore(agentName, agent[1]) },
         \melodic, { this.playMelodicScore(agentName, agent[1]) },
         \concrete, { this.playConcreteScore(agentName, agent[1]) },
         { "unknown score type: %\n".format(scoreType).postln }
       )
-    }, {
-      "No agent named %\n".format(agentName).postln;
     });
   }
 
-
   changeAgentAmplitude{| agentName, change |
-    var agent = agentDict[agentName];
-    if (agent.notNil, {
+    this.actionAgent(agentName, {| agentName, agent |
       agent[1].amp = (agent[1].amp + change).clip(0, 2);
       this.reinitScore(agentName);
-      "Changing % amp by % to %\n".format(agentName, change, agent[1].amp).postln;
-    }, {
-      "No agent named %\n".format(agentName).postln;
+      "Changing % amp to %\n".format(agentName, change, agent[1].amp).postln;
     });
   }
 
   addEffect{| agentName, effects |
-    var agent, agentFX, fx;
-    agent = agentDict[agentName];
-    if (agent.notNil, {
-      agentFX = agent[0];
-
+    this.actionAgent(agentName, {| agentName, agent |
+      var agentFX = agent[0];
       effects.do({|effect|
+        var fx;
         if(agentFX[effect.asSymbol].isNil, {
           // add 1 (the source is 1)
           agentFX[effect.asSymbol] = agentFX.size+1;
@@ -84,17 +96,12 @@ AtomiixAudio {
           });
         });
       });
-
-    }, {
-      "No agent named %\n".format(agentName).postln;
     });
   }
 
   removeEffect{| agentName, effects |
-    var agent, agentFX, fx;
-    agent = agentDict[agentName];
-    if (agent.notNil, {
-      agentFX = agent[0];
+    this.actionAgent(agentName, {| agentName, agent |
+      var agentFX = agent[0];
 
       if (effects.isNil, {
         // remove all effects (10 max) (+1 as 0 is Pdef)
@@ -109,9 +116,6 @@ AtomiixAudio {
           });
         });
       });
-
-    }, {
-      "No agent named %\n".format(agentName).postln;
     });
   }
 

@@ -6,6 +6,7 @@ Atomiix {
 
   init {| configPath, project, oscPort |
     "Booting Atomiix...".postln;
+
     instruments = AtomiixInstruments.new.init(configPath, project);
     audioEngine = AtomiixAudio.new.init(
       instruments.makeInstrDict,
@@ -29,12 +30,16 @@ Atomiix {
     }, '/play/pattern', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
-      audioEngine.freeAgent(msg[1]);
-    }, '/free', NetAddr("localhost"), oscPort);
+      var command = msg[1];
+      switch (command,
+        \free, {audioEngine.freeAgent(msg[2])},
+        \doze, {audioEngine.dozeAgent(msg[2])},
+        \wake, {audioEngine.wakeAgent(msg[2])}
+      )
+    }, '/command', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
       var agentName, change;
-      msg.postln;
       agentName = msg[1];
       change = msg[2];
       audioEngine.changeAgentAmplitude(agentName, change);
