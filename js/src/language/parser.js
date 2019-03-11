@@ -8,6 +8,10 @@ import { scoreParser, scoreModifierParser } from './scoreParser';
 
 const parser = new Parser();
 
+function idToAgent(identifier) {
+  return ast.Agent(identifier.content, identifier.line, identifier.character);
+}
+
 parser.parse = function(program) {
   const tokens = lexer.tokenize(program);
   this.initialize(tokens);
@@ -27,34 +31,22 @@ parser.program = function() {
 };
 
 parser.statement = function() {
-  if (this.la1('tempo')) {
-    throw new ParserException("Don't support tempo changes yet");
-  }
-  if (this.la1('tonic')) {
-    throw new ParserException("Don't support tonic changes yet");
-  }
-  if (this.la1('scale')) {
-    throw new ParserException("Don't support scale changes yet");
-  }
-  if (this.la1('grid')) {
-    throw new ParserException("Don't support grid changes yet");
-  }
-  const identifier = this.match('identifier').content;
+  const identifier = this.match('identifier');
 
   if (this.la1('play arrow')) {
     this.match('play arrow');
     const score = this.score();
-    return ast.Play(ast.Agent(identifier), score);
+    return ast.Play(idToAgent(identifier), score);
   } else if (this.la1('add effect arrow')) {
-    return this.addEffectsChain(ast.Agent(identifier));
+    return this.addEffectsChain(idToAgent(identifier));
   } else if (this.la1('remove effect arrow')) {
-    return this.removeEffectsChain(ast.Agent(identifier));
+    return this.removeEffectsChain(idToAgent(identifier));
   } else if (this.la1('increase amplitude')) {
     this.match('increase amplitude');
-    return ast.IncreaseAmplitude(ast.Agent(identifier));
+    return ast.IncreaseAmplitude(idToAgent(identifier));
   } else if (this.la1('decrease amplitude')) {
     this.match('decrease amplitude');
-    return ast.DecreaseAmplitude(ast.Agent(identifier));
+    return ast.DecreaseAmplitude(idToAgent(identifier));
   }
 
   // must be a command
@@ -66,11 +58,11 @@ parser.score = function() {
   if (this.la1('identifier')) {
     instrument = this.match('identifier').content;
   }
-  const scoreString = this.match('score').content;
+  const score = this.match('score');
 
   const modifiers = this.scoreModifiers();
 
-  return scoreParser(instrument, scoreString, modifiers);
+  return scoreParser(instrument, score, modifiers);
 };
 
 // TODO
@@ -145,7 +137,7 @@ parser.removeEffectsChain = function(agent) {
   return ast.RemoveFXChain(agent, effects);
 };
 
-parser.command = function(commandName) {
+parser.command = function(command) {
   let args = [];
   while (!(this.eof() || this.la1('newline'))) {
     if (this.la1('number')) {
@@ -158,7 +150,7 @@ parser.command = function(commandName) {
       throw new ParserException('Expected number or string');
     }
   }
-  return ast.Command(commandName, args);
+  return ast.Command(command.content, args, command.line, command.character);
 };
 
 export default parser;

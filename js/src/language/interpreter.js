@@ -3,6 +3,9 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 import * as osc from '../transport/osc';
 
+import { editorAction } from '../transport/editor';
+import * as actions from '../transport/editorActions';
+
 import * as stdlib from './stdlib';
 
 import { AtomiixRuntimeError } from './runtime';
@@ -16,6 +19,7 @@ export function createState() {
     scale: scales.names.Maj,
     tonic: 60,
     stdlib,
+    agents: {},
     oscAddresses: {
       playPattern: '/play/pattern',
       command: '/command',
@@ -26,13 +30,40 @@ export function createState() {
   };
 }
 
+export function addActiveAgent(state, agent, score, lineOffset) {
+  const acs = [];
+  const existing = state.agents[agent.name];
+  if (existing) {
+    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
+  }
+  agent.line = agent.line + lineOffset;
+  score.line = score.line + lineOffset;
+  state.agents[agent.name] = {
+    agent,
+    score,
+  };
+  acs.push(editorAction(actions.HIGHLIGHTLINE, [agent.line]));
+  return acs;
+}
+
+export function deactivateAgent(state, agentName) {
+  const acs = [];
+  const existing = state.agents[agentName];
+  if (existing) {
+    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
+    state.agents[agentName] = undefined;
+  }
+  return acs;
+}
+
 export function freeAgents(state, programAST) {
   const { agentNames } = getAgentNames(state, programAST);
-  const messages = agentNames.map(n =>
-    osc.freeAgentToOSC(state.oscAddresses.command, n)
-  );
+  let messages = [];
+  agentNames.forEach(n => {
+    messages.push(osc.freeAgentToOSC(state.oscAddresses.command, n));
+    messages = messages.concat(deactivateAgent(state, n));
+  });
   return {
-    newState: state,
     messages,
   };
 }
@@ -47,7 +78,6 @@ export function getAgentNames(state, programAST) {
     }
   }
   return {
-    newState: state,
     agentNames,
   };
 }
@@ -62,26 +92,25 @@ export function getStatementAgent(state, statementAST) {
 }
 
 // Turns a program AST into a new state object and
-// a series of OSC messages
-export function interpret(state, programAST) {
+// a series of OSC messages and editor actions
+export function interpret(state, programAST, lineOffset = 0) {
   let messages = [];
   for (let i = 0; i < programAST.statements.length; i += 1) {
     const s = programAST.statements[i];
-    const outputMsgs = interpretStatement(state, s);
+    const outputMsgs = interpretStatement(state, s, lineOffset);
     if (outputMsgs) {
       messages = messages.concat(outputMsgs);
     }
   }
   return {
-    newState: state,
     messages,
   };
 }
 
-export function interpretStatement(state, statementAST) {
+export function interpretStatement(state, statementAST, lineOffset) {
   switch (statementAST.type) {
     case astTypes.PLAY:
-      return interpretPlay(state, statementAST);
+      return interpretPlay(state, statementAST, lineOffset);
     case astTypes.ADDFXCHAIN:
       return interpretAddFX(state, statementAST);
     case astTypes.RMFXCHAIN:
@@ -91,7 +120,7 @@ export function interpretStatement(state, statementAST) {
     case astTypes.DECRAMP:
       return interpretAmplitudeChange(state, statementAST, -0.1);
     case astTypes.COMMAND:
-      return interpretCommand(state, statementAST);
+      return interpretCommand(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
         `${statementAST.type} is not a supported statement type`
@@ -111,29 +140,35 @@ export function interpretAmplitudeChange(state, { agent }, change) {
   return [osc.ampChangeToOSC(state.oscAddresses.agentAmplitude, agent, change)];
 }
 
-export function interpretCommand(state, { command, args }) {
+export function interpretCommand(state, { command, args }, lineOffset) {
   const cmd = state.stdlib[command];
   if (!cmd) {
     throw new AtomiixRuntimeError(`${command} is not an existing command`);
   }
-  return cmd(state, args);
+  const msgs = cmd(state, args, lineOffset);
+  return msgs;
 }
 
-export function interpretPlay(state, { agent, score }) {
-  // TODO save score against agent in state
+export function interpretPlay(state, { agent, score }, lineOffset) {
+  let msgs = [];
   const scoreType = score.scoreType;
   switch (scoreType) {
     case astTypes.PERCUSSIVE:
-      return interpretPercussiveScore(state, agent, score);
+      msgs = msgs.concat(interpretPercussiveScore(state, agent, score));
+      break;
     case astTypes.MELODIC:
-      return interpretMelodicScore(state, agent, score);
+      msgs = msgs.concat(interpretMelodicScore(state, agent, score));
+      break;
     case astTypes.CONCRETE:
-      return interpretConcreteScore(state, agent, score);
+      msgs = msgs.concat(interpretConcreteScore(state, agent, score));
+      break;
     default:
       throw new AtomiixRuntimeError(
         `${scoreType} is not a supported score type`
       );
   }
+  msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
+  return msgs;
 }
 
 export function interpretPercussiveScore(state, agent, score) {

@@ -4,43 +4,49 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 
 test('parses a percussive score', () => {
-  const seqString = '|  a b  cd  |';
-  const seq = scoreParser('', seqString, []);
+  const score = { content: '|  a b  cd  |', line: 0, character: 0 };
+  const seq = scoreParser('', score, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
     null,
     ['a', 'b', 'c', 'd'],
     [2, 3, 1, 3],
     2,
-    []
+    [],
+    0,
+    0
   );
   expect(seq).toEqual(expected);
 });
 
 test('parses a melodic score', () => {
-  const seqString = '[  1 3  57  ]';
-  const seq = scoreParser('foo', seqString, []);
+  const score = { content: '[  1 3  57  ]', line: 0, character: 0 };
+  const seq = scoreParser('foo', score, []);
   const expected = ast.Score(
     astTypes.MELODIC,
     'foo',
     [1, 3, 5, 7],
     [2, 3, 1, 3],
     2,
-    []
+    [],
+    0,
+    0
   );
   expect(seq).toEqual(expected);
 });
 
 test('parses a concrete score', () => {
-  const seqString = '{  1 3  57  }';
-  const seq = scoreParser('foo', seqString, []);
+  const score = { content: '{  1 3  57  }', line: 0, character: 0 };
+  const seq = scoreParser('foo', score, []);
   const expected = ast.Score(
     astTypes.CONCRETE,
     'foo',
     [1, 3, 5, 7],
     [2, 3, 1, 3],
     2,
-    []
+    [],
+    0,
+    0
   );
   expect(seq).toEqual(expected);
 });

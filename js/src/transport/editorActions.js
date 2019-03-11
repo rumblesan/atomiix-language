@@ -1,0 +1,2 @@
+export const HIGHLIGHTLINE = 'HIGHLIGHTLINE';
+export const LOWLIGHTLINE = 'LOWLIGHTLINE';

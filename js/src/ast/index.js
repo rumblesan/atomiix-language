@@ -90,22 +90,30 @@ export function DecreaseAmplitude(agent) {
 /**
  *  command: String
  *  args: [string | integer]
+ *  line: integer
+ *  position: integer
  */
-export function Command(command, args) {
+export function Command(command, args, line, position) {
   return {
     type: COMMAND,
     command,
     args,
+    line,
+    position,
   };
 }
 
 /**
  *  name: Identifier
+ *  line: integer
+ *  position: integer
  */
-export function Agent(name) {
+export function Agent(name, line, position) {
   return {
     type: AGENT,
     name,
+    line,
+    position,
   };
 }
 
@@ -116,6 +124,8 @@ export function Agent(name) {
  *  durations: [integer]
  *  offset: integer
  *  modifiers: [ScoreOperator | ScoreModifer]
+ *  line: integer
+ *  position: integer
  */
 export function Score(
   scoreType,
@@ -123,7 +133,9 @@ export function Score(
   values,
   durations,
   offset,
-  modifiers
+  modifiers,
+  line,
+  position
 ) {
   return {
     type: SCORE,
@@ -133,6 +145,8 @@ export function Score(
     durations,
     offset,
     modifiers,
+    line,
+    position,
   };
 }
 

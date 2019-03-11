@@ -2,6 +2,7 @@ import * as t from '../ast/types';
 
 export function OSCMessage(address, args) {
   return {
+    type: 'OSCMESSAGE',
     oscType: 'message',
     address,
     args,

@@ -5,7 +5,8 @@ import * as astTypes from '../ast/types';
 
 // TODO
 // use modifiers
-export function scoreParser(instrument, scoreString, modifiers) {
+export function scoreParser(instrument, score, modifiers) {
+  const scoreString = score.content;
   const first = scoreString.charAt(0);
   const last = scoreString.slice(-1);
 
@@ -43,7 +44,9 @@ export function scoreParser(instrument, scoreString, modifiers) {
         scoreStringData.chars,
         scoreStringData.durations,
         scoreStringData.offset,
-        modifiers
+        modifiers,
+        score.line,
+        score.character
       );
     case '[':
       if (!instrument) {
@@ -56,7 +59,9 @@ export function scoreParser(instrument, scoreString, modifiers) {
         scoreStringData.chars.map(n => parseInt(n, 10)),
         scoreStringData.durations,
         scoreStringData.offset,
-        modifiers
+        modifiers,
+        score.line,
+        score.character
       );
     case '{':
       if (!instrument) {
@@ -69,50 +74,13 @@ export function scoreParser(instrument, scoreString, modifiers) {
         scoreStringData.chars.map(n => parseInt(n, 10)),
         scoreStringData.durations,
         scoreStringData.offset,
-        modifiers
+        modifiers,
+        score.line,
+        score.character
       );
     default:
       throw new ParserException(`${first} is not a supported score delimiters`);
   }
-}
-
-export function parseConcreteScore(instrument, scoreChars, modifiers) {
-  const { chars, durations, offset } = scoreStringParser(scoreChars);
-  const amplitudes = chars.map(c => parseInt(c, 10));
-
-  let pitch = 60;
-  let panning = [];
-  let repeats = 'inf';
-
-  for (let i = 0; i < modifiers.length; i += 1) {
-    const m = modifiers[i];
-    if (m.type === astTypes.SCOREMODIFIER) {
-      switch (m.modifierType) {
-        case astTypes.PANNING:
-          panning = m.values;
-          break;
-      }
-    } else if (m.type === astTypes.SCOREOPERATOR) {
-      // TODO handle * and / operators
-      switch (m.operator) {
-        case '+':
-          pitch = pitch + m.value;
-          break;
-        case '-':
-          pitch = pitch - m.value;
-          break;
-      }
-    }
-  }
-  return ast.ConcreteScore(
-    pitch,
-    amplitudes,
-    durations,
-    instrument,
-    panning,
-    offset,
-    repeats
-  );
 }
 
 export function scoreStringParser(scoreChars) {

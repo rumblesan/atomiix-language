@@ -1,102 +1,9 @@
 import atomiix from './index.js';
-import { OSCMessage } from './transport/osc';
+
+import * as th from './test-helpers';
 
 const parser = atomiix.parser;
 const interpreter = atomiix.interpreter;
-
-function createPercussiveMsg(
-  addr,
-  agentName,
-  notes,
-  durations,
-  instruments,
-  sustain,
-  attack,
-  panning,
-  offset,
-  repeats
-) {
-  const msgArgs = [
-    { type: 'string', value: 'percussive' },
-    { type: 'string', value: agentName },
-    { type: 'array', value: notes },
-    { type: 'array', value: durations },
-    { type: 'array', value: instruments },
-    { type: 'array', value: sustain },
-    { type: 'array', value: attack },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
-}
-
-function createMelodicMsg(
-  addr,
-  agentName,
-  notes,
-  durations,
-  instrument,
-  sustain,
-  attack,
-  panning,
-  offset,
-  repeats
-) {
-  const msgArgs = [
-    { type: 'string', value: 'melodic' },
-    { type: 'string', value: agentName },
-    { type: 'array', value: notes },
-    { type: 'array', value: durations },
-    { type: 'string', value: instrument },
-    { type: 'array', value: sustain },
-    { type: 'array', value: attack },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
-}
-
-function createConcreteMsg(
-  addr,
-  agentName,
-  amplitudes,
-  durations,
-  instrument,
-  panning,
-  offset,
-  repeats
-) {
-  const msgArgs = [
-    { type: 'string', value: 'concrete' },
-    { type: 'string', value: agentName },
-    { type: 'integer', value: 60 },
-    { type: 'array', value: amplitudes },
-    { type: 'array', value: durations },
-    { type: 'string', value: instrument },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
-}
-
-function createCommandMsg(addr, command, agentName) {
-  const msgArgs = [
-    { type: 'string', value: command },
-    { type: 'string', value: agentName },
-  ];
-  return OSCMessage(addr, msgArgs);
-}
-
-function createFXMsg(addr, agentName, effects) {
-  const msgArgs = [
-    { type: 'string', value: agentName },
-    { type: 'array', value: effects },
-  ];
-  return OSCMessage(addr, msgArgs);
-}
 
 test('basic end to end test', () => {
   const program =
@@ -105,7 +12,7 @@ test('basic end to end test', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
   const expected = [
-    createPercussiveMsg(
+    th.createPercussiveMsg(
       '/play/pattern',
       'baz',
       [60],
@@ -117,7 +24,8 @@ test('basic end to end test', () => {
       2 / 4,
       2
     ),
-    createMelodicMsg(
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createMelodicMsg(
       '/play/pattern',
       'foo',
       [64, 67, 71],
@@ -129,7 +37,8 @@ test('basic end to end test', () => {
       0,
       'inf'
     ),
-    createConcreteMsg(
+    th.createEditorAction('HIGHLIGHTLINE', [2]),
+    th.createConcreteMsg(
       '/play/pattern',
       'bar',
       [0.2, 0.6],
@@ -139,6 +48,7 @@ test('basic end to end test', () => {
       1 / 4,
       'inf'
     ),
+    th.createEditorAction('HIGHLIGHTLINE', [3]),
   ];
   expect(messages).toEqual(expected);
 });
@@ -147,12 +57,16 @@ test('can free agents', () => {
   const program =
     'baz -> |  a b  c|\nfoo -> harp[1  3 5]^23^+2\nbar -> sea{ 2  6}<37>';
   const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.freeAgents(initialState, ast);
+  const state = interpreter.createState();
+  interpreter.interpret(state, ast);
+  const { messages } = interpreter.freeAgents(state, ast);
   const expected = [
-    createCommandMsg('/command', 'free', 'baz'),
-    createCommandMsg('/command', 'free', 'foo'),
-    createCommandMsg('/command', 'free', 'bar'),
+    th.createCommandMsg('/command', 'free', 'baz'),
+    th.createEditorAction('LOWLIGHTLINE', [1]),
+    th.createCommandMsg('/command', 'free', 'foo'),
+    th.createEditorAction('LOWLIGHTLINE', [2]),
+    th.createCommandMsg('/command', 'free', 'bar'),
+    th.createEditorAction('LOWLIGHTLINE', [3]),
   ];
   expect(messages).toEqual(expected);
 });
@@ -163,7 +77,7 @@ test('can add effects', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
   const expected = [
-    createPercussiveMsg(
+    th.createPercussiveMsg(
       '/play/pattern',
       'baz',
       [60],
@@ -175,7 +89,8 @@ test('can add effects', () => {
       2 / 4,
       'inf'
     ),
-    createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
   ];
   expect(messages).toEqual(expected);
 });
@@ -186,7 +101,7 @@ test('can remove effects', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
   const expected = [
-    createPercussiveMsg(
+    th.createPercussiveMsg(
       '/play/pattern',
       'baz',
       [60],
@@ -198,7 +113,8 @@ test('can remove effects', () => {
       2 / 4,
       'inf'
     ),
-    createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
   ];
   expect(messages).toEqual(expected);
 });
@@ -209,7 +125,7 @@ test('can remove all effects', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
   const expected = [
-    createPercussiveMsg(
+    th.createPercussiveMsg(
       '/play/pattern',
       'baz',
       [60],
@@ -221,7 +137,8 @@ test('can remove all effects', () => {
       2 / 4,
       'inf'
     ),
-    createFXMsg('/agent/effects/remove', 'baz', []),
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createFXMsg('/agent/effects/remove', 'baz', []),
   ];
   expect(messages).toEqual(expected);
 });
@@ -232,7 +149,7 @@ test('can doze and wake agents', () => {
   const initialState = interpreter.createState();
   const { messages } = interpreter.interpret(initialState, ast);
   const expected = [
-    createPercussiveMsg(
+    th.createPercussiveMsg(
       '/play/pattern',
       'baz',
       [60],
@@ -244,8 +161,11 @@ test('can doze and wake agents', () => {
       2 / 4,
       'inf'
     ),
-    createCommandMsg('/command', 'doze', 'baz'),
-    createCommandMsg('/command', 'wake', 'baz'),
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createCommandMsg('/command', 'doze', 'baz'),
+    th.createEditorAction('LOWLIGHTLINE', [1]),
+    th.createCommandMsg('/command', 'wake', 'baz'),
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
   ];
   expect(messages).toEqual(expected);
 });
