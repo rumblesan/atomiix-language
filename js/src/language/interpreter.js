@@ -51,7 +51,7 @@ export function deactivateAgent(state, agentName) {
   const existing = state.agents[agentName];
   if (existing) {
     acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
-    state.agents[agentName] = undefined;
+    delete state.agents[agentName];
   }
   return acs;
 }
