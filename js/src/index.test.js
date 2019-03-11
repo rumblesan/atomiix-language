@@ -2,16 +2,12 @@ import atomiix from './index.js';
 
 import * as th from './test-helpers';
 
-const parser = atomiix.parser;
-const interpreter = atomiix.interpreter;
-
 test('basic end to end test', () => {
   const program =
     'baz -> |  a b  c|!8@2\nfoo -> harp[1  3 5]^23^+2(4~2)\nbar -> sea{ 2  6}<37>';
-  const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.interpret(initialState, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
     th.createPercussiveMsg(
       '/play/pattern',
       'baz',
@@ -24,7 +20,6 @@ test('basic end to end test', () => {
       2 / 4,
       2
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [1]),
     th.createMelodicMsg(
       '/play/pattern',
       'foo',
@@ -37,7 +32,6 @@ test('basic end to end test', () => {
       0,
       'inf'
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [2]),
     th.createConcreteMsg(
       '/play/pattern',
       'bar',
@@ -48,35 +42,41 @@ test('basic end to end test', () => {
       1 / 4,
       'inf'
     ),
+  ];
+  const expectedActions = [
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createEditorAction('HIGHLIGHTLINE', [2]),
     th.createEditorAction('HIGHLIGHTLINE', [3]),
   ];
-  expect(messages).toEqual(expected);
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
 
 test('can free agents', () => {
   const program =
     'baz -> |  a b  c|\nfoo -> harp[1  3 5]^23^+2\nbar -> sea{ 2  6}<37>';
-  const ast = parser.parse(program);
-  const state = interpreter.createState();
-  interpreter.interpret(state, ast);
-  const { messages } = interpreter.freeAgents(state, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  atomiix.evaluate(initialState, program);
+  const { messages, actions } = atomiix.free(initialState, program);
+  const expectedMessages = [
     th.createCommandMsg('/command', 'free', 'baz'),
-    th.createEditorAction('LOWLIGHTLINE', [1]),
     th.createCommandMsg('/command', 'free', 'foo'),
-    th.createEditorAction('LOWLIGHTLINE', [2]),
     th.createCommandMsg('/command', 'free', 'bar'),
+  ];
+  const expectedActions = [
+    th.createEditorAction('LOWLIGHTLINE', [1]),
+    th.createEditorAction('LOWLIGHTLINE', [2]),
     th.createEditorAction('LOWLIGHTLINE', [3]),
   ];
-  expect(messages).toEqual(expected);
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
 
 test('can add effects', () => {
   const program = 'baz -> |  a b  c|\nbaz >> reverb >> distortion';
-  const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.interpret(initialState, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
     th.createPercussiveMsg(
       '/play/pattern',
       'baz',
@@ -89,18 +89,18 @@ test('can add effects', () => {
       2 / 4,
       'inf'
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [1]),
     th.createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
   ];
-  expect(messages).toEqual(expected);
+  const expectedActions = [th.createEditorAction('HIGHLIGHTLINE', [1])];
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
 
 test('can remove effects', () => {
   const program = 'baz -> |  a b  c|\nbaz << reverb << distortion';
-  const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.interpret(initialState, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
     th.createPercussiveMsg(
       '/play/pattern',
       'baz',
@@ -113,18 +113,18 @@ test('can remove effects', () => {
       2 / 4,
       'inf'
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [1]),
     th.createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
   ];
-  expect(messages).toEqual(expected);
+  const expectedActions = [th.createEditorAction('HIGHLIGHTLINE', [1])];
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
 
 test('can remove all effects', () => {
   const program = 'baz -> |  a b  c|\nbaz <<';
-  const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.interpret(initialState, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
     th.createPercussiveMsg(
       '/play/pattern',
       'baz',
@@ -137,18 +137,18 @@ test('can remove all effects', () => {
       2 / 4,
       'inf'
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [1]),
     th.createFXMsg('/agent/effects/remove', 'baz', []),
   ];
-  expect(messages).toEqual(expected);
+  const expectedActions = [th.createEditorAction('HIGHLIGHTLINE', [1])];
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
 
 test('can doze and wake agents', () => {
   const program = 'baz -> |  a b  c|\ndoze baz\nwake baz';
-  const ast = parser.parse(program);
-  const initialState = interpreter.createState();
-  const { messages } = interpreter.interpret(initialState, ast);
-  const expected = [
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
     th.createPercussiveMsg(
       '/play/pattern',
       'baz',
@@ -161,11 +161,14 @@ test('can doze and wake agents', () => {
       2 / 4,
       'inf'
     ),
-    th.createEditorAction('HIGHLIGHTLINE', [1]),
     th.createCommandMsg('/command', 'doze', 'baz'),
-    th.createEditorAction('LOWLIGHTLINE', [1]),
     th.createCommandMsg('/command', 'wake', 'baz'),
+  ];
+  const expectedActions = [
+    th.createEditorAction('HIGHLIGHTLINE', [1]),
+    th.createEditorAction('LOWLIGHTLINE', [1]),
     th.createEditorAction('HIGHLIGHTLINE', [1]),
   ];
-  expect(messages).toEqual(expected);
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
 });
