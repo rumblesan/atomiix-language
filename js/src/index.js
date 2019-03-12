@@ -1,6 +1,10 @@
 import parser from './language/parser';
 
-import { createState, interpret, freeAgents } from './language/interpreter';
+import { interpret, freeAgents } from './language/interpreter';
+import {
+  create as createState,
+  updateAgentPosition,
+} from './language/interpreter/state';
 
 const language = 'atomiix';
 
@@ -44,10 +48,19 @@ function free(state, code) {
   };
 }
 
+function moveAgent(state, agentName, newLine) {
+  const actions = updateAgentPosition(state, agentName, newLine);
+  return {
+    messages: [],
+    actions,
+  };
+}
+
 export default {
   language,
   init,
   evaluate,
   free,
+  moveAgent,
   parser,
 };

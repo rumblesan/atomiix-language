@@ -1,71 +1,23 @@
-import scales from '../music/scales';
-import * as ast from '../ast';
-import * as astTypes from '../ast/types';
-import * as osc from '../transport/osc';
+import scales from '../../music/scales';
+import * as ast from '../../ast';
+import * as astTypes from '../../ast/types';
+import * as osc from '../../transport/osc';
 
-import { editorAction } from '../transport/editor';
-import * as actions from '../transport/editorActions';
+import * as iState from './state';
 
-import * as stdlib from './stdlib';
-
-import { AtomiixRuntimeError } from './runtime';
+import { AtomiixRuntimeError } from '../runtime';
 
 export function intervalToNote(state, interval) {
   return state.tonic + scales.notes[state.scale][interval];
 }
 
-export function createState() {
-  return {
-    scale: scales.names.Maj,
-    tonic: 60,
-    stdlib,
-    agents: {},
-    oscAddresses: {
-      playPattern: '/play/pattern',
-      command: '/command',
-      agentAmplitude: '/agent/amplitude',
-      addFX: '/agent/effects/add',
-      rmFX: '/agent/effects/remove',
-    },
-  };
-}
-
-export function addActiveAgent(state, agent, score, lineOffset) {
-  const acs = [];
-  const existing = state.agents[agent.name];
-  if (existing) {
-    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
+export function getStatementAgent(state, statementAST) {
+  switch (statementAST.type) {
+    case astTypes.PLAY:
+      return statementAST.agent;
+    default:
+      return null;
   }
-  agent.line = agent.line + lineOffset;
-  score.line = score.line + lineOffset;
-  state.agents[agent.name] = {
-    agent,
-    score,
-  };
-  acs.push(editorAction(actions.HIGHLIGHTLINE, [agent.line]));
-  return acs;
-}
-
-export function deactivateAgent(state, agentName) {
-  const acs = [];
-  const existing = state.agents[agentName];
-  if (existing) {
-    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
-    delete state.agents[agentName];
-  }
-  return acs;
-}
-
-export function freeAgents(state, programAST) {
-  const { agentNames } = getAgentNames(state, programAST);
-  let messages = [];
-  agentNames.forEach(n => {
-    messages.push(osc.freeAgentToOSC(state.oscAddresses.command, n));
-    messages = messages.concat(deactivateAgent(state, n));
-  });
-  return {
-    messages,
-  };
 }
 
 export function getAgentNames(state, programAST) {
@@ -82,13 +34,16 @@ export function getAgentNames(state, programAST) {
   };
 }
 
-export function getStatementAgent(state, statementAST) {
-  switch (statementAST.type) {
-    case astTypes.PLAY:
-      return statementAST.agent;
-    default:
-      return null;
-  }
+export function freeAgents(state, programAST) {
+  const { agentNames } = getAgentNames(state, programAST);
+  let messages = [];
+  agentNames.forEach(n => {
+    messages.push(osc.freeAgentToOSC(state.oscAddresses.command, n));
+    messages = messages.concat(iState.deactivateAgent(state, n));
+  });
+  return {
+    messages,
+  };
 }
 
 // Turns a program AST into a new state object and
@@ -167,7 +122,7 @@ export function interpretPlay(state, { agent, score }, lineOffset) {
         `${scoreType} is not a supported score type`
       );
   }
-  msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
+  msgs = msgs.concat(iState.addActiveAgent(state, agent, score, lineOffset));
   return msgs;
 }
 
