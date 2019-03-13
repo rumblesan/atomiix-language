@@ -23,6 +23,14 @@ export function create() {
   };
 }
 
+export function getAgentInfo(state, agentName) {
+  const existing = state.agents[agentName];
+  if (!existing) {
+    throw new AtomiixRuntimeError(`No agent called ${agentName}`);
+  }
+  return existing;
+}
+
 export function addActiveAgent(state, agent, score, lineOffset) {
   const acs = [];
   const existing = state.agents[agent.name];
@@ -60,17 +68,4 @@ export function updateAgentPosition(state, agentName, newLine) {
     acs.push(editorAction(actions.NORMLIGHTLINE, [prevLine]));
   }
   return acs;
-}
-
-// the updater function gets given the score string for an agent
-// and needs to return a new score string
-// this will be used to create the new line of text that will be
-// given to the editor as well as re-evaluating the agent with the
-// new score
-export function updateAgentScore(state, agentName, updater) {
-  const existing = state.agents[agentName];
-  if (!existing) {
-    throw new AtomiixRuntimeError(`No agent called ${agentName}`);
-  }
-  return updater(existing.score);
 }

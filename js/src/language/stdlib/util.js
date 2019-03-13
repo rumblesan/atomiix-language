@@ -13,6 +13,7 @@ export function expectString(name, arg) {
       `${name} expected String but got ${arg.type}`
     );
   }
+  return arg.value;
 }
 
 export function expectNum(name, arg) {
@@ -21,4 +22,5 @@ export function expectNum(name, arg) {
       `${name} expected Number but got ${arg.type}`
     );
   }
+  return arg.value;
 }
