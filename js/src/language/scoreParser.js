@@ -45,6 +45,7 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.durations,
         scoreStringData.offset,
         modifiers,
+        scoreString,
         score.line,
         score.character
       );
@@ -60,6 +61,7 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.durations,
         scoreStringData.offset,
         modifiers,
+        scoreString,
         score.line,
         score.character
       );
@@ -75,6 +77,7 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.durations,
         scoreStringData.offset,
         modifiers,
+        scoreString,
         score.line,
         score.character
       );

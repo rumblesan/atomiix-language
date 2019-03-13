@@ -13,6 +13,7 @@ test('parses a percussive score', () => {
     [2, 3, 1, 3],
     2,
     [],
+    '|  a b  cd  |',
     0,
     0
   );
@@ -29,6 +30,7 @@ test('parses a melodic score', () => {
     [2, 3, 1, 3],
     2,
     [],
+    '[  1 3  57  ]',
     0,
     0
   );
@@ -45,6 +47,7 @@ test('parses a concrete score', () => {
     [2, 3, 1, 3],
     2,
     [],
+    '{  1 3  57  }',
     0,
     0
   );

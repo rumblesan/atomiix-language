@@ -124,6 +124,7 @@ export function Agent(name, line, position) {
  *  durations: [integer]
  *  offset: integer
  *  modifiers: [ScoreOperator | ScoreModifer]
+ *  scoreString: string
  *  line: integer
  *  position: integer
  */
@@ -134,6 +135,7 @@ export function Score(
   durations,
   offset,
   modifiers,
+  scoreString,
   line,
   position
 ) {
@@ -145,6 +147,7 @@ export function Score(
     durations,
     offset,
     modifiers,
+    scoreString,
     line,
     position,
   };
