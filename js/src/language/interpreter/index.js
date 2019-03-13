@@ -46,6 +46,14 @@ export function freeAgents(state, programAST) {
   };
 }
 
+export function reevaluateAgent(state, agentName) {
+  const existing = state.agents[agentName];
+  if (!existing) {
+    throw new AtomiixRuntimeError(`No agent called ${agentName}`);
+  }
+  return interpretScore(state, existing.agent, existing.score);
+}
+
 // Turns a program AST into a new state object and
 // a series of OSC messages and editor actions
 export function interpret(state, programAST, lineOffset = 0) {
@@ -105,25 +113,25 @@ export function interpretCommand(state, { command, args }, lineOffset) {
 }
 
 export function interpretPlay(state, { agent, score }, lineOffset) {
-  let msgs = [];
+  let msgs = interpretScore(state, agent, score);
+  msgs = msgs.concat(iState.addActiveAgent(state, agent, score, lineOffset));
+  return msgs;
+}
+
+export function interpretScore(state, agent, score) {
   const scoreType = score.scoreType;
   switch (scoreType) {
     case astTypes.PERCUSSIVE:
-      msgs = msgs.concat(interpretPercussiveScore(state, agent, score));
-      break;
+      return interpretPercussiveScore(state, agent, score);
     case astTypes.MELODIC:
-      msgs = msgs.concat(interpretMelodicScore(state, agent, score));
-      break;
+      return interpretMelodicScore(state, agent, score);
     case astTypes.CONCRETE:
-      msgs = msgs.concat(interpretConcreteScore(state, agent, score));
-      break;
+      return interpretConcreteScore(state, agent, score);
     default:
       throw new AtomiixRuntimeError(
         `${scoreType} is not a supported score type`
       );
   }
-  msgs = msgs.concat(iState.addActiveAgent(state, agent, score, lineOffset));
-  return msgs;
 }
 
 export function interpretPercussiveScore(state, agent, score) {
