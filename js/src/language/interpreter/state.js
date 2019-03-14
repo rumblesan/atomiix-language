@@ -33,17 +33,28 @@ export function getAgentInfo(state, agentName) {
 
 export function addActiveAgent(state, agent, score, lineOffset) {
   const acs = [];
-  const existing = state.agents[agent.name];
-  if (existing) {
-    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
-  }
   agent.line = agent.line + lineOffset;
   score.line = score.line + lineOffset;
   state.agents[agent.name] = {
     agent,
     score,
   };
-  acs.push(editorAction(actions.HIGHLIGHTLINE, [agent.line]));
+  acs.push(
+    editorAction(actions.MARKAGENT, [
+      agent.name,
+      agent.line - 1,
+      agent.position - 1,
+      agent.position - 1 + agent.name.length - 1,
+    ])
+  );
+  acs.push(
+    editorAction(actions.MARKSCORE, [
+      agent.name,
+      score.line - 1,
+      score.position - 1,
+      score.position - 1 + score.scoreString.length,
+    ])
+  );
   return acs;
 }
 
@@ -51,21 +62,28 @@ export function deactivateAgent(state, agentName) {
   const acs = [];
   const existing = state.agents[agentName];
   if (existing) {
-    acs.push(editorAction(actions.LOWLIGHTLINE, [existing.agent.line]));
+    acs.push(editorAction(actions.UNMARKAGENT, [existing.agent.name]));
     delete state.agents[agentName];
   }
   return acs;
 }
 
-export function updateAgentPosition(state, agentName, newLine) {
+export function updateAgentPosition(state, agentName, newLine, newStart) {
   const acs = [];
   const existing = state.agents[agentName];
   if (existing) {
-    const prevLine = existing.agent.line;
     existing.agent.line = newLine;
+    existing.agent.position = newStart;
+  }
+  return acs;
+}
+
+export function updateScorePosition(state, agentName, newLine, newStart) {
+  const acs = [];
+  const existing = state.agents[agentName];
+  if (existing) {
     existing.score.line = newLine;
-    acs.push(editorAction(actions.HIGHLIGHTLINE, [existing.agent.line]));
-    acs.push(editorAction(actions.NORMLIGHTLINE, [prevLine]));
+    existing.score.position = newStart;
   }
   return acs;
 }

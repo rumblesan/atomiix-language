@@ -19,7 +19,6 @@ export function doze(state, args) {
     msgs.push(
       osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
     );
-    msgs.push(editorAction(actions.LOWLIGHTLINE, [agentInfo.agent.line]));
   }
   return msgs;
 }
@@ -35,7 +34,6 @@ export function wake(state, args) {
     msgs.push(
       osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
     );
-    msgs.push(editorAction(actions.HIGHLIGHTLINE, [agentInfo.agent.line]));
   }
   return msgs;
 }
@@ -58,12 +56,9 @@ export function shake(state, args) {
     .sort(() => 0.5 - Math.random())
     .join('');
   const newScoreString = opener + newChars + closer;
-  const scoreStart = [score.line, score.position];
-  const scoreEnd = [score.line, score.position + oldScoreString.length];
 
-  msgs.push(
-    editorAction(actions.REPLACETEXT, [newScoreString, scoreStart, scoreEnd])
-  );
+  msgs.push(editorAction(actions.REPLACESCORE, [agentName, newScoreString]));
+
   const newScoreToken = {
     content: newScoreString,
     line: score.line,
@@ -76,7 +71,7 @@ export function shake(state, args) {
   );
   agentInfo.score = newScore;
 
-  msgs = msgs.concat(reevaluateAgent(state, agentName.value));
+  msgs = msgs.concat(reevaluateAgent(state, agentName));
 
   return msgs;
 }
