@@ -37,6 +37,7 @@ export function addActiveAgent(state, agent, score, lineOffset) {
   state.agents[agent.name] = {
     agent,
     score,
+    playing: true,
   };
   acs.push(
     MarkAgent(

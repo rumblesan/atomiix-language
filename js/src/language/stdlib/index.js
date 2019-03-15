@@ -15,6 +15,7 @@ export function doze(state, args) {
 
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
+    agentInfo.playing = false;
     msgs.push(
       osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
     );
@@ -30,6 +31,7 @@ export function wake(state, args) {
 
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
+    agentInfo.playing = true;
     msgs.push(
       osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
     );
@@ -70,7 +72,9 @@ export function shake(state, args) {
   );
   agentInfo.score = newScore;
 
-  msgs = msgs.concat(reevaluateAgent(state, agentName));
+  if (agentInfo.playing) {
+    msgs = msgs.concat(reevaluateAgent(state, agentName));
+  }
 
   return msgs;
 }
