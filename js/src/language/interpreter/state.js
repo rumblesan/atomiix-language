@@ -43,7 +43,7 @@ export function addActiveAgent(state, agent, score, lineOffset) {
       agent.name,
       agent.line,
       agent.position,
-      agent.position + agent.name.length - 1,
+      agent.position + agent.name.length,
       score.position,
       score.position + score.scoreString.length
     )
