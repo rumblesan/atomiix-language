@@ -119,8 +119,25 @@ AtomiixAudio {
     });
   }
 
+  agentFinished{| agentName |
+    "Agent % has finished playing".format(agentName).postln;
+  }
+
+  createFinishingSeq{| agentName, durationArray, repeats |
+    if (repeats != inf, {
+      var durations = Pseq(durationArray, repeats).asStream;
+      ^Pfunc{
+        var nd = durations.next();
+        if(nd.isNil, {this.agentFinished(agentName)});
+        nd;
+      }
+    }, {
+      ^Pseq(durationArray, repeats);
+    });
+  }
+
   playPercussiveScore{| agentName, scoreInfo |
-    var pdef, agent, instruments, newInstrFlag;
+    var pdef, agent, instruments, newInstrFlag, durationSequence;
     ["percussive", agentName, scoreInfo].postln;
 
     agent = this.setAgent(agentName);
@@ -143,6 +160,8 @@ AtomiixAudio {
     agent[1].quantphase = scoreInfo.quantphase;
     agent[1].repeats = scoreInfo.repeats;
 
+    durationSequence = this.createFinishingSeq(agentName, scoreInfo.durations, scoreInfo.repeats);
+
     if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
       // needed because of repeats (free proxyspace timing)
       proxyspace[agentName].free;
@@ -155,7 +174,7 @@ AtomiixAudio {
       pdef = Pdef(agentName, Pbind(
         \instrument, Pseq(instruments, inf), 
         \midinote, Pseq(scoreInfo.notes, inf), 
-        \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+        \dur, durationSequence,
         \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
         \sustain, Pseq(scoreInfo.sustainArray, inf),
         \pan, Pseq(scoreInfo.panArray, inf)
@@ -178,7 +197,7 @@ AtomiixAudio {
         pdef = Pdef(agentName, Pbind(
           \instrument, Pseq(instruments, inf), 
           \midinote, Pseq(scoreInfo.notes, inf), 
-          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \dur, durationSequence,
           \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
@@ -190,7 +209,7 @@ AtomiixAudio {
         pdef = Pdef(agentName, Pbind(
           \instrument, Pseq(instruments, inf), 
           \midinote, Pseq(scoreInfo.notes, inf), 
-          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \dur, durationSequence,
           \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
@@ -205,7 +224,7 @@ AtomiixAudio {
   }
 
   playMelodicScore {| agentName, scoreInfo |
-    var pdef, agent, newInstrFlag;
+    var pdef, agent, newInstrFlag, durationSequence;
     ["melodic", agentName, scoreInfo].postln;
 
     agent = this.setAgent(agentName);
@@ -223,6 +242,8 @@ AtomiixAudio {
     agent[1].quantphase = scoreInfo.quantphase;
     agent[1].repeats = scoreInfo.repeats;
 
+    durationSequence = this.createFinishingSeq(agentName, scoreInfo.durations, scoreInfo.repeats);
+
     if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
       // needed because of repeats (free proxyspace timing)
       proxyspace[agentName].free;
@@ -236,7 +257,7 @@ AtomiixAudio {
         \instrument, scoreInfo.instrument,
         \type, \note,
         \midinote, Pseq(scoreInfo.notes, inf),
-        \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+        \dur, durationSequence,
         \sustain, Pseq(scoreInfo.sustainArray, inf),
         \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
         \pan, Pseq(scoreInfo.panArray, inf)
@@ -259,7 +280,7 @@ AtomiixAudio {
         pdef = Pdef(agentName, Pbind(
           \instrument, scoreInfo.instrument,
           \midinote, Pseq(scoreInfo.notes, inf),
-          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \dur, durationSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
@@ -273,7 +294,7 @@ AtomiixAudio {
         pdef = Pdef(agentName, Pbind(
           \instrument, scoreInfo.instrument,
           \midinote, Pseq(scoreInfo.notes, inf),
-          \dur, Pseq(scoreInfo.durations, scoreInfo.repeats),
+          \dur, durationSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
@@ -291,7 +312,7 @@ AtomiixAudio {
   }
 
   playConcreteScore{| agentName, scoreInfo|
-    var pdef, agent, newInstrFlag;
+    var pdef, agent, newInstrFlag, durationSequence;
     ["concrete", agentName, scoreInfo].postln;
 
     agent = this.setAgent(agentName);
@@ -310,6 +331,8 @@ AtomiixAudio {
     agent[1].quantphase = scoreInfo.quantphase;
     agent[1].repeats = scoreInfo.repeats;
 
+    durationSequence = this.createFinishingSeq(agentName, scoreInfo.durations, scoreInfo.repeats);
+
     if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
       // needed because of repeats (free proxyspace timing)
       proxyspace[agentName].free;
@@ -320,7 +343,9 @@ AtomiixAudio {
       // clear the effect references
       agentDict[agentName][0].clear;
 
-      Pdefn((agentName++"durations").asSymbol, Pseq(scoreInfo.durations, scoreInfo.repeats));
+      // Only make one of these sequences a Finishing Sequence
+      // so we only get one alert
+      Pdefn((agentName++"durations").asSymbol, durationSequence);
       Pdefn((agentName++"amplitudes").asSymbol, Pseq(scoreInfo.amplitudes, scoreInfo.repeats));
       pdef = Pdef(agentName, Pmono(scoreInfo.instrument,
             \dur, Pdefn((agentName++"durations").asSymbol),
@@ -335,7 +360,9 @@ AtomiixAudio {
         proxyspace[agentName].play
       }.defer(0.5);
     }, {
-      Pdefn((agentName++"durations").asSymbol, Pseq(scoreInfo.durations, scoreInfo.repeats)).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
+      // Only make one of these sequences a Finishing Sequence
+      // so we only get one alert
+      Pdefn((agentName++"durations").asSymbol, durationSequence).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
       Pdefn((agentName++"amplitudes").asSymbol, Pseq(scoreInfo.amplitudes, scoreInfo.repeats)).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
       if(newInstrFlag, {
         // needed in order to swap instrument in Pmono
