@@ -46,8 +46,8 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.offset,
         modifiers,
         scoreString,
-        score.line,
-        score.character
+        score.line - 1,
+        score.character - 1
       );
     case '[':
       if (!instrument) {
@@ -62,8 +62,8 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.offset,
         modifiers,
         scoreString,
-        score.line,
-        score.character
+        score.line - 1,
+        score.character - 1
       );
     case '{':
       if (!instrument) {
@@ -78,8 +78,8 @@ export function scoreParser(instrument, score, modifiers) {
         scoreStringData.offset,
         modifiers,
         scoreString,
-        score.line,
-        score.character
+        score.line - 1,
+        score.character - 1
       );
     default:
       throw new ParserException(`${first} is not a supported score delimiters`);

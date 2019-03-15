@@ -41,11 +41,11 @@ export function addActiveAgent(state, agent, score, lineOffset) {
   acs.push(
     MarkAgent(
       agent.name,
-      agent.line - 1,
-      agent.position - 1,
-      agent.position - 1 + agent.name.length - 1,
-      score.position - 1,
-      score.position - 1 + score.scoreString.length
+      agent.line,
+      agent.position,
+      agent.position + agent.name.length - 1,
+      score.position,
+      score.position + score.scoreString.length
     )
   );
   return acs;

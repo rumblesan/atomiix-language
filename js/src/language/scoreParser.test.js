@@ -4,7 +4,7 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 
 test('parses a percussive score', () => {
-  const score = { content: '|  a b  cd  |', line: 0, character: 0 };
+  const score = { content: '|  a b  cd  |', line: 1, character: 1 };
   const seq = scoreParser('', score, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
@@ -21,7 +21,7 @@ test('parses a percussive score', () => {
 });
 
 test('parses a melodic score', () => {
-  const score = { content: '[  1 3  57  ]', line: 0, character: 0 };
+  const score = { content: '[  1 3  57  ]', line: 1, character: 1 };
   const seq = scoreParser('foo', score, []);
   const expected = ast.Score(
     astTypes.MELODIC,
@@ -38,7 +38,7 @@ test('parses a melodic score', () => {
 });
 
 test('parses a concrete score', () => {
-  const score = { content: '{  1 3  57  }', line: 0, character: 0 };
+  const score = { content: '{  1 3  57  }', line: 1, character: 1 };
   const seq = scoreParser('foo', score, []);
   const expected = ast.Score(
     astTypes.CONCRETE,

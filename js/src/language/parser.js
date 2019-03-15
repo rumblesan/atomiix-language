@@ -9,7 +9,11 @@ import { scoreParser, scoreModifierParser } from './scoreParser';
 const parser = new Parser();
 
 function idToAgent(identifier) {
-  return ast.Agent(identifier.content, identifier.line, identifier.character);
+  return ast.Agent(
+    identifier.content,
+    identifier.line - 1,
+    identifier.character - 1
+  );
 }
 
 parser.parse = function(program) {
