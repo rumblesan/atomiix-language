@@ -45,9 +45,9 @@ test('basic end to end test', () => {
     ),
   ];
   const expectedActions = [
-    MarkAgent('baz', 0, 0, 2, 7, 17),
-    MarkAgent('foo', 1, 0, 2, 11, 19),
-    MarkAgent('bar', 2, 0, 2, 10, 17),
+    MarkAgent('baz', 0, 0, 3, 7, 17),
+    MarkAgent('foo', 1, 0, 3, 11, 19),
+    MarkAgent('bar', 2, 0, 3, 10, 17),
   ];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
@@ -92,7 +92,7 @@ test('can add effects', () => {
     ),
     th.createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
   ];
-  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
+  const expectedActions = [MarkAgent('baz', 0, 0, 3, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -116,7 +116,7 @@ test('can remove effects', () => {
     ),
     th.createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
   ];
-  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
+  const expectedActions = [MarkAgent('baz', 0, 0, 3, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -140,7 +140,7 @@ test('can remove all effects', () => {
     ),
     th.createFXMsg('/agent/effects/remove', 'baz', []),
   ];
-  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
+  const expectedActions = [MarkAgent('baz', 0, 0, 3, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -165,7 +165,7 @@ test('can doze and wake agents', () => {
     th.createCommandMsg('/command', 'doze', 'baz'),
     th.createCommandMsg('/command', 'wake', 'baz'),
   ];
-  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
+  const expectedActions = [MarkAgent('baz', 0, 0, 3, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
