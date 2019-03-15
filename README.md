@@ -1,5 +1,7 @@
 # Atomiix
 
+[![Build Status](https://travis-ci.org/rumblesan/atomiix.svg?branch=master)](https://travis-ci.org/rumblesan/atomiix)
+
 A reimplementation of IxiLang with an Atom editor frontend.
 
 
