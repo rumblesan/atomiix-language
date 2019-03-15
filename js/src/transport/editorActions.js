@@ -1,9 +1,0 @@
-export const HIGHLIGHTLINE = 'HIGHLIGHTLINE';
-export const NORMLIGHTLINE = 'NORMLIGHTLINE';
-export const LOWLIGHTLINE = 'LOWLIGHTLINE';
-
-export const MARKAGENT = 'MARKAGENT';
-export const MARKSCORE = 'MARKSCORE';
-export const UNMARKAGENT = 'UNMARKAGENT';
-
-export const REPLACESCORE = 'REPLACESCORE';

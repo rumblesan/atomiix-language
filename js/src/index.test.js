@@ -1,6 +1,7 @@
 import atomiix from './index.js';
 
 import * as th from './test-helpers';
+import { MarkAgent, UnmarkAgent } from './transport/editor';
 
 test('basic end to end test', () => {
   const program =
@@ -44,12 +45,9 @@ test('basic end to end test', () => {
     ),
   ];
   const expectedActions = [
-    th.createEditorAction('MARKAGENT', ['baz', 0, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['baz', 0, 7, 17]),
-    th.createEditorAction('MARKAGENT', ['foo', 1, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['foo', 1, 11, 19]),
-    th.createEditorAction('MARKAGENT', ['bar', 2, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['bar', 2, 10, 17]),
+    MarkAgent('baz', 0, 0, 2, 7, 17),
+    MarkAgent('foo', 1, 0, 2, 11, 19),
+    MarkAgent('bar', 2, 0, 2, 10, 17),
   ];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
@@ -67,9 +65,9 @@ test('can free agents', () => {
     th.createCommandMsg('/command', 'free', 'bar'),
   ];
   const expectedActions = [
-    th.createEditorAction('UNMARKAGENT', ['baz']),
-    th.createEditorAction('UNMARKAGENT', ['foo']),
-    th.createEditorAction('UNMARKAGENT', ['bar']),
+    UnmarkAgent('baz'),
+    UnmarkAgent('foo'),
+    UnmarkAgent('bar'),
   ];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
@@ -94,10 +92,7 @@ test('can add effects', () => {
     ),
     th.createFXMsg('/agent/effects/add', 'baz', ['reverb', 'distortion']),
   ];
-  const expectedActions = [
-    th.createEditorAction('MARKAGENT', ['baz', 0, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['baz', 0, 7, 17]),
-  ];
+  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -121,10 +116,7 @@ test('can remove effects', () => {
     ),
     th.createFXMsg('/agent/effects/remove', 'baz', ['reverb', 'distortion']),
   ];
-  const expectedActions = [
-    th.createEditorAction('MARKAGENT', ['baz', 0, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['baz', 0, 7, 17]),
-  ];
+  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -148,10 +140,7 @@ test('can remove all effects', () => {
     ),
     th.createFXMsg('/agent/effects/remove', 'baz', []),
   ];
-  const expectedActions = [
-    th.createEditorAction('MARKAGENT', ['baz', 0, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['baz', 0, 7, 17]),
-  ];
+  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
@@ -176,10 +165,7 @@ test('can doze and wake agents', () => {
     th.createCommandMsg('/command', 'doze', 'baz'),
     th.createCommandMsg('/command', 'wake', 'baz'),
   ];
-  const expectedActions = [
-    th.createEditorAction('MARKAGENT', ['baz', 0, 0, 2]),
-    th.createEditorAction('MARKSCORE', ['baz', 0, 7, 17]),
-  ];
+  const expectedActions = [MarkAgent('baz', 0, 0, 2, 7, 17)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });

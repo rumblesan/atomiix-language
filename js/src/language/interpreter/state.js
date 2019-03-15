@@ -4,8 +4,7 @@ import scales from '../../music/scales';
 
 import * as stdlib from '../stdlib';
 
-import { editorAction } from '../../transport/editor';
-import * as actions from '../../transport/editorActions';
+import { MarkAgent, UnmarkAgent } from '../../transport/editor';
 
 export function create() {
   return {
@@ -40,20 +39,14 @@ export function addActiveAgent(state, agent, score, lineOffset) {
     score,
   };
   acs.push(
-    editorAction(actions.MARKAGENT, [
+    MarkAgent(
       agent.name,
       agent.line - 1,
       agent.position - 1,
       agent.position - 1 + agent.name.length - 1,
-    ])
-  );
-  acs.push(
-    editorAction(actions.MARKSCORE, [
-      agent.name,
-      score.line - 1,
       score.position - 1,
-      score.position - 1 + score.scoreString.length,
-    ])
+      score.position - 1 + score.scoreString.length
+    )
   );
   return acs;
 }
@@ -62,28 +55,8 @@ export function deactivateAgent(state, agentName) {
   const acs = [];
   const existing = state.agents[agentName];
   if (existing) {
-    acs.push(editorAction(actions.UNMARKAGENT, [existing.agent.name]));
+    acs.push(UnmarkAgent(existing.agent.name));
     delete state.agents[agentName];
-  }
-  return acs;
-}
-
-export function updateAgentPosition(state, agentName, newLine, newStart) {
-  const acs = [];
-  const existing = state.agents[agentName];
-  if (existing) {
-    existing.agent.line = newLine;
-    existing.agent.position = newStart;
-  }
-  return acs;
-}
-
-export function updateScorePosition(state, agentName, newLine, newStart) {
-  const acs = [];
-  const existing = state.agents[agentName];
-  if (existing) {
-    existing.score.line = newLine;
-    existing.score.position = newStart;
   }
   return acs;
 }

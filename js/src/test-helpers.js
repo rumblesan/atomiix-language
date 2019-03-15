@@ -94,10 +94,36 @@ export function createFXMsg(addr, agentName, effects) {
   return OSCMessage(addr, msgArgs);
 }
 
-export function createEditorAction(name, args) {
+export function createMarkAction(
+  agentName,
+  line,
+  agentStart,
+  agentEnd,
+  scoreStart,
+  scoreEnd
+) {
   return {
     type: 'EDITORACTION',
-    name,
-    args,
+    actionType: 'MARKTEXT',
+    group: agentName,
+    sections: {
+      agent: {
+        line,
+        start: agentStart,
+        finish: agentEnd,
+      },
+      score: {
+        line,
+        start: scoreStart,
+        finish: scoreEnd,
+      },
+    },
+  };
+}
+export function createUnmarkAction(agentName) {
+  return {
+    type: 'EDITORACTION',
+    actionType: 'UNMARKTEXT',
+    group: agentName,
   };
 }

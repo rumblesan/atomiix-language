@@ -1,6 +1,5 @@
 import * as osc from '../../transport/osc';
-import { editorAction } from '../../transport/editor';
-import * as actions from '../../transport/editorActions';
+import { ReplaceScore } from '../../transport/editor';
 
 import { reevaluateAgent } from '../interpreter';
 import { getAgentInfo } from '../interpreter/state';
@@ -57,7 +56,7 @@ export function shake(state, args) {
     .join('');
   const newScoreString = opener + newChars + closer;
 
-  msgs.push(editorAction(actions.REPLACESCORE, [agentName, newScoreString]));
+  msgs.push(ReplaceScore(agentName, newScoreString));
 
   const newScoreToken = {
     content: newScoreString,
