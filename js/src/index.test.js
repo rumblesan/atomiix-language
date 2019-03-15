@@ -169,14 +169,3 @@ test('can doze and wake agents', () => {
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });
-
-test('can move agents', () => {
-  const program = 'baz -> |  a b  c|';
-  const state = atomiix.init();
-  atomiix.evaluate(state, program);
-  const { messages, actions } = atomiix.moveAgent(state, 'baz', 3);
-  const expectedMessages = [];
-  const expectedActions = [];
-  expect(messages).toEqual(expectedMessages);
-  expect(actions).toEqual(expectedActions);
-});
