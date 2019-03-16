@@ -8,6 +8,7 @@ import { scoreParser, scoreModifierParser } from './scoreParser';
 
 const parser = new Parser();
 
+// Subtract 1 because canto34 starts at line 1
 function idToAgent(identifier) {
   return ast.Agent(
     identifier.content,
@@ -154,7 +155,13 @@ parser.command = function(command) {
       throw new ParserException('Expected number or string');
     }
   }
-  return ast.Command(command.content, args, command.line, command.character);
+  // Subtract 1 because canto34 starts at line 1
+  return ast.Command(
+    command.content,
+    args,
+    command.line - 1,
+    command.character - 1
+  );
 };
 
 export default parser;

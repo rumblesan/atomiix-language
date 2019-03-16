@@ -1,13 +1,15 @@
 import * as osc from '../../transport/osc/outbound';
-import { ReplaceScore } from '../../transport/editor';
+import { ReplaceScore, ReplaceLine } from '../../transport/editor';
 
 import { reevaluateAgent } from '../interpreter';
 import { getAgentInfo } from '../interpreter/state';
 import { scoreParser } from '../scoreParser';
 
-import { expectArgs, expectString } from './util';
+import { expectArgs, expectString, expectNum } from './util';
 
-export function doze(state, args) {
+import scales from '../../music/scales';
+
+export function doze(state, command, args) {
   const msgs = [];
   const fname = 'doze';
   expectArgs(fname, args, 1);
@@ -23,7 +25,7 @@ export function doze(state, args) {
   return msgs;
 }
 
-export function wake(state, args) {
+export function wake(state, command, args) {
   const msgs = [];
   const fname = 'wake';
   expectArgs(fname, args, 1);
@@ -39,7 +41,7 @@ export function wake(state, args) {
   return msgs;
 }
 
-export function shake(state, args) {
+export function shake(state, command, args) {
   let msgs = [];
   const fname = 'shake';
   expectArgs(fname, args, 1);
@@ -76,5 +78,39 @@ export function shake(state, args) {
     msgs = msgs.concat(reevaluateAgent(state, agentName));
   }
 
+  return msgs;
+}
+
+export function scale(state, command, args) {
+  const fname = 'scale';
+  expectArgs(fname, args, 1);
+  const scaleName = expectString(fname, args[0]);
+  const scale = scales.names[scaleName];
+  if (!scale) {
+    state.logger.warn(`${fname}: ${scaleName} is not a valid scale name`);
+    return;
+  }
+  state.scale = scale;
+}
+
+export function tonic(state, command, args) {
+  const fname = 'tonic';
+  expectArgs(fname, args, 1);
+  const tonic = expectNum(fname, args[0]);
+  state.tonic = Math.floor(tonic);
+}
+
+export function grid(state, command, args, lineOffset) {
+  let msgs = [];
+  const fname = 'grid';
+  expectArgs(fname, args, 1);
+  const gridSpacing = Math.floor(expectNum(fname, args[0]));
+  const repeats = Math.floor(70 / gridSpacing);
+  const gridLine =
+    '          ' +
+    Array(repeats)
+      .fill(' '.repeat(gridSpacing - 1))
+      .join('|');
+  msgs.push(ReplaceLine(command.line + lineOffset, gridLine));
   return msgs;
 }

@@ -120,7 +120,7 @@ export function interpretCommand(state, { command, args }, lineOffset) {
   if (!cmd) {
     throw new AtomiixRuntimeError(`${command} is not an existing command`);
   }
-  const msgs = cmd(state, args, lineOffset);
+  const msgs = cmd(state, command, args, lineOffset);
   return msgs;
 }
 

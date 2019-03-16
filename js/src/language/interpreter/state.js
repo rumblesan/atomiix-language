@@ -9,7 +9,7 @@ import { MarkAgent, UnmarkAgent } from '../../transport/editor';
 export function createLogger() {
   return {
     info: console.log, // eslint-disable-line no-console
-    warning: console.log, // eslint-disable-line no-console
+    warn: console.log, // eslint-disable-line no-console
     error: console.log, // eslint-disable-line no-console
   };
 }
@@ -17,7 +17,7 @@ export function createLogger() {
 export function create(logger) {
   const l = logger || createLogger();
   return {
-    scale: scales.names.Maj,
+    scale: scales.names.major,
     tonic: 60,
     stdlib,
     agents: {},

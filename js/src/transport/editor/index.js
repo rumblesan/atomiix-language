@@ -45,3 +45,12 @@ export function ReplaceScore(agentName, newScoreString) {
     },
   };
 }
+
+export function ReplaceLine(lineNumber, newString) {
+  return {
+    type: t.EDITORACTION,
+    actionType: t.REPLACELINE,
+    line: lineNumber,
+    text: newString,
+  };
+}
