@@ -6,7 +6,16 @@ import * as stdlib from '../stdlib';
 
 import { MarkAgent, UnmarkAgent } from '../../transport/editor';
 
-export function create() {
+export function createLogger() {
+  return {
+    info: console.log, // eslint-disable-line no-console
+    warning: console.log, // eslint-disable-line no-console
+    error: console.log, // eslint-disable-line no-console
+  };
+}
+
+export function create(logger) {
+  const l = logger || createLogger();
   return {
     scale: scales.names.Maj,
     tonic: 60,
@@ -20,6 +29,7 @@ export function create() {
       addFX: '/agent/effects/add',
       rmFX: '/agent/effects/remove',
     },
+    logger: l,
   };
 }
 
