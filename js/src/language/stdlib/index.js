@@ -9,43 +9,40 @@ import { expectArgs, expectString, expectNum } from './util';
 
 import scales from '../../music/scales';
 
-export function doze(state, command, args) {
+export function doze(state, { name, args }) {
   const msgs = [];
-  const fname = 'doze';
-  expectArgs(fname, args, 1);
-  const agentName = expectString(fname, args[0]);
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
 
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
     agentInfo.playing = false;
     msgs.push(
-      osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
+      osc.agentMethodToOSC(state.oscAddresses.command, name, agentName)
     );
   }
   return msgs;
 }
 
-export function wake(state, command, args) {
+export function wake(state, { name, args }) {
   const msgs = [];
-  const fname = 'wake';
-  expectArgs(fname, args, 1);
-  const agentName = expectString(fname, args[0]);
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
 
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
     agentInfo.playing = true;
     msgs.push(
-      osc.agentMethodToOSC(state.oscAddresses.command, fname, agentName)
+      osc.agentMethodToOSC(state.oscAddresses.command, name, agentName)
     );
   }
   return msgs;
 }
 
-export function shake(state, command, args) {
+export function shake(state, { name, args }) {
   let msgs = [];
-  const fname = 'shake';
-  expectArgs(fname, args, 1);
-  const agentName = expectString(fname, args[0]);
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
 
   const agentInfo = getAgentInfo(state, agentName);
   const { score } = agentInfo;
@@ -81,36 +78,30 @@ export function shake(state, command, args) {
   return msgs;
 }
 
-export function scale(state, command, args) {
-  const fname = 'scale';
-  expectArgs(fname, args, 1);
-  const scaleName = expectString(fname, args[0]);
+export function scale(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const scaleName = expectString(name, args[0]);
   const scale = scales.names[scaleName];
   if (!scale) {
-    state.logger.warn(`${fname}: ${scaleName} is not a valid scale name`);
+    state.logger.warn(`${name}: ${scaleName} is not a valid scale name`);
     return;
   }
   state.scale = scale;
 }
 
-export function tonic(state, command, args) {
-  const fname = 'tonic';
-  expectArgs(fname, args, 1);
-  const tonic = expectNum(fname, args[0]);
+export function tonic(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const tonic = expectNum(name, args[0]);
   state.tonic = Math.floor(tonic);
 }
 
-export function grid(state, command, args, lineOffset) {
+export function grid(state, { name, args, line }, lineOffset) {
   let msgs = [];
-  const fname = 'grid';
-  expectArgs(fname, args, 1);
-  const gridSpacing = Math.floor(expectNum(fname, args[0]));
+  expectArgs(name, args, 1);
+  const gridSpacing = Math.floor(expectNum(name, args[0]));
   const repeats = Math.floor(70 / gridSpacing);
   const gridLine =
-    '          ' +
-    Array(repeats)
-      .fill(' '.repeat(gridSpacing - 1))
-      .join('|');
-  msgs.push(ReplaceLine(command.line + lineOffset, gridLine));
+    '          |' + (' '.repeat(gridSpacing - 1) + '|').repeat(repeats);
+  msgs.push(ReplaceLine(line + lineOffset, gridLine));
   return msgs;
 }

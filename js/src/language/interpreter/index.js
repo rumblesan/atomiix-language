@@ -115,12 +115,13 @@ export function interpretAmplitudeChange(state, { agent }, change) {
   ];
 }
 
-export function interpretCommand(state, { command, args }, lineOffset) {
-  const cmd = state.stdlib[command];
+export function interpretCommand(state, command, lineOffset) {
+  const commandName = command.name;
+  const cmd = state.stdlib[commandName];
   if (!cmd) {
-    throw new AtomiixRuntimeError(`${command} is not an existing command`);
+    throw new AtomiixRuntimeError(`${commandName} is not an existing command`);
   }
-  const msgs = cmd(state, command, args, lineOffset);
+  const msgs = cmd(state, command, lineOffset);
   return msgs;
 }
 

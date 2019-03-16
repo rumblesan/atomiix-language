@@ -1,7 +1,7 @@
 import atomiix from './index.js';
 
 import * as th from './test-helpers';
-import { MarkAgent, UnmarkAgent } from './transport/editor';
+import { ReplaceLine, MarkAgent, UnmarkAgent } from './transport/editor';
 
 test('basic end to end test', () => {
   const program =
@@ -166,6 +166,18 @@ test('can doze and wake agents', () => {
     th.createCommandMsg('/command', 'wake', 'baz'),
   ];
   const expectedActions = [MarkAgent('baz', 0, 0, 3, 7, 17)];
+  expect(messages).toEqual(expectedMessages);
+  expect(actions).toEqual(expectedActions);
+});
+
+test('can create a grid', () => {
+  const program = '\n\ngrid 8\n';
+  const initialState = atomiix.init();
+  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [];
+  const grid =
+    '          |       |       |       |       |       |       |       |       |';
+  const expectedActions = [ReplaceLine(2, grid)];
   expect(messages).toEqual(expectedMessages);
   expect(actions).toEqual(expectedActions);
 });

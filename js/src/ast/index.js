@@ -93,10 +93,10 @@ export function DecreaseAmplitude(agent) {
  *  line: integer
  *  position: integer
  */
-export function Command(command, args, line, position) {
+export function Command(name, args, line, position) {
   return {
     type: COMMAND,
-    command,
+    name,
     args,
     line,
     position,
