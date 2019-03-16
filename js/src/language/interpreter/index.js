@@ -1,7 +1,7 @@
 import scales from '../../music/scales';
 import * as ast from '../../ast';
 import * as astTypes from '../../ast/types';
-import * as osc from '../../transport/osc';
+import * as osc from '../../transport/osc/outbound';
 
 import * as iState from './state';
 

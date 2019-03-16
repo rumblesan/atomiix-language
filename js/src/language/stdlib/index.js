@@ -1,4 +1,4 @@
-import * as osc from '../../transport/osc';
+import * as osc from '../../transport/osc/outbound';
 import { ReplaceScore } from '../../transport/editor';
 
 import { reevaluateAgent } from '../interpreter';

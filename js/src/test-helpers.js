@@ -1,4 +1,4 @@
-import { OSCMessage } from './transport/osc';
+import { OSCMessage } from './transport/osc/outbound';
 
 export function createPercussiveMsg(
   addr,

@@ -1,5 +1,6 @@
 import parser from './language/parser';
 
+import { handleInboundOSC } from './transport/osc/inbound';
 import { interpret, freeAgents } from './language/interpreter';
 import { create as createState } from './language/interpreter/state';
 
@@ -53,5 +54,6 @@ export default {
   init,
   evaluate,
   free,
+  incomingOSC: handleInboundOSC,
   parser,
 };

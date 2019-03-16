@@ -16,6 +16,7 @@ export function create() {
       playPattern: '/play/pattern',
       command: '/command',
       agentAmplitude: '/agent/amplitude',
+      agentFinished: '/finished',
       addFX: '/agent/effects/add',
       rmFX: '/agent/effects/remove',
     },
@@ -60,4 +61,11 @@ export function deactivateAgent(state, agentName) {
     delete state.agents[agentName];
   }
   return acs;
+}
+
+export function stopAgent(state, agentName) {
+  const existing = state.agents[agentName];
+  if (existing) {
+    existing.playing = false;
+  }
 }
