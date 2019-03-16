@@ -100,7 +100,19 @@ export function interpretRemoveFX(state, { agent, effects }) {
 }
 
 export function interpretAmplitudeChange(state, { agent }, change) {
-  return [osc.ampChangeToOSC(state.oscAddresses.agentAmplitude, agent, change)];
+  const agentInfo = state.agents[agent.name];
+  if (!agentInfo) {
+    // TODO warning?
+    return;
+  }
+  agentInfo.amplitude = agentInfo.amplitude + change;
+  return [
+    osc.ampChangeToOSC(
+      state.oscAddresses.agentAmplitude,
+      agent,
+      agentInfo.amplitude
+    ),
+  ];
 }
 
 export function interpretCommand(state, { command, args }, lineOffset) {

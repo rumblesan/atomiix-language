@@ -49,6 +49,7 @@ export function addActiveAgent(state, agent, score, lineOffset) {
     agent,
     score,
     playing: true,
+    amplitude: 0.5,
   };
   acs.push(
     MarkAgent(
