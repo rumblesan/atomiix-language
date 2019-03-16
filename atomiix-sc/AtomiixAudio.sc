@@ -72,11 +72,13 @@ AtomiixAudio {
     });
   }
 
-  changeAgentAmplitude{| agentName, change |
+  setAgentAmplitude{| agentName, amplitude |
     this.actionAgent(agentName, {| agentName, agent |
-      agent[1].amp = (agent[1].amp + change).clip(0, 2);
-      this.reinitScore(agentName);
-      "Changing % amp to %\n".format(agentName, change, agent[1].amp).postln;
+      agent[1].amp = amplitude.clip(0, 2);
+      if(agent[1].mode == \concrete, {
+        Pdef(agentName).set(\amp, agent[1].amp);
+      });
+      "Changing % amp to %\n".format(agentName, amplitude, agent[1].amp).postln;
     });
   }
 
@@ -139,8 +141,13 @@ AtomiixAudio {
     });
   }
 
+  createAttackSeq{| agent, attackArray |
+    var attacks = Pseq(attackArray, inf).asStream;
+    ^Pfunc{ attacks.next() * agent[1].amp}
+  }
+
   playPercussiveScore{| agentName, scoreInfo |
-    var pdef, agent, instruments, newInstrFlag, durationSequence;
+    var pdef, agent, instruments, newInstrFlag, durationSequence, attackSequence;
     ["percussive", agentName, scoreInfo].postln;
 
     agent = this.setAgent(agentName);
@@ -164,6 +171,7 @@ AtomiixAudio {
     agent[1].repeats = scoreInfo.repeats;
 
     durationSequence = this.createFinishingSeq(agentName, scoreInfo.durations, scoreInfo.repeats);
+    attackSequence = this.createAttackSeq(agent, scoreInfo.attackArray);
 
     if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
       // needed because of repeats (free proxyspace timing)
@@ -178,7 +186,7 @@ AtomiixAudio {
         \instrument, Pseq(instruments, inf), 
         \midinote, Pseq(scoreInfo.notes, inf), 
         \dur, durationSequence,
-        \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+        \amp, attackSequence,
         \sustain, Pseq(scoreInfo.sustainArray, inf),
         \pan, Pseq(scoreInfo.panArray, inf)
       ));
@@ -201,7 +209,7 @@ AtomiixAudio {
           \instrument, Pseq(instruments, inf), 
           \midinote, Pseq(scoreInfo.notes, inf), 
           \dur, durationSequence,
-          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \amp, attackSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
         )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase];
@@ -213,7 +221,7 @@ AtomiixAudio {
           \instrument, Pseq(instruments, inf), 
           \midinote, Pseq(scoreInfo.notes, inf), 
           \dur, durationSequence,
-          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \amp, attackSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
           \pan, Pseq(scoreInfo.panArray, inf)
         )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase];
@@ -227,7 +235,7 @@ AtomiixAudio {
   }
 
   playMelodicScore {| agentName, scoreInfo |
-    var pdef, agent, newInstrFlag, durationSequence;
+    var pdef, agent, newInstrFlag, durationSequence, attackSequence;
     ["melodic", agentName, scoreInfo].postln;
 
     agent = this.setAgent(agentName);
@@ -246,6 +254,7 @@ AtomiixAudio {
     agent[1].repeats = scoreInfo.repeats;
 
     durationSequence = this.createFinishingSeq(agentName, scoreInfo.durations, scoreInfo.repeats);
+    attackSequence = this.createAttackSeq(agent, scoreInfo.attackArray);
 
     if(proxyspace[agentName].isNeutral || (scoreInfo.repeats != inf), {
       // needed because of repeats (free proxyspace timing)
@@ -262,7 +271,7 @@ AtomiixAudio {
         \midinote, Pseq(scoreInfo.notes, inf),
         \dur, durationSequence,
         \sustain, Pseq(scoreInfo.sustainArray, inf),
-        \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+        \amp, attackSequence,
         \pan, Pseq(scoreInfo.panArray, inf)
       ));
 
@@ -285,7 +294,7 @@ AtomiixAudio {
           \midinote, Pseq(scoreInfo.notes, inf),
           \dur, durationSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
-          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \amp, attackSequence,
           \pan, Pseq(scoreInfo.panArray, inf)
         )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
 
@@ -299,7 +308,7 @@ AtomiixAudio {
           \midinote, Pseq(scoreInfo.notes, inf),
           \dur, durationSequence,
           \sustain, Pseq(scoreInfo.sustainArray, inf),
-          \amp, Pseq(scoreInfo.attackArray * agent[1].amp, inf),
+          \amp, attackSequence,
           \pan, Pseq(scoreInfo.panArray, inf)
         )).quant = [scoreInfo.durations.sum, scoreInfo.quantphase, 0, 1];
 

@@ -43,10 +43,10 @@ Atomiix {
     }, '/command', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
-      var agentName, change;
+      var agentName, value;
       agentName = msg[1];
-      change = msg[2];
-      audioEngine.changeAgentAmplitude(agentName, change);
+      value = msg[2];
+      audioEngine.setAgentAmplitude(agentName, value);
     }, '/agent/amplitude', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
