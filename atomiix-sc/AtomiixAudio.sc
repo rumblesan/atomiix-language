@@ -7,13 +7,15 @@ AtomiixAudio {
   var effectsDict;
   var instrumentDict;
   var numChan;
+  var oscOutPort;
 
-  init{| instrDict, fxDict, numChannels = 2 |
+  init{| instrDict, fxDict, outPort, numChannels = 2 |
     TempoClock.default.tempo = 120/60;
     proxyspace = ProxySpace.new.know_(true);
     agentDict = IdentityDictionary.new;
     instrumentDict = instrDict;
     effectsDict = fxDict;
+    oscOutPort = outPort;
     numChan = numChannels
   }
 
@@ -121,6 +123,7 @@ AtomiixAudio {
 
   agentFinished{| agentName |
     "Agent % has finished playing".format(agentName).postln;
+    oscOutPort.sendMsg("/finished", agentName);
   }
 
   createFinishingSeq{| agentName, durationArray, repeats |

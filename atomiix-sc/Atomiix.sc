@@ -4,15 +4,19 @@ Atomiix {
 
   var instruments, audioEngine;
 
-  init {| configPath, project, oscPort |
+  init {| configPath, project, oscInPort, oscOutPort, oscOutHost = "127.0.0.1" |
+    var outPort;
     "Booting Atomiix...".postln;
+
+    outPort = NetAddr.new(oscOutHost, oscOutPort);
 
     instruments = AtomiixInstruments.new.init(configPath, project);
     audioEngine = AtomiixAudio.new.init(
       instruments.makeInstrDict,
-      instruments.makeEffectDict
+      instruments.makeEffectDict,
+      outPort
     );
-    this.setupOSC(oscPort);
+    this.setupOSC(oscInPort);
   }
 
   setupOSC {| oscPort |
