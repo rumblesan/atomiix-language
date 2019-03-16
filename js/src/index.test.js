@@ -24,7 +24,7 @@ test('basic end to end test', () => {
     th.createMelodicMsg(
       '/play/pattern',
       'foo',
-      [64, 67, 71],
+      [62, 66, 69],
       [3 / 4, 2 / 4, 1 / 4],
       'harp',
       [0.5],
