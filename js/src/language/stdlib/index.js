@@ -105,3 +105,11 @@ export function grid(state, { name, args, line }, lineOffset) {
   msgs.push(ReplaceLine(line + lineOffset, gridLine));
   return msgs;
 }
+
+export function tempo(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const newTempo = Math.floor(expectNum(name, args[0]));
+  const glide = args[0].modifier;
+
+  return osc.tempoChangeToOSC(state.oscAddresses.tempo, newTempo, glide);
+}

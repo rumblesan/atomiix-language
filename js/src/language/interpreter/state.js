@@ -19,6 +19,7 @@ export function create(logger) {
   return {
     scale: scales.names.major,
     tonic: 60,
+    bpm: 120,
     stdlib,
     agents: {},
     oscAddresses: {
@@ -28,6 +29,7 @@ export function create(logger) {
       agentFinished: '/finished',
       addFX: '/agent/effects/add',
       rmFX: '/agent/effects/remove',
+      tempo: '/tempo',
     },
     logger: l,
   };

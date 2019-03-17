@@ -43,6 +43,11 @@ Atomiix {
     }, '/command', NetAddr("localhost"), oscPort);
 
     OSCFunc({| msg |
+      msg.postln;
+      audioEngine.changeTempo(msg[1], msg[2]);
+    }, '/tempo', NetAddr("localhost"), oscPort);
+
+    OSCFunc({| msg |
       var agentName, value;
       agentName = msg[1];
       value = msg[2];

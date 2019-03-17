@@ -147,7 +147,12 @@ parser.command = function(command) {
   while (!(this.eof() || this.la1('newline'))) {
     if (this.la1('number')) {
       const num = this.match('number').content;
-      args.push(ast.Num(num));
+      let mod;
+      if (!this.eof() && this.la1('colon')) {
+        this.match('colon');
+        mod = this.match('number').content;
+      }
+      args.push(ast.Num(num, mod));
     } else if (this.la1('identifier')) {
       const str = this.match('identifier').content;
       args.push(ast.Str(str));

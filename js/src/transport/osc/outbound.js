@@ -41,6 +41,14 @@ export function ampChangeToOSC(address, agent, change) {
   return OSCMessage(address, msgArgs);
 }
 
+export function tempoChangeToOSC(address, tempo, glide) {
+  const msgArgs = [{ type: 'float', value: tempo }];
+  if (glide) {
+    msgArgs.push({ type: 'float', value: glide });
+  }
+  return OSCMessage(address, msgArgs);
+}
+
 export function playStmtToOSC(address, agent, score) {
   let msgArgs;
   switch (score.scoreType) {

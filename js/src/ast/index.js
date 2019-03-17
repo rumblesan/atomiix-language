@@ -301,11 +301,13 @@ export function Effect(name) {
 
 /**
  *  value: number
+ *  modifier: number | undefined
  */
-export function Num(value) {
+export function Num(value, modifier) {
   return {
     type: NUMBER,
     value,
+    modifier,
   };
 }
 

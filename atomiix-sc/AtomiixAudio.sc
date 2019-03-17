@@ -35,6 +35,16 @@ AtomiixAudio {
     });
   }
 
+  changeTempo{| newTempo, glide |
+    [newTempo, glide].postln;
+    if(glide.notNil, {
+      TempoClock.default.sync(newTempo/60, glide);
+    }, {
+      TempoClock.default.tempo = newTempo/60;
+    });
+    "---> Setting tempo to %".format(newTempo).postln;
+  }
+
   freeAgent{| agentName |
     this.actionAgent(agentName, {| agentName |
       "Freeing agent: %\n".format(agentName).postln;
