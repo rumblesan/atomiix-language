@@ -23,5 +23,6 @@ export const ATTACK = 'ATTACK';
 
 export const EFFECT = 'EFFECT';
 
+export const BEAT = 'BEAT';
 export const NUMBER = 'NUMBER';
 export const STRING = 'STRING';

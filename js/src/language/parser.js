@@ -153,6 +153,14 @@ parser.command = function(command) {
         mod = this.match('number').content;
       }
       args.push(ast.Num(num, mod));
+    } else if (this.la1('beat')) {
+      const beat = this.match('beat').content;
+      let mod;
+      if (!this.eof() && this.la1('colon')) {
+        this.match('colon');
+        mod = this.match('number').content;
+      }
+      args.push(ast.Beat(beat, mod));
     } else if (this.la1('identifier')) {
       const str = this.match('identifier').content;
       args.push(ast.Str(str));

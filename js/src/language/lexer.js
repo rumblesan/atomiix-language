@@ -40,6 +40,16 @@ const sustainMultiplier = () => ({
   regexp: /^[_~]/,
 });
 
+const beat = () => ({
+  name: 'beat',
+  regexp: /^\d+(\.\d+)?b/,
+  role: ['constant', 'numeric'],
+  interpret(content) {
+    // hacky but works, because parse float ignores the trailing 'b'
+    return parseFloat(content);
+  },
+});
+
 const number = () => ({
   name: 'number',
   regexp: /^\d+(\.\d+)?/,
@@ -67,6 +77,7 @@ lexer.addTokenType(types.closeParen());
 
 lexer.addTokenType(operator());
 
+lexer.addTokenType(beat());
 lexer.addTokenType(number());
 
 lexer.addTokenType(identifier());

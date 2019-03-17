@@ -15,6 +15,7 @@ import {
   SCOREMODIFIER,
   SUSTAIN,
   EFFECT,
+  BEAT,
   NUMBER,
   STRING,
 } from './types';
@@ -303,6 +304,18 @@ export function Effect(name) {
  *  value: number
  *  modifier: number | undefined
  */
+export function Beat(value, modifier) {
+  return {
+    type: BEAT,
+    value,
+    modifier,
+  };
+}
+
+/**
+ *  value: number
+ *  modifier: number | undefined
+ */
 export function Num(value, modifier) {
   return {
     type: NUMBER,
@@ -312,7 +325,7 @@ export function Num(value, modifier) {
 }
 
 /**
- *  value: number
+ *  value: string
  */
 export function Str(value) {
   return {
