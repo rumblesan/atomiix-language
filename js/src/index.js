@@ -30,6 +30,23 @@ function evaluate(state, code, lineOffset = 0) {
   };
 }
 
+function incomingOSC(state, msg) {
+  const { messages } = handleInboundOSC(state, msg);
+  const oscMessages = [];
+  const editorEvents = [];
+  messages.forEach(m => {
+    if (m.type === 'OSCMESSAGE') {
+      oscMessages.push(m);
+    } else if (m.type === editorActions.EDITORACTION) {
+      editorEvents.push(m);
+    }
+  });
+  return {
+    messages: oscMessages,
+    actions: editorEvents,
+  };
+}
+
 function free(state, code) {
   const ast = parser.parse(code);
   const { messages } = freeAgents(state, ast);
@@ -54,6 +71,6 @@ export default {
   init,
   evaluate,
   free,
-  incomingOSC: handleInboundOSC,
+  incomingOSC,
   parser,
 };

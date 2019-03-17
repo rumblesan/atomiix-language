@@ -6,6 +6,7 @@ import {
   INCRAMP,
   DECRAMP,
   COMMAND,
+  FUTURE,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -101,6 +102,19 @@ export function Command(name, args, line, position) {
     args,
     line,
     position,
+  };
+}
+
+/**
+ *  timing: Number
+ *  command: Command
+ */
+export function Future(timing, command, line) {
+  return {
+    type: FUTURE,
+    timing,
+    command,
+    line,
   };
 }
 

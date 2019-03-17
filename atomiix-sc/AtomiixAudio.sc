@@ -35,6 +35,26 @@ AtomiixAudio {
     });
   }
 
+  registerCallback{| time, timeType, repeats, callbackID |
+    {
+      repeats.do({
+        if(timeType == \beats, {
+          (time * TempoClock.default.tempo).wait;
+        },{
+          time.wait;
+        });
+        {
+          "calling callback %".format(callbackID).postln;
+          this.actionCallback(callbackID);
+        }.defer;
+      });
+    }.fork(TempoClock.new)
+  }
+
+  actionCallback{| callbackID |
+    oscOutPort.sendMsg("/callback", callbackID);
+  }
+
   changeTempo{| newTempo, glide |
     [newTempo, glide].postln;
     if(glide.notNil, {

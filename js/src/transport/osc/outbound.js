@@ -49,6 +49,22 @@ export function tempoChangeToOSC(address, tempo, glide) {
   return OSCMessage(address, msgArgs);
 }
 
+export function futureCallbackOSC(
+  address,
+  time,
+  timeType,
+  repeats,
+  callbackID
+) {
+  const msgArgs = [
+    { type: 'float', value: time },
+    { type: 'string', value: timeType },
+    { type: 'integer', value: repeats },
+    { type: 'string', value: callbackID },
+  ];
+  return OSCMessage(address, msgArgs);
+}
+
 export function playStmtToOSC(address, agent, score) {
   let msgArgs;
   switch (score.scoreType) {

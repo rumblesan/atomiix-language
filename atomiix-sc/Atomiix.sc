@@ -70,6 +70,15 @@ Atomiix {
       audioEngine.removeEffect(agentName, effects);
     }, '/agent/effects/remove', NetAddr("localhost"), oscPort);
 
+    OSCFunc({| msg |
+      var time, timeType, repeats, callbackID;
+      time = msg[1];
+      timeType = msg[2];
+      repeats = msg[3];
+      callbackID = msg[4];
+      audioEngine.registerCallback(time, timeType, repeats, callbackID);
+    }, '/callback', NetAddr("localhost"), oscPort);
+
     "Atomiix-SC: Listening on port %\n".format(oscPort).postln;
   }
 

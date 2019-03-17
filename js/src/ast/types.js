@@ -6,6 +6,7 @@ export const RMFXCHAIN = 'RMFXCHAIN';
 export const INCRAMP = 'INCRAMP';
 export const DECRAMP = 'DECRAMP';
 export const COMMAND = 'COMMAND';
+export const FUTURE = 'FUTURE';
 
 export const AGENT = 'AGENT';
 

@@ -42,9 +42,9 @@ parser.statement = function() {
     this.match('play arrow');
     const score = this.score();
     return ast.Play(idToAgent(identifier), score);
-  } else if (this.la1('add effect arrow')) {
+  } else if (this.la1('double right arrow')) {
     return this.addEffectsChain(idToAgent(identifier));
-  } else if (this.la1('remove effect arrow')) {
+  } else if (this.la1('double left arrow')) {
     return this.removeEffectsChain(idToAgent(identifier));
   } else if (this.la1('increase amplitude')) {
     this.match('increase amplitude');
@@ -59,7 +59,7 @@ parser.statement = function() {
     case 'group':
       throw new ParserException('No support for grouping yet');
     case 'future':
-      throw new ParserException('No support for future yet');
+      return this.future(identifier);
     case 'sequence':
       throw new ParserException('No support for sequence yet');
     default:
@@ -126,8 +126,8 @@ parser.scoreOperator = function() {
 
 parser.addEffectsChain = function(agent) {
   let effects = [];
-  while (!this.eof() && this.la1('add effect arrow')) {
-    this.match('add effect arrow');
+  while (!this.eof() && this.la1('double right arrow')) {
+    this.match('double right arrow');
     const effectName = this.match('identifier').content;
     effects.push(ast.Effect(effectName));
   }
@@ -136,8 +136,8 @@ parser.addEffectsChain = function(agent) {
 
 parser.removeEffectsChain = function(agent) {
   let effects = [];
-  while (!this.eof() && this.la1('remove effect arrow')) {
-    this.match('remove effect arrow');
+  while (!this.eof() && this.la1('double left arrow')) {
+    this.match('double left arrow');
     if (this.eof() || !this.la1('identifier')) {
       if (effects.length === 0) {
         // if this is the first attempt at getting an effect name
@@ -149,6 +149,43 @@ parser.removeEffectsChain = function(agent) {
     effects.push(ast.Effect(effectName));
   }
   return ast.RemoveFXChain(agent, effects);
+};
+
+parser.future = function(future) {
+  let timing;
+  let command;
+  if (this.la1('number')) {
+    const num = this.match('number').content;
+    let mod;
+    if (!this.eof() && this.la1('colon')) {
+      this.match('colon');
+      mod = this.match('number').content;
+    }
+    timing = ast.Num(num, mod);
+  } else if (this.la1('beat')) {
+    const beat = this.match('beat').content;
+    let mod;
+    if (!this.eof() && this.la1('colon')) {
+      this.match('colon');
+      mod = this.match('number').content;
+    }
+    timing = ast.Beat(beat, mod);
+  }
+  this.match('double right arrow');
+
+  if (this.la1('increase amplitude')) {
+    this.match('increase amplitude');
+    const identifier = this.match('identifier');
+    command = ast.IncreaseAmplitude(idToAgent(identifier));
+  } else if (this.la1('decrease amplitude')) {
+    this.match('decrease amplitude');
+    const identifier = this.match('identifier');
+    command = ast.DecreaseAmplitude(idToAgent(identifier));
+  } else if (this.la1('identifier')) {
+    const identifier = this.match('identifier');
+    command = this.command(identifier);
+  }
+  return ast.Future(timing, command, future.line - 1);
 };
 
 parser.command = function(command) {

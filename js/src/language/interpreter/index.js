@@ -54,6 +54,11 @@ export function reevaluateAgent(state, agentName) {
   return interpretScore(state, existing.agent, existing.score);
 }
 
+export function runCallback(state, callbackID) {
+  const cb = state.callbacks[callbackID];
+  return interpret(state, cb.command);
+}
+
 // Turns a program AST into a new state object and
 // a series of OSC messages and editor actions
 export function interpret(state, programAST, lineOffset = 0) {
@@ -84,6 +89,8 @@ export function interpretStatement(state, statementAST, lineOffset) {
       return interpretAmplitudeChange(state, statementAST, -0.1);
     case astTypes.COMMAND:
       return interpretCommand(state, statementAST, lineOffset);
+    case astTypes.FUTURE:
+      return interpretFuture(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
         `${statementAST.type} is not a supported statement type`
@@ -123,6 +130,35 @@ export function interpretCommand(state, command, lineOffset) {
   }
   const msgs = cmd(state, command, lineOffset);
   return msgs;
+}
+
+export function interpretFuture(state, future, lineOffset) {
+  const callbackID =
+    Math.random()
+      .toString(36)
+      .substring(7) + state.lastCallbackID;
+  state.lastCallbackID += 1;
+  state.callbacks[callbackID] = {
+    command: ast.Program([future.command]),
+    line: future.line + lineOffset,
+  };
+  let timeType = 'seconds';
+  if (future.timing.type === astTypes.BEAT) {
+    timeType = 'beats';
+  }
+  let repeats = 1;
+  if (future.timing.modifier) {
+    repeats = future.timing.modifier;
+  }
+  return [
+    osc.futureCallbackOSC(
+      state.oscAddresses.callback,
+      future.timing.value,
+      timeType,
+      repeats,
+      callbackID
+    ),
+  ];
 }
 
 export function interpretPlay(state, { agent, score }, lineOffset) {

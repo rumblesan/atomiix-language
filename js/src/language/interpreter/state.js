@@ -30,7 +30,10 @@ export function create(logger) {
       addFX: '/agent/effects/add',
       rmFX: '/agent/effects/remove',
       tempo: '/tempo',
+      callback: '/callback',
     },
+    callbacks: {},
+    lastCallbackID: 0,
     logger: l,
   };
 }
