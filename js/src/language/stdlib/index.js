@@ -78,6 +78,45 @@ export function shake(state, { name, args }) {
   return msgs;
 }
 
+export function reverse(state, { name, args }) {
+  let msgs = [];
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+
+  const agentInfo = getAgentInfo(state, agentName);
+  const { score } = agentInfo;
+
+  const oldScoreString = score.scoreString;
+  const opener = oldScoreString[0];
+  const closer = oldScoreString[oldScoreString.length - 1];
+  const newChars = oldScoreString
+    .slice(1, -1)
+    .split('')
+    .reverse()
+    .join('');
+  const newScoreString = opener + newChars + closer;
+
+  msgs.push(ReplaceScore(agentName, newScoreString));
+
+  const newScoreToken = {
+    content: newScoreString,
+    line: score.line,
+    character: score.position,
+  };
+  const newScore = scoreParser(
+    score.instrument,
+    newScoreToken,
+    score.modifiers
+  );
+  agentInfo.score = newScore;
+
+  if (agentInfo.playing) {
+    msgs = msgs.concat(reevaluateAgent(state, agentName));
+  }
+
+  return msgs;
+}
+
 export function scale(state, { name, args }) {
   expectArgs(name, args, 1);
   const scaleName = expectString(name, args[0]);
