@@ -55,7 +55,16 @@ parser.statement = function() {
   }
 
   // must be a command
-  return this.command(identifier);
+  switch (identifier.content) {
+    case 'group':
+      throw new ParserException('No support for grouping yet');
+    case 'future':
+      throw new ParserException('No support for future yet');
+    case 'sequence':
+      throw new ParserException('No support for sequence yet');
+    default:
+      return this.command(identifier);
+  }
 };
 
 parser.score = function() {
