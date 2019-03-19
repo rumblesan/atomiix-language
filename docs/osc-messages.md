@@ -1,10 +1,12 @@
 # OSC Communications
 
-The messages that javascript will send to SuperCollider.
+## Outbound
 
-## Play Patterns
+The messages that JavaScript will send to SuperCollider.
 
-### Percussive
+### Play Patterns
+
+#### Percussive
 
 address
 * /play/pattern
@@ -21,7 +23,7 @@ arguments
 * offset: integer
 * repeats: integer or inf
 
-### Melodic
+#### Melodic
 
 address
 * /play/pattern
@@ -38,7 +40,7 @@ arguments
 * offset: integer
 * repeats: integer or inf
 
-### Concrete
+#### Concrete
 
 address
 * /play/pattern
@@ -54,40 +56,91 @@ arguments
 * offset: integer
 * repeats: integer or inf
 
-## Freeing Agents
+### Agent Commands
+
+This currently covers freeing agents, as well as dozing and waking them.
 
 address
-* /free
+* /command
 
 arguments
+* command: string
 * agentName: string
 
-## Changing Agent Amplitude
+### Changing Tempo
+
+The syncTime is optional, and if not included then the tempo will be changed immediately.
+
+address
+* /tempo
+
+arguments
+* newTempo: float
+* syncTime: float
+
+### Changing Agent Amplitude
 
 address
 * /agent/amplitude
 
 arguments
 * agentName: string
-* change: float
+* value: float
 
-## Adding Agent Effects
+### Adding Agent Effects
 
 address
 * /agent/effects/add
 
 arguments
 * agentName: string
-* effects: [string] 
+* effects: [string]
 
-## Removing Agent Effects
+### Removing Agent Effects
+
+If effects is an empty array then all effects are removed
 
 address
 * /agent/effects/remove
 
 arguments
 * agentName: string
-* effects: [string] 
+* effects: [string]
 
-If effects is an empty array then all effects are removed
+### Registering Callbacks
 
+Because SuperCollider is responsible for all timing, callbacks work by sending an OSC message to register, and then waiting for the return OSC message from SuperCollider.
+
+address
+* /callback
+
+arguments
+* time: float
+* timeType: string   -   should be either \seconds or \beats
+* repeats: integer
+* callbackID: string
+
+
+## Inbound
+
+The messages that SuperCollider will send to JavaScript.
+
+## Agent Finished
+
+Sent when an agent finishes the number of repeats
+
+address
+* /finished
+
+arguments
+* agentName: string
+
+## Callback Fired
+
+Sent when a callbacks time is up. Can be sent multiple times for a callback with repeats.
+
+address
+* /callback
+
+arguments
+* callbackID: string
