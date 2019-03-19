@@ -144,3 +144,4 @@ address
 
 arguments
 * callbackID: string
+* remaining: integer

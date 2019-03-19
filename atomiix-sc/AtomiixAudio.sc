@@ -37,7 +37,7 @@ AtomiixAudio {
 
   registerCallback{| time, timeType, repeats, callbackID |
     {
-      repeats.do({
+      repeats.do({| num |
         if(timeType == \beats, {
           (time * TempoClock.default.tempo).wait;
         },{
@@ -45,14 +45,14 @@ AtomiixAudio {
         });
         {
           "calling callback %".format(callbackID).postln;
-          this.actionCallback(callbackID);
+          this.actionCallback(callbackID, (repeats - 1) - num);
         }.defer;
       });
     }.fork(TempoClock.new)
   }
 
-  actionCallback{| callbackID |
-    oscOutPort.sendMsg("/callback", callbackID);
+  actionCallback{| callbackID, remaining |
+    oscOutPort.sendMsg("/callback", callbackID, remaining);
   }
 
   changeTempo{| newTempo, glide |

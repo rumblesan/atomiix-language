@@ -4,3 +4,10 @@ export class AtomiixRuntimeError extends Error {
     this.name = 'AtomiixRuntimeError';
   }
 }
+
+export class AtomiixOSCError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'AtomiixOSCError';
+  }
+}
