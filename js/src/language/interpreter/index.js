@@ -286,7 +286,7 @@ export function interpretModifiers(
           panning = m.values.map(n => (n - 1) / 4 - 1);
           break;
         case astTypes.SUSTAIN:
-          sustain = [(1 / m.noteLength) * m.multiplier];
+          sustain = [(1 / m.noteLength) * (m.multiplier || 1)];
           break;
         case astTypes.ATTACK:
           attack = m.values;

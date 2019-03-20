@@ -17,7 +17,7 @@ const newline = () => ({
 
 const identifier = () => ({
   name: 'identifier',
-  regexp: /^[<>a-zA-Z][a-zA-Z0-9]*/,
+  regexp: /^[a-zA-Z][a-zA-Z0-9]*/,
 });
 
 const score = () => ({

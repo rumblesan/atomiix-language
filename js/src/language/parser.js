@@ -107,7 +107,7 @@ parser.scoreModifiers = function() {
 };
 
 parser.sustainModifier = function() {
-  let multiplier = 1;
+  let multiplier = null;
   this.match('open paren');
   const noteLength = this.match('number').content;
   if (this.la1('sustain multiplier')) {

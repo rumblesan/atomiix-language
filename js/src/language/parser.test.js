@@ -1,6 +1,7 @@
 import parser from './parser';
 
 import * as ast from '../ast';
+import * as astTypes from '../ast/types';
 
 test('parses a command', () => {
   const program = 'tempo 120';
@@ -57,6 +58,55 @@ test('parses a beat with a modifier', () => {
   const seq = parser.parse(program);
   const expected = ast.Program([
     ast.Command('tempo', [ast.Beat(120, 6)], 0, 0),
+  ]);
+  expect(seq).toEqual(expected);
+});
+
+test('parses an agent with a score', () => {
+  // this isn't a real program, but should be fine for the moment
+  const program = 'jimi -> guitar[1 2 3 4 ]+12';
+  const seq = parser.parse(program);
+  const expected = ast.Program([
+    ast.Play(
+      ast.Agent('jimi', 0, 0),
+      ast.Score(
+        astTypes.MELODIC,
+        'guitar',
+        [1, 2, 3, 4],
+        [2, 2, 2, 2],
+        0,
+        [ast.ScoreOperator('+', 12)],
+        '[1 2 3 4 ]',
+        0,
+        14
+      )
+    ),
+  ]);
+  expect(seq).toEqual(expected);
+});
+
+test('parses an agent with score modifiers', () => {
+  // this isn't a real program, but should be fine for the moment
+  const program = 'jimi -> guitar[1 2 3 4 ]+12<12>';
+  const seq = parser.parse(program);
+  const expected = ast.Program([
+    ast.Play(
+      ast.Agent('jimi', 0, 0),
+      ast.Score(
+        astTypes.MELODIC,
+        'guitar',
+        [1, 2, 3, 4],
+        [2, 2, 2, 2],
+        0,
+        [
+          ast.ScoreOperator('+', 12),
+          ast.ScoreModifier(astTypes.PANNING, [1, 2]),
+        ],
+        '[1 2 3 4 ]',
+        0,
+        14
+      )
+    ),
   ]);
   expect(seq).toEqual(expected);
 });
