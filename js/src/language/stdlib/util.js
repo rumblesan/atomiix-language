@@ -1,5 +1,5 @@
-import * as astTypes from '../../ast/types';
-import { AtomiixRuntimeError } from '../runtime';
+import * as astTypes from '../ast/types';
+import { AtomiixRuntimeError } from '../errors';
 
 export function expectArgs(name, args, num) {
   if (args.length !== num) {

@@ -1,4 +1,4 @@
-import * as t from '../../ast/types';
+import * as t from '../../language/ast/types';
 
 export function OSCMessage(address, args) {
   return {

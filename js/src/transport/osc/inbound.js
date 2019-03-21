@@ -1,6 +1,6 @@
 import { stopAgent } from '../../language/interpreter/state';
 import { interpret } from '../../language/interpreter';
-import { AtomiixOSCError } from '../../language/runtime';
+import { AtomiixOSCError } from '../../language/errors';
 
 function getStringArg(name, msg, argNum) {
   const el = msg.args[argNum];

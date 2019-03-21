@@ -1,4 +1,4 @@
-import parser from './parser';
+import parser from './index';
 
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';

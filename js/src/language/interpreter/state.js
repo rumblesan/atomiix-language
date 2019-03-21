@@ -1,10 +1,10 @@
-import { AtomiixRuntimeError } from '../runtime';
+import { AtomiixRuntimeError } from '../errors';
 
 import scales from '../../music/scales';
 
 import * as stdlib from '../stdlib';
 
-import { MarkAgent, UnmarkAgent } from '../../transport/editor';
+import { MarkAgent, UnmarkAgent } from '../../actions/editor';
 
 export function createLogger() {
   return {

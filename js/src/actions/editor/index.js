@@ -1,4 +1,5 @@
-import * as t from './actions';
+import { EDITORACTION } from '../types';
+import * as t from './types';
 
 export function MarkAgent(
   name,
@@ -9,7 +10,7 @@ export function MarkAgent(
   scoreFinish
 ) {
   return {
-    type: t.EDITORACTION,
+    type: EDITORACTION,
     actionType: t.MARKTEXT,
     group: name,
     sections: {
@@ -29,7 +30,7 @@ export function MarkAgent(
 
 export function UnmarkAgent(agentName) {
   return {
-    type: t.EDITORACTION,
+    type: EDITORACTION,
     actionType: t.UNMARKTEXT,
     group: agentName,
   };
@@ -37,7 +38,7 @@ export function UnmarkAgent(agentName) {
 
 export function ReplaceScore(agentName, newScoreString) {
   return {
-    type: t.EDITORACTION,
+    type: EDITORACTION,
     actionType: t.REPLACETEXT,
     group: agentName,
     sections: {
@@ -48,7 +49,7 @@ export function ReplaceScore(agentName, newScoreString) {
 
 export function ReplaceLine(lineNumber, newString) {
   return {
-    type: t.EDITORACTION,
+    type: EDITORACTION,
     actionType: t.REPLACELINE,
     line: lineNumber,
     text: newString,

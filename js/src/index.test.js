@@ -1,7 +1,7 @@
 import atomiix from './index.js';
 
 import * as th from './test-helpers';
-import { ReplaceLine, MarkAgent, UnmarkAgent } from './transport/editor';
+import { ReplaceLine, MarkAgent, UnmarkAgent } from './actions/editor';
 
 test('basic end to end test', () => {
   const program =

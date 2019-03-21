@@ -1,9 +1,9 @@
 import * as osc from '../../transport/osc/outbound';
-import { ReplaceScore, ReplaceLine } from '../../transport/editor';
+import { ReplaceScore, ReplaceLine } from '../../actions/editor';
 
 import { reevaluateAgent } from '../interpreter';
 import { getAgentInfo } from '../interpreter/state';
-import { scoreParser } from '../scoreParser';
+import { scoreParser } from '../parser/scoreParser';
 
 import { expectArgs, expectString, expectNum } from './util';
 

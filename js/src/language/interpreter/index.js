@@ -1,11 +1,11 @@
 import scales from '../../music/scales';
-import * as ast from '../../ast';
-import * as astTypes from '../../ast/types';
+import * as ast from '../ast';
+import * as astTypes from '../ast/types';
 import * as osc from '../../transport/osc/outbound';
 
 import * as iState from './state';
 
-import { AtomiixRuntimeError } from '../runtime';
+import { AtomiixRuntimeError } from '../errors';
 
 export function intervalToNote(state, interval) {
   return state.tonic + scales.notes[state.scale][interval];

@@ -1,4 +1,4 @@
-import * as astTypes from '../../ast/types';
+import * as astTypes from '../ast/types';
 
 export function writeScoreModifiers(modifiers) {
   return modifiers
