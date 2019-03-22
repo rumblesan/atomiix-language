@@ -1,8 +1,10 @@
-import { ReplaceScore } from '../../actions/editor';
+import * as astTypes from '../ast/types';
+
+import { reevaluateAgent } from '../interpreter';
 import { getAgentInfo } from '../interpreter/state';
 import { scoreParser } from '../parser/scoreParser';
-import { reevaluateAgent } from '../interpreter';
-import * as astTypes from '../ast/types';
+
+import { ReplaceScore } from '../../actions/editor';
 
 export function modifyScoreString(state, agentName, modifyFunc) {
   let msgs = [];

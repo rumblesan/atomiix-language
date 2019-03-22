@@ -1,6 +1,6 @@
 import { AtomiixRuntimeError } from '../errors';
 import scales from '../../music/scales';
-import * as stdlib from '../stdlib';
+import stdlib from '../stdlib';
 import { MarkAgent, UnmarkAgent } from '../../actions/editor';
 
 export function createLogger() {
