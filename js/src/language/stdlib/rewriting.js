@@ -1,4 +1,37 @@
+import { ReplaceScore } from '../../actions/editor';
+import { getAgentInfo } from '../interpreter/state';
+import { scoreParser } from '../parser/scoreParser';
+import { reevaluateAgent } from '../interpreter';
 import * as astTypes from '../ast/types';
+
+export function modifyScoreString(state, agentName, modifyFunc) {
+  let msgs = [];
+
+  const agentInfo = getAgentInfo(state, agentName);
+  const { score } = agentInfo;
+
+  const newScoreString = modifyFunc(score);
+
+  msgs.push(ReplaceScore(agentName, newScoreString));
+
+  const newScoreToken = {
+    content: newScoreString,
+    line: score.line,
+    character: score.position,
+  };
+  const newScore = scoreParser(
+    score.instrument,
+    newScoreToken,
+    score.modifiers
+  );
+  agentInfo.score = newScore;
+
+  if (agentInfo.playing) {
+    msgs = msgs.concat(reevaluateAgent(state, agentName));
+  }
+
+  return msgs;
+}
 
 export function writeScoreModifiers(modifiers) {
   return modifiers

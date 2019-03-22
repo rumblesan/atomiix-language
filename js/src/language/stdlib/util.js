@@ -2,8 +2,8 @@ import * as astTypes from '../ast/types';
 import { AtomiixRuntimeError } from '../errors';
 
 export function expectArgs(name, args, num) {
-  if (args.length !== num) {
-    throw new AtomiixRuntimeError(`${name} expected ${num} arguments`);
+  if (args.length < num) {
+    throw new AtomiixRuntimeError(`${name} expected at least ${num} arguments`);
   }
 }
 
@@ -23,4 +23,11 @@ export function expectNum(name, arg) {
     );
   }
   return arg.value;
+}
+
+export function optionalNum(name, arg, defaultVal) {
+  if (arg === undefined) {
+    return defaultVal;
+  }
+  return expectNum(name, arg);
 }

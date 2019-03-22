@@ -38,18 +38,18 @@ parser.program = function() {
 parser.statement = function() {
   const identifier = this.match('identifier');
 
-  if (this.la1('play arrow')) {
+  if (!this.eof() && this.la1('play arrow')) {
     this.match('play arrow');
     const score = this.score();
     return ast.Play(idToAgent(identifier), score);
-  } else if (this.la1('double right arrow')) {
+  } else if (!this.eof() && this.la1('double right arrow')) {
     return this.addEffectsChain(idToAgent(identifier));
-  } else if (this.la1('double left arrow')) {
+  } else if (!this.eof() && this.la1('double left arrow')) {
     return this.removeEffectsChain(idToAgent(identifier));
-  } else if (this.la1('increase amplitude')) {
+  } else if (!this.eof() && this.la1('increase amplitude')) {
     this.match('increase amplitude');
     return ast.IncreaseAmplitude(idToAgent(identifier));
-  } else if (this.la1('decrease amplitude')) {
+  } else if (!this.eof() && this.la1('decrease amplitude')) {
     this.match('decrease amplitude');
     return ast.DecreaseAmplitude(idToAgent(identifier));
   }

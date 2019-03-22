@@ -1,11 +1,11 @@
 import * as audioActions from '../../actions/audio';
-import { ReplaceScore, ReplaceLine } from '../../actions/editor';
+import { ReplaceLine } from '../../actions/editor';
 
-import { reevaluateAgent } from '../interpreter';
+import { PERCUSSIVE } from '../ast/types';
 import { getAgentInfo } from '../interpreter/state';
-import { scoreParser } from '../parser/scoreParser';
+import { modifyScoreString } from './rewriting';
 
-import { expectArgs, expectString, expectNum } from './util';
+import { expectArgs, expectString, expectNum, optionalNum } from './util';
 
 import scales from '../../music/scales';
 
@@ -35,82 +35,141 @@ export function wake(state, { name, args }) {
   return msgs;
 }
 
+export function kill(state, { name, args }) {
+  expectArgs(name, args, 0);
+
+  return Object.keys(state.agents).map(name => {
+    state.agents[name].playing = false;
+    return audioActions.FreeAgent(name);
+  });
+}
+
 export function shake(state, { name, args }) {
-  let msgs = [];
   expectArgs(name, args, 1);
   const agentName = expectString(name, args[0]);
 
-  const agentInfo = getAgentInfo(state, agentName);
-  const { score } = agentInfo;
-
-  const oldScoreString = score.scoreString;
-  const opener = oldScoreString[0];
-  const closer = oldScoreString[oldScoreString.length - 1];
-  const newChars = oldScoreString
-    .slice(1, -1)
-    .split('')
-    .sort(() => 0.5 - Math.random())
-    .join('');
-  const newScoreString = opener + newChars + closer;
-
-  msgs.push(ReplaceScore(agentName, newScoreString));
-
-  const newScoreToken = {
-    content: newScoreString,
-    line: score.line,
-    character: score.position,
-  };
-  const newScore = scoreParser(
-    score.instrument,
-    newScoreToken,
-    score.modifiers
-  );
-  agentInfo.score = newScore;
-
-  if (agentInfo.playing) {
-    msgs = msgs.concat(reevaluateAgent(state, agentName));
-  }
-
-  return msgs;
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const newChars = oldScoreString
+      .slice(1, -1)
+      .split('')
+      .sort(() => 0.5 - Math.random())
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
 }
 
 export function reverse(state, { name, args }) {
-  let msgs = [];
   expectArgs(name, args, 1);
   const agentName = expectString(name, args[0]);
 
-  const agentInfo = getAgentInfo(state, agentName);
-  const { score } = agentInfo;
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const newChars = oldScoreString
+      .slice(1, -1)
+      .split('')
+      .reverse()
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}
 
-  const oldScoreString = score.scoreString;
-  const opener = oldScoreString[0];
-  const closer = oldScoreString[oldScoreString.length - 1];
-  const newChars = oldScoreString
-    .slice(1, -1)
-    .split('')
-    .reverse()
-    .join('');
-  const newScoreString = opener + newChars + closer;
+export function shiftr(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+  const shift = optionalNum(name, args[1], 1);
 
-  msgs.push(ReplaceScore(agentName, newScoreString));
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    if (oldScoreString.length < 4) {
+      return oldScoreString;
+    }
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const chars = oldScoreString.slice(1, -1);
+    const sameChars = chars.slice(0, -shift);
+    const movedChars = chars.substr(chars.length - shift);
+    const newScoreString = opener + movedChars + sameChars + closer;
+    return newScoreString;
+  });
+}
 
-  const newScoreToken = {
-    content: newScoreString,
-    line: score.line,
-    character: score.position,
-  };
-  const newScore = scoreParser(
-    score.instrument,
-    newScoreToken,
-    score.modifiers
-  );
-  agentInfo.score = newScore;
+export function shiftl(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+  const shift = optionalNum(name, args[1], 1);
 
-  if (agentInfo.playing) {
-    msgs = msgs.concat(reevaluateAgent(state, agentName));
-  }
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    if (oldScoreString.length < 4) {
+      return oldScoreString;
+    }
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const chars = oldScoreString.slice(1, -1);
+    const sameChars = chars.substr(0, shift);
+    const movedChars = chars.slice(shift);
+    const newScoreString = opener + movedChars + sameChars + closer;
+    return newScoreString;
+  });
+}
 
-  return msgs;
+export function up(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    if (score.scoreType != PERCUSSIVE) {
+      return score.scoreString;
+    }
+    return score.scoreString.toUpperCase();
+  });
+}
+
+export function down(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    if (score.scoreType != PERCUSSIVE) {
+      return score.scoreString;
+    }
+    return score.scoreString.toLowerCase();
+  });
+}
+
+const isUpper = /^[A-Z]/;
+const isLower = /^[a-z]/;
+export function yoyo(state, { name, args }) {
+  expectArgs(name, args, 1);
+  const agentName = expectString(name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const newChars = oldScoreString
+      .slice(1, -1)
+      .split('')
+      .map(c => {
+        if (isUpper.test(c)) {
+          return c.toLowerCase();
+        } else if (isLower.test(c)) {
+          return c.toUpperCase();
+        } else {
+          return c;
+        }
+      })
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
 }
 
 export function scale(state, { name, args }) {

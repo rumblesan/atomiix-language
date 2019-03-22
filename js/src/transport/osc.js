@@ -17,7 +17,7 @@ export function audioActionToOSC(addresses, action) {
     case at.AGENTMETHOD:
       return agentMethodOSC(addresses.command, action);
     case at.FREEAGENT:
-      return freeAgentOSC(addresses.command, action.agent);
+      return freeAgentOSC(addresses.command, action);
     case at.ADDAGENTFX:
       return addAgentFXOSC(addresses.addFX, action);
     case at.RMAGENTFX:
