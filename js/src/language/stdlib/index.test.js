@@ -1,7 +1,7 @@
 import atomiix from '../../index.js';
 
 import * as th from '../../test-helpers';
-import { ReplaceScore, MarkAgent, UnmarkAgent } from '../../actions/editor';
+import { ReplaceScore, MarkAgent } from '../../actions/editor';
 
 test('can reverse an agents score', () => {
   const program = 'baz -> |  a b  c|\nreverse baz';
