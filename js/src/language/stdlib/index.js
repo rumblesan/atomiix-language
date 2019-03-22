@@ -4,6 +4,7 @@ import { ReplaceLine } from '../../actions/editor';
 import { PERCUSSIVE } from '../ast/types';
 import { getAgentInfo } from '../interpreter/state';
 import { modifyScoreString } from './rewriting';
+import { reevaluateAgent } from '../interpreter';
 
 import { expectArgs, expectString, expectNum, optionalNum } from './util';
 
@@ -181,6 +182,19 @@ export function scale(state, { name, args }) {
     return;
   }
   state.scale = scale;
+}
+
+export function scalepush(state, command) {
+  scale(state, command);
+  let msgs = [];
+
+  Object.keys(state.agents).forEach(name => {
+    const agentInfo = getAgentInfo(state, name);
+    if (agentInfo.playing) {
+      msgs = msgs.concat(reevaluateAgent(state, name));
+    }
+  });
+  return msgs;
 }
 
 export function tonic(state, { name, args }) {
