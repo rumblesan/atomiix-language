@@ -19,6 +19,7 @@ export function create(logger) {
     bpm: 120,
     stdlib,
     agents: {},
+    groups: {},
     callbacks: {},
     lastCallbackID: 0,
     logger: l,
@@ -34,6 +35,11 @@ export function getAgentInfo(state, agentName) {
 }
 
 export function addActiveAgent(state, agent, score, lineOffset) {
+  if (state.groups[agent.name]) {
+    throw new AtomiixRuntimeError(
+      `${agent.name} is already the name of a group`
+    );
+  }
   const acs = [];
   agent.line = agent.line + lineOffset;
   score.line = score.line + lineOffset;

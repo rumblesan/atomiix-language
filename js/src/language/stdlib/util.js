@@ -31,3 +31,14 @@ export function optionalNum(name, arg, defaultVal) {
   }
   return expectNum(name, arg);
 }
+
+export function handleGroup(state, name, func) {
+  let msgs = [];
+  if (state.groups[name]) {
+    state.groups[name].forEach(agentName => {
+      msgs = msgs.concat(func(state, agentName));
+    });
+    return msgs;
+  }
+  return func(state, name);
+}

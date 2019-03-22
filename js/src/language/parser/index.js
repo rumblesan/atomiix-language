@@ -57,7 +57,7 @@ parser.statement = function() {
   // must be a command
   switch (identifier.content) {
     case 'group':
-      throw new ParserException('No support for grouping yet');
+      return this.group(identifier);
     case 'future':
       return this.future(identifier);
     case 'sequence':
@@ -221,6 +221,20 @@ parser.command = function(command) {
     command.line - 1,
     command.character - 1
   );
+};
+
+parser.group = function(/*command*/) {
+  const groupName = this.match('identifier').content;
+  this.match('play arrow');
+  let agents = [];
+  while (!(this.eof() || this.la1('newline'))) {
+    if (this.la1('identifier')) {
+      agents.push(this.match('identifier').content);
+    } else {
+      throw new ParserException('Expected agent name');
+    }
+  }
+  return ast.Group(groupName, agents);
 };
 
 export default parser;

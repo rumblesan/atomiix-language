@@ -7,6 +7,7 @@ import {
   DECRAMP,
   COMMAND,
   FUTURE,
+  GROUP,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -115,6 +116,18 @@ export function Future(timing, command, line) {
     timing,
     command,
     line,
+  };
+}
+
+/**
+ *  timing: Number
+ *  command: Command
+ */
+export function Group(name, agents) {
+  return {
+    type: GROUP,
+    name,
+    agents,
   };
 }
 

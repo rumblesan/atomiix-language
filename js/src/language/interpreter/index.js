@@ -3,7 +3,7 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 import * as audioActions from '../../actions/audio';
 
-import * as iState from './state';
+import { addActiveAgent, deactivateAgent, getAgentInfo } from './state';
 
 import { AtomiixRuntimeError } from '../errors';
 
@@ -39,7 +39,7 @@ export function freeAgents(state, programAST) {
   let actions = [];
   agentNames.forEach(n => {
     actions.push(audioActions.FreeAgent(n));
-    actions = actions.concat(iState.deactivateAgent(state, n));
+    actions = actions.concat(deactivateAgent(state, n));
   });
   return actions;
 }
@@ -87,6 +87,8 @@ export function interpretStatement(state, statementAST, lineOffset) {
       return interpretCommand(state, statementAST, lineOffset);
     case astTypes.FUTURE:
       return interpretFuture(state, statementAST, lineOffset);
+    case astTypes.GROUP:
+      return interpretGroup(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
         `${statementAST.type} is not a supported statement type`
@@ -150,9 +152,29 @@ export function interpretFuture(state, future, lineOffset) {
   ];
 }
 
+export function interpretGroup(state, { name, agents }) {
+  if (state.agents[name]) {
+    throw new AtomiixRuntimeError(`${name} is already the name of an agent`);
+  }
+
+  if (state.groups[name]) {
+    throw new AtomiixRuntimeError(`${name} is already the name of a group`);
+  }
+
+  const agentNames = agents.map(a => {
+    // call getAgentInfo to make sure agent exists
+    // but just return the name
+    getAgentInfo(state, a);
+    return a;
+  });
+
+  state.groups[name] = agentNames;
+  return [];
+}
+
 export function interpretPlay(state, { agent, score }, lineOffset) {
   let msgs = interpretScore(state, agent, score);
-  msgs = msgs.concat(iState.addActiveAgent(state, agent, score, lineOffset));
+  msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
   return msgs;
 }
 
