@@ -1,7 +1,4 @@
-import { OSCMessage } from './transport/osc/outbound';
-
 export function createPercussiveMsg(
-  addr,
   agentName,
   notes,
   durations,
@@ -12,23 +9,22 @@ export function createPercussiveMsg(
   offset,
   repeats
 ) {
-  const msgArgs = [
-    { type: 'string', value: 'percussive' },
-    { type: 'string', value: agentName },
-    { type: 'array', value: notes },
-    { type: 'array', value: durations },
-    { type: 'array', value: instruments },
-    { type: 'array', value: sustain },
-    { type: 'array', value: attack },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'PLAYPERCUSSIVE',
+    agent: agentName,
+    notes,
+    durations,
+    instruments,
+    sustain,
+    attack,
+    panning,
+    offset,
+    repeats,
+  };
 }
 
 export function createMelodicMsg(
-  addr,
   agentName,
   notes,
   durations,
@@ -39,23 +35,22 @@ export function createMelodicMsg(
   offset,
   repeats
 ) {
-  const msgArgs = [
-    { type: 'string', value: 'melodic' },
-    { type: 'string', value: agentName },
-    { type: 'array', value: notes },
-    { type: 'array', value: durations },
-    { type: 'string', value: instrument },
-    { type: 'array', value: sustain },
-    { type: 'array', value: attack },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'PLAYMELODIC',
+    agent: agentName,
+    notes,
+    durations,
+    instrument,
+    sustain,
+    attack,
+    panning,
+    offset,
+    repeats,
+  };
 }
 
 export function createConcreteMsg(
-  addr,
   agentName,
   amplitudes,
   durations,
@@ -64,34 +59,53 @@ export function createConcreteMsg(
   offset,
   repeats
 ) {
-  const msgArgs = [
-    { type: 'string', value: 'concrete' },
-    { type: 'string', value: agentName },
-    { type: 'integer', value: 60 },
-    { type: 'array', value: amplitudes },
-    { type: 'array', value: durations },
-    { type: 'string', value: instrument },
-    { type: 'array', value: panning },
-    { type: 'integer', value: offset },
-    repeats === 'inf' ? { type: 'bang' } : { type: 'integer', value: repeats },
-  ];
-  return OSCMessage(addr, msgArgs);
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'PLAYCONCRETE',
+    agent: agentName,
+    pitch: 60,
+    amplitudes,
+    durations,
+    instrument,
+    panning,
+    offset,
+    repeats,
+  };
 }
 
-export function createCommandMsg(addr, command, agentName) {
-  const msgArgs = [
-    { type: 'string', value: command },
-    { type: 'string', value: agentName },
-  ];
-  return OSCMessage(addr, msgArgs);
+export function createCommandMsg(agentName, method) {
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'AGENTMETHOD',
+    agent: agentName,
+    method,
+  };
 }
 
-export function createFXMsg(addr, agentName, effects) {
-  const msgArgs = [
-    { type: 'string', value: agentName },
-    { type: 'array', value: effects },
-  ];
-  return OSCMessage(addr, msgArgs);
+export function createFreeAgentMsg(agentName) {
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'FREEAGENT',
+    agent: agentName,
+  };
+}
+
+export function createAddFXMsg(agentName, fxList) {
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'ADDAGENTFX',
+    agent: agentName,
+    fxList,
+  };
+}
+
+export function createRemoveFXMsg(agentName, fxList) {
+  return {
+    type: 'AUDIOACTION',
+    actionType: 'RMAGENTFX',
+    agent: agentName,
+    fxList,
+  };
 }
 
 export function createMarkAction(

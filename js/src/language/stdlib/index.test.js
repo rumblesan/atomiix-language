@@ -6,10 +6,9 @@ import { ReplaceScore, MarkAgent } from '../../actions/editor';
 test('can reverse an agents score', () => {
   const program = 'baz -> |  a b  c|\nreverse baz';
   const initialState = atomiix.init();
-  const { messages, actions } = atomiix.evaluate(initialState, program);
+  const { audio, editor } = atomiix.evaluate(initialState, program);
   const expectedMessages = [
     th.createPercussiveMsg(
-      '/play/pattern',
       'baz',
       [60],
       [2 / 4, 3 / 4, 1 / 4],
@@ -21,7 +20,6 @@ test('can reverse an agents score', () => {
       'inf'
     ),
     th.createPercussiveMsg(
-      '/play/pattern',
       'baz',
       [60],
       [3 / 4, 2 / 4, 3 / 4],
@@ -37,6 +35,6 @@ test('can reverse an agents score', () => {
     MarkAgent('baz', 0, 0, 3, 7, 17),
     ReplaceScore('baz', '|c  b a  |'),
   ];
-  expect(messages).toEqual(expectedMessages);
-  expect(actions).toEqual(expectedActions);
+  expect(audio).toEqual(expectedMessages);
+  expect(editor).toEqual(expectedActions);
 });

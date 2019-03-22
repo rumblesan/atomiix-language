@@ -1,9 +1,6 @@
 import { AtomiixRuntimeError } from '../errors';
-
 import scales from '../../music/scales';
-
 import * as stdlib from '../stdlib';
-
 import { MarkAgent, UnmarkAgent } from '../../actions/editor';
 
 export function createLogger() {
@@ -22,16 +19,6 @@ export function create(logger) {
     bpm: 120,
     stdlib,
     agents: {},
-    oscAddresses: {
-      playPattern: '/play/pattern',
-      command: '/command',
-      agentAmplitude: '/agent/amplitude',
-      agentFinished: '/finished',
-      addFX: '/agent/effects/add',
-      rmFX: '/agent/effects/remove',
-      tempo: '/tempo',
-      callback: '/callback',
-    },
     callbacks: {},
     lastCallbackID: 0,
     logger: l,

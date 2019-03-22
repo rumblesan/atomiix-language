@@ -1,7 +1,7 @@
 import scales from '../../music/scales';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
-import * as osc from '../../transport/osc/outbound';
+import * as audioActions from '../../actions/audio';
 
 import * as iState from './state';
 
@@ -36,14 +36,12 @@ export function getAgentNames(state, programAST) {
 
 export function freeAgents(state, programAST) {
   const { agentNames } = getAgentNames(state, programAST);
-  let messages = [];
+  let actions = [];
   agentNames.forEach(n => {
-    messages.push(osc.freeAgentToOSC(state.oscAddresses.command, n));
-    messages = messages.concat(iState.deactivateAgent(state, n));
+    actions.push(audioActions.FreeAgent(n));
+    actions = actions.concat(iState.deactivateAgent(state, n));
   });
-  return {
-    messages,
-  };
+  return actions;
 }
 
 export function reevaluateAgent(state, agentName) {
@@ -62,17 +60,15 @@ export function runCallback(state, callbackID) {
 // Turns a program AST into a new state object and
 // a series of OSC messages and editor actions
 export function interpret(state, programAST, lineOffset = 0) {
-  let messages = [];
+  let actions = [];
   for (let i = 0; i < programAST.statements.length; i += 1) {
     const s = programAST.statements[i];
     const outputMsgs = interpretStatement(state, s, lineOffset);
     if (outputMsgs) {
-      messages = messages.concat(outputMsgs);
+      actions = actions.concat(outputMsgs);
     }
   }
-  return {
-    messages,
-  };
+  return actions;
 }
 
 export function interpretStatement(state, statementAST, lineOffset) {
@@ -99,11 +95,11 @@ export function interpretStatement(state, statementAST, lineOffset) {
 }
 
 export function interpretAddFX(state, { agent, effects }) {
-  return [osc.fxChainToOSC(state.oscAddresses.addFX, agent, effects)];
+  return [audioActions.AddAgentFX(agent.name, effects.map(e => e.name))];
 }
 
 export function interpretRemoveFX(state, { agent, effects }) {
-  return [osc.fxChainToOSC(state.oscAddresses.rmFX, agent, effects)];
+  return [audioActions.RemoveAgentFX(agent.name, effects.map(e => e.name))];
 }
 
 export function interpretAmplitudeChange(state, { agent }, change) {
@@ -113,13 +109,7 @@ export function interpretAmplitudeChange(state, { agent }, change) {
     return;
   }
   agentInfo.amplitude = agentInfo.amplitude + change;
-  return [
-    osc.ampChangeToOSC(
-      state.oscAddresses.agentAmplitude,
-      agent,
-      agentInfo.amplitude
-    ),
-  ];
+  return [audioActions.SetAgentAmplitude(agent.name, agentInfo.amplitude)];
 }
 
 export function interpretCommand(state, command, lineOffset) {
@@ -151,8 +141,7 @@ export function interpretFuture(state, future, lineOffset) {
     repeats = future.timing.modifier;
   }
   return [
-    osc.futureCallbackOSC(
-      state.oscAddresses.callback,
+    audioActions.FutureCallback(
       future.timing.value,
       timeType,
       repeats,
@@ -207,7 +196,7 @@ export function interpretPercussiveScore(state, agent, score) {
     quantphase,
     repeats
   );
-  const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ps);
+  const msg = audioActions.PlayPercussiveScore(agent.name, ps);
   return [msg];
 }
 
@@ -234,7 +223,7 @@ export function interpretMelodicScore(state, agent, score) {
     quantphase,
     repeats
   );
-  const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ms);
+  const msg = audioActions.PlayMelodicScore(agent.name, ms);
   return [msg];
 }
 
@@ -251,7 +240,7 @@ export function interpretConcreteScore(state, agent, score) {
   const instrument = score.instrument;
   const quantphase = score.offset / 4;
 
-  const ms = ast.ConcreteScore(
+  const cs = ast.ConcreteScore(
     pitch,
     amplitudes,
     durations,
@@ -260,7 +249,7 @@ export function interpretConcreteScore(state, agent, score) {
     quantphase,
     repeats
   );
-  const msg = osc.playStmtToOSC(state.oscAddresses.playPattern, agent, ms);
+  const msg = audioActions.PlayConcreteScore(agent.name, cs);
   return [msg];
 }
 

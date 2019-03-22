@@ -1,22 +1,28 @@
 import parser from './language/parser';
-
-import { handleInboundOSC } from './transport/osc/inbound';
 import { interpret, freeAgents } from './language/interpreter';
-import { create as createState } from './language/interpreter/state';
+import { handleInboundAction } from './language/events';
+import { create as init } from './language/interpreter/state';
+
+import {
+  oscAddresses,
+  audioActionToOSC,
+  oscToInboundAction,
+  oscDestinations,
+} from './transport/osc';
 
 import * as actionTypes from './actions/types';
 import * as editorActions from './actions/editor/types';
 
-function partitionMessages(messages) {
+function partitionActions(actions) {
   const out = {
-    messages: [],
-    actions: [],
+    audio: [],
+    editor: [],
   };
-  messages.forEach(m => {
-    if (m.type === 'OSCMESSAGE') {
-      out.messages.push(m);
+  actions.forEach(m => {
+    if (m.type === actionTypes.AUDIOACTION) {
+      out.audio.push(m);
     } else if (m.type === actionTypes.EDITORACTION) {
-      out.actions.push(m);
+      out.editor.push(m);
     }
   });
   return out;
@@ -24,25 +30,36 @@ function partitionMessages(messages) {
 
 function evaluate(state, code, lineOffset = 0) {
   const ast = parser.parse(code);
-  const { messages } = interpret(state, ast, lineOffset);
-  return partitionMessages(messages);
-}
-
-function incomingOSC(state, msg) {
-  const { messages } = handleInboundOSC(state, msg);
-  return partitionMessages(messages);
+  const actions = interpret(state, ast, lineOffset);
+  return partitionActions(actions);
 }
 
 function free(state, code) {
   const ast = parser.parse(code);
-  const { messages } = freeAgents(state, ast);
-  return partitionMessages(messages);
+  const actions = freeAgents(state, ast);
+  return partitionActions(actions);
+}
+
+function incomingAction(state, incoming) {
+  const actions = handleInboundAction(state, incoming);
+  return partitionActions(actions);
+}
+
+function actionToOSC(audioActions) {
+  return audioActions.map(m => audioActionToOSC(oscAddresses, m));
+}
+
+function oscToAction(msg) {
+  return oscToInboundAction(oscDestinations, msg);
 }
 
 export default {
   editorActions,
-  init: createState,
+  init,
   evaluate,
   free,
-  incomingOSC,
+  handleAction: handleInboundAction,
+  incomingAction,
+  actionToOSC,
+  oscToAction,
 };

@@ -1,4 +1,4 @@
-import * as osc from '../../transport/osc/outbound';
+import * as audioActions from '../../actions/audio';
 import { ReplaceScore, ReplaceLine } from '../../actions/editor';
 
 import { reevaluateAgent } from '../interpreter';
@@ -17,9 +17,7 @@ export function doze(state, { name, args }) {
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
     agentInfo.playing = false;
-    msgs.push(
-      osc.agentMethodToOSC(state.oscAddresses.command, name, agentName)
-    );
+    msgs.push(audioActions.AgentMethod(agentName, name));
   }
   return msgs;
 }
@@ -32,9 +30,7 @@ export function wake(state, { name, args }) {
   const agentInfo = getAgentInfo(state, agentName);
   if (agentInfo) {
     agentInfo.playing = true;
-    msgs.push(
-      osc.agentMethodToOSC(state.oscAddresses.command, name, agentName)
-    );
+    msgs.push(audioActions.AgentMethod(agentName, name));
   }
   return msgs;
 }
@@ -150,5 +146,5 @@ export function tempo(state, { name, args }) {
   const newTempo = expectNum(name, args[0]);
   const glide = args[0].modifier;
 
-  return osc.tempoChangeToOSC(state.oscAddresses.tempo, newTempo, glide);
+  return audioActions.SetTempo(newTempo, glide);
 }
