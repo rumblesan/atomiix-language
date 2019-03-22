@@ -55,3 +55,11 @@ export function ReplaceLine(lineNumber, newString) {
     text: newString,
   };
 }
+
+export function DisplayInfo(info) {
+  return {
+    type: EDITORACTION,
+    actionType: t.DISPLAYINFO,
+    info: info,
+  };
+}

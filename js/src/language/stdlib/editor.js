@@ -1,5 +1,6 @@
-import { ReplaceLine } from '../../actions/editor';
+import { ReplaceLine, DisplayInfo } from '../../actions/editor';
 import { expectArgs, expectNum } from './util';
+import stdlib from './index';
 
 export function grid(state, { name, args, line }, lineOffset) {
   let msgs = [];
@@ -10,4 +11,9 @@ export function grid(state, { name, args, line }, lineOffset) {
     '          |' + (' '.repeat(gridSpacing - 1) + '|').repeat(repeats);
   msgs.push(ReplaceLine(line + lineOffset, gridLine));
   return msgs;
+}
+
+export function remind() {
+  const text = Object.keys(stdlib).join('\n');
+  return [DisplayInfo(text)];
 }

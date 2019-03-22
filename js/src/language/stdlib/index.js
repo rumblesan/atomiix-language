@@ -1,7 +1,7 @@
 import { doze, wake } from './control';
 import { kill, scale, scalepush, tonic, tempo } from './global';
 import { shake, reverse, shiftr, shiftl, up, down, yoyo } from './score';
-import { grid } from './editor';
+import { grid, remind } from './editor';
 
 export default {
   doze,
@@ -19,4 +19,5 @@ export default {
   down,
   yoyo,
   grid,
+  remind,
 };
