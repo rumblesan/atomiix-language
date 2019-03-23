@@ -2,27 +2,29 @@
 
 ## Setup
 
-Because the project is developed across two repositories, and has a few moving parts, development is a little tricky.
+Because the project is developed across three repositories, and has a few moving parts, development is a little tricky.
 The following setup seems to work fairly painlessly though.
 
 * Clone all the repositories
-  - [Atomiix](https://github.com/rumblesan/atomiix)
+  - [Atomiix Language](https://github.com/rumblesan/atomiix)
+  - [Atomiix Quark](https://github.com/rumblesan/atomiix.quark)
   - [Atomiix Editor](https://github.com/rumblesan/atomiix-editor)
 * Make sure to have the following installed
   - Recent version of Node.js
   - SuperCollider
   - Atom Editor
-    + Make sure that `apm`, the Atom Package Manager tool is avaiable on the command line
-* Link the main atomiix repo library with the editor repo
-  - In the main atomiix repository, `cd` into the js folder and run `npm link`
+    + Make sure that `apm`, the Atom Package Manager tool is available on the command line
+* Link the main Atomiix language repository with the editor repository
+  - In the main Atomiix repository run `npm link`
   - In the atomiix-editor repository, run `npm link @atomiix/atomiix`
-  - This will mean that it shouldn't be necessary to keep running `npm install` in the editor repo
+  - This will mean that it shouldn't be necessary to keep running `npm install` in the editor repository
 * Install the SuperCollider backend as a quark.
-  - Running the following in the SuperCollider editor `Quarks.install(path/to/repo/atomiix-sc)`
+  - Running the following in the SuperCollider editor `Quarks.install(path/to/repo/atomiix.quark)`
+  - If you're not planning to develop any of the SuperCollider code then it should also be possible to run `Quarks.install(https://github.com/rumblesan/atomiix.quark)`
 * Start the SuperCollider backend
-  - There is a script to do this (**scripts/supercollider/run**) which assumes an OSX system
-  - Alternatively, check the config in **scripts/supercollider/startup.scd** and init the Atomiix class yourself
-* In the atomiix-editor repo, run `apm link` to register the package folder with Atom
+  - There is a script in the quark repository to do this (**scripts/run**) which assumes an OSX system
+  - Alternatively, check the config in **scripts/startup.scd** and init the Atomiix class yourself
+* In the atomiix-editor repository, run `apm link` to register the package folder with Atom
 
 With all that done
 * Startup the atom editor
