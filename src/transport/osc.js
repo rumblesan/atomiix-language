@@ -95,10 +95,10 @@ function removeAgentFXOSC(address, { agent, fxList }) {
   return OSCMessage(address, msgArgs);
 }
 
-function setAgentAmpOSC(address, { agent, change }) {
+function setAgentAmpOSC(address, { agent, amplitude }) {
   const msgArgs = [
     { type: 'string', value: agent },
-    { type: 'float', value: change },
+    { type: 'float', value: amplitude },
   ];
   return OSCMessage(address, msgArgs);
 }
