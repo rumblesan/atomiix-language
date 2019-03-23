@@ -1,6 +1,6 @@
-import * as inboundTypes from '../../actions/inbound/types';
-import { stopAgent } from '../interpreter/state';
-import { interpret } from '../interpreter';
+import * as inboundTypes from '../actions/inbound/types';
+import { stopAgent } from './interpreter/state';
+import { interpret } from './interpreter';
 
 export function handleInboundAction(state, action) {
   switch (action.actionType) {

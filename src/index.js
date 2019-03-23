@@ -1,6 +1,6 @@
 import parser from './language/parser';
 import { interpret, freeAgents } from './language/interpreter';
-import { handleInboundAction } from './language/events';
+import { handleInboundAction } from './language/inbound';
 import { create as init } from './language/interpreter/state';
 
 import {
