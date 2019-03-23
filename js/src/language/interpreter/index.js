@@ -173,8 +173,14 @@ export function interpretGroup(state, { name, agents }) {
 }
 
 export function interpretPlay(state, { agent, score }, lineOffset) {
-  let msgs = interpretScore(state, agent, score);
-  msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
+  let msgs = [];
+  if (score.durations.length > 0) {
+    msgs = msgs.concat(interpretScore(state, agent, score));
+    msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
+  } else {
+    msgs.push(audioActions.FreeAgent(agent.name));
+    msgs = msgs.concat(deactivateAgent(state, agent.name));
+  }
   return msgs;
 }
 
