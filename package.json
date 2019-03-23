@@ -42,5 +42,16 @@
     "modulePaths": [
       "src"
     ]
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env"
+      ]
+    ]
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true
   }
 }

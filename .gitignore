@@ -1,2 +1,4 @@
 node_modules/
-atomiix/
+lib/
+.DS_Store
+npm-debug.log
