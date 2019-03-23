@@ -3,6 +3,5 @@ node_js:
 - 'lts/*'
 
 script:
-- cd js
 - npm install
 - npm test
