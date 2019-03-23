@@ -11,8 +11,7 @@
   "scripts": {
     "lint": "eslint src",
     "build": "webpack-cli --mode production",
-    "build:dev": "webpack-cli --mode development",
-    "dev": "webpack-cli --progress --colors --watch --mode development",
+    "build:dev": "webpack-cli --progress --colors --watch --mode development",
     "test": "jest",
     "posttest": "npm run lint",
     "test:watch": "jest test --watch",
