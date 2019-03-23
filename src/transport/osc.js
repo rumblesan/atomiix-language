@@ -81,7 +81,7 @@ function freeAgentOSC(address, { agent }) {
 
 function addAgentFXOSC(address, { agent, fxList }) {
   const msgArgs = [
-    { type: 'string', value: agent.name },
+    { type: 'string', value: agent },
     { type: 'array', value: fxList },
   ];
   return OSCMessage(address, msgArgs);
@@ -89,7 +89,7 @@ function addAgentFXOSC(address, { agent, fxList }) {
 
 function removeAgentFXOSC(address, { agent, fxList }) {
   const msgArgs = [
-    { type: 'string', value: agent.name },
+    { type: 'string', value: agent },
     { type: 'array', value: fxList },
   ];
   return OSCMessage(address, msgArgs);
@@ -97,7 +97,7 @@ function removeAgentFXOSC(address, { agent, fxList }) {
 
 function setAgentAmpOSC(address, { agent, change }) {
   const msgArgs = [
-    { type: 'string', value: agent.name },
+    { type: 'string', value: agent },
     { type: 'float', value: change },
   ];
   return OSCMessage(address, msgArgs);

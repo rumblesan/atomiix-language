@@ -1,5 +1,19 @@
+import * as th from '../test-helpers';
 import * as inbound from '../actions/inbound';
-import { oscToInboundAction, oscDestinations } from './osc';
+import {
+  audioActionToOSC,
+  oscAddresses,
+  oscToInboundAction,
+  oscDestinations,
+} from './osc';
+
+function AddFXMessage(name, fxList) {
+  return {
+    oscType: 'message',
+    address: '/agent/effects/add',
+    args: [{ type: 'string', value: name }, { type: 'array', value: fxList }],
+  };
+}
 
 function AgentFinishedOSC(name) {
   return {
@@ -19,6 +33,13 @@ function CallbackOSC(callbackId, remaining) {
     ],
   };
 }
+
+test('can convert an addFX action into an OSC message', () => {
+  const action = th.createAddFXMsg('baz', ['reverb', 'distortion']);
+  const expected = AddFXMessage('baz', ['reverb', 'distortion']);
+  const oscMessage = audioActionToOSC(oscAddresses, action);
+  expect(oscMessage).toEqual(expected);
+});
 
 test('can convert an inbound agent finished osc message into an action', () => {
   const oscMessage = AgentFinishedOSC('baz');
