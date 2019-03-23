@@ -1,7 +1,0 @@
-#!/bin/bash
-
-SUPERCOLLIDER=${SCEXE:-"/Applications/SuperCollider.app/Contents/MacOS/sclang"}
-
-STARTUP_FILE="./scripts/supercollider/startup.scd"
-
-eval "${SUPERCOLLIDER} ${STARTUP_FILE}"
