@@ -18,6 +18,8 @@ export function audioActionToOSC(addresses, action) {
       return agentMethodOSC(addresses.command, action);
     case at.FREEAGENT:
       return freeAgentOSC(addresses.command, action);
+    case at.NAPAGENT:
+      return napAgentOSC(addresses.command, action);
     case at.ADDAGENTFX:
       return addAgentFXOSC(addresses.addFX, action);
     case at.RMAGENTFX:
@@ -78,6 +80,18 @@ function freeAgentOSC(address, { agent }) {
   ];
   return OSCMessage(address, msgArgs);
 }
+
+function napAgentOSC(address, { agent, time, timeType, repeats }) {
+  const msgArgs = [
+    { type: 'string', value: 'nap' },
+    { type: 'string', value: agent },
+    { type: 'float', value: time },
+    { type: 'string', value: timeType },
+    { type: 'integer', value: repeats },
+  ];
+  return OSCMessage(address, msgArgs);
+}
+
 
 function addAgentFXOSC(address, { agent, fxList }) {
   const msgArgs = [

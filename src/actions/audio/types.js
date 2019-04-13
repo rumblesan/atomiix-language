@@ -1,5 +1,6 @@
 export const AGENTMETHOD = 'AGENTMETHOD';
 export const FREEAGENT = 'FREEAGENT';
+export const NAPAGENT = 'NAPAGENT';
 export const ADDAGENTFX = 'ADDAGENTFX';
 export const RMAGENTFX = 'RMAGENTFX';
 export const SETAGENTAMP = 'SETAGENTAMP';

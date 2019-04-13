@@ -1,4 +1,5 @@
 import * as audioActions from '../../actions/audio';
+import * as astTypes from '../ast/types';
 
 import { getAgentInfo } from '../interpreter/state';
 
@@ -31,6 +32,26 @@ export function wake(state, { name, args }) {
     if (agentInfo) {
       agentInfo.playing = false;
       msgs.push(audioActions.AgentMethod(n, name));
+    }
+    return msgs;
+  });
+}
+
+export function nap(state, { name, args }) {
+  expectArgs(name, args, 2);
+  const agentOrGroup = expectString(name, args[0]);
+
+  const timeArg = args[1];
+  const time = timeArg.value;
+  const timeType = timeArg.type === astTypes.BEAT ? 'beats' : 'seconds';
+  const repeats = timeArg.modifier || 1;
+
+  return handleGroup(state, agentOrGroup, (s, n) => {
+    const msgs = [];
+    const agentInfo = getAgentInfo(s, n);
+    if (agentInfo) {
+      agentInfo.playing = false;
+      msgs.push(audioActions.NapAgent(n, time, timeType, repeats));
     }
     return msgs;
   });

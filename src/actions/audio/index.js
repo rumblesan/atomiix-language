@@ -18,6 +18,17 @@ export function FreeAgent(agent) {
   };
 }
 
+export function NapAgent(agent, time, timeType, repeats) {
+  return {
+    type: AUDIOACTION,
+    actionType: t.NAPAGENT,
+    agent,
+    time,
+    timeType,
+    repeats,
+  };
+}
+
 export function AddAgentFX(agent, fxList) {
   return {
     type: AUDIOACTION,
