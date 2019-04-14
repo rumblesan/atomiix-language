@@ -1,6 +1,7 @@
 import parser from './language/parser';
 import { interpret, freeAgents } from './language/interpreter';
 import { handleInboundAction } from './language/inbound';
+import * as errTypes from './language/errors/types';
 import { create as init } from './language/interpreter/state';
 
 import {
@@ -29,9 +30,21 @@ function partitionActions(actions) {
 }
 
 function evaluate(state, code, lineOffset = 0) {
-  const ast = parser.parse(code);
-  const actions = interpret(state, ast, lineOffset);
-  return partitionActions(actions);
+  try {
+    const ast = parser.parse(code);
+    const actions = interpret(state, ast, lineOffset);
+    return partitionActions(actions);
+  } catch (err) {
+    switch (err.name) {
+      case errTypes.AtomiixRuntimeErrorName:
+        state.logger.error(err.message);
+        break;
+      case errTypes.AtomiixOSCErrorName:
+        state.logger.error(err.message);
+        break;
+    }
+    return { audio: [], editor: [] };
+  }
 }
 
 function free(state, code) {
