@@ -12,7 +12,7 @@ test('basic end to end test', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 9 / 4],
+      [2 / 4, 3 / 4, 11 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -34,7 +34,7 @@ test('basic end to end test', () => {
     th.createConcreteMsg(
       'bar',
       [0.2, 0.6],
-      [3 / 4, 1 / 4],
+      [3 / 4, 2 / 4],
       'sea',
       [-0.5, 0.5],
       1 / 4,
@@ -78,7 +78,7 @@ test('can add effects', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -101,7 +101,7 @@ test('can remove effects', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -124,7 +124,7 @@ test('can remove all effects', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -147,7 +147,7 @@ test('can doze and wake agents', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],

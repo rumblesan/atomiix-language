@@ -112,7 +112,9 @@ export function scoreStringParser(scoreChars) {
 
   if (current != '') {
     chars.push(current);
-    durations.push(spaces);
+    // add the duration of any beginning
+    // spaces to the final chars duration
+    durations.push(spaces + offset);
   }
   return {
     chars,

@@ -11,7 +11,7 @@ test('can reverse an agents score', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -47,7 +47,7 @@ test('can right shift an agents score', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
@@ -58,7 +58,7 @@ test('can right shift an agents score', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [3 / 4, 2 / 4, 2 / 4],
+      [3 / 4, 2 / 4, 3 / 4],
       ['c', 'a', 'b'],
       [0.25],
       [5 / 9],
@@ -83,7 +83,7 @@ test('can left shift an agents score', () => {
     th.createPercussiveMsg(
       'baz',
       [60],
-      [2 / 4, 3 / 4, 1 / 4],
+      [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
       [0.25],
       [5 / 9],
