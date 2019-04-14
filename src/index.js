@@ -29,37 +29,45 @@ function partitionActions(actions) {
   return out;
 }
 
+function handleErr(state, err) {
+  switch (err.name) {
+    case errTypes.AtomiixRuntimeErrorName:
+      state.logger.error(err.formattedMessage());
+      break;
+    case errTypes.AtomiixOSCErrorName:
+      state.logger.error(err.formattedMessage());
+      break;
+  }
+  return { audio: [], editor: [] };
+}
+
 function evaluate(state, code, lineOffset = 0) {
   try {
     const ast = parser.parse(code);
     const actions = interpret(state, ast, lineOffset);
     return partitionActions(actions);
   } catch (err) {
-    let lineNum = '';
-    switch (err.name) {
-      case errTypes.AtomiixRuntimeErrorName:
-        if (err.lineNumber !== undefined) {
-          lineNum = ` on line ${err.lineNumber}`;
-        }
-        state.logger.error(`Error${lineNum}: ${err.message}`);
-        break;
-      case errTypes.AtomiixOSCErrorName:
-        state.logger.error(`Error: ${err.message}`);
-        break;
-    }
-    return { audio: [], editor: [] };
+    return handleErr(state, err);
   }
 }
 
 function free(state, code) {
-  const ast = parser.parse(code);
-  const actions = freeAgents(state, ast);
-  return partitionActions(actions);
+  try {
+    const ast = parser.parse(code);
+    const actions = freeAgents(state, ast);
+    return partitionActions(actions);
+  } catch (err) {
+    return handleErr(state, err);
+  }
 }
 
 function incomingAction(state, incoming) {
-  const actions = handleInboundAction(state, incoming);
-  return partitionActions(actions);
+  try {
+    const actions = handleInboundAction(state, incoming);
+    return partitionActions(actions);
+  } catch (err) {
+    return handleErr(state, err);
+  }
 }
 
 function actionToOSC(audioActions) {

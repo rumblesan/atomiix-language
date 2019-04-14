@@ -1,3 +1,4 @@
+import * as errTypes from './errors/types';
 import * as inboundTypes from '../actions/inbound/types';
 import { stopAgent } from './interpreter/state';
 import { interpret } from './interpreter';
@@ -21,12 +22,21 @@ function handleAgentFinished(state, { name }) {
 }
 
 function handleCallbackTriggered(state, { callbackId, remaining }) {
+  let out = [];
   const cb = state.callbacks[callbackId];
   if (!cb) {
-    // TODO log an error?
-    return [];
+    state.logger.error(`Error: no callback with id ${callbackId}`);
+    return out;
   }
-  const out = interpret(state, cb.command);
+  try {
+    out = interpret(state, cb.command, null);
+  } catch (err) {
+    if (err.name === errTypes.AtomiixRuntimeErrorName) {
+      err.setCallbackStatus(true);
+      err.setLineNumber(undefined);
+      throw err;
+    }
+  }
   if (remaining < 1) {
     delete state.callbacks[callbackId];
   }
