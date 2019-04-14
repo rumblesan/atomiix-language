@@ -35,12 +35,16 @@ function evaluate(state, code, lineOffset = 0) {
     const actions = interpret(state, ast, lineOffset);
     return partitionActions(actions);
   } catch (err) {
+    let lineNum = '';
     switch (err.name) {
       case errTypes.AtomiixRuntimeErrorName:
-        state.logger.error(err.message);
+        if (err.lineNumber !== undefined) {
+          lineNum = ` on line ${err.lineNumber}`;
+        }
+        state.logger.error(`Error${lineNum}: ${err.message}`);
         break;
       case errTypes.AtomiixOSCErrorName:
-        state.logger.error(err.message);
+        state.logger.error(`Error: ${err.message}`);
         break;
     }
     return { audio: [], editor: [] };

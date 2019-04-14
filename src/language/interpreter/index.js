@@ -1,6 +1,7 @@
 import scales from '../../music/scales';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
+import * as errTypes from '../errors/types';
 import * as audioActions from '../../actions/audio';
 
 import { addActiveAgent, deactivateAgent, getAgentInfo } from './state';
@@ -63,7 +64,16 @@ export function interpret(state, programAST, lineOffset = 0) {
   let actions = [];
   for (let i = 0; i < programAST.statements.length; i += 1) {
     const s = programAST.statements[i];
-    const outputMsgs = interpretStatement(state, s, lineOffset);
+
+    let outputMsgs;
+    try {
+      outputMsgs = interpretStatement(state, s, lineOffset);
+    } catch (err) {
+      if (err.name === errTypes.AtomiixRuntimeErrorName) {
+        err.setLineNumber(lineOffset + i);
+        throw err;
+      }
+    }
     if (outputMsgs) {
       actions = actions.concat(outputMsgs);
     }
