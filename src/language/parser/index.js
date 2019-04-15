@@ -1,6 +1,7 @@
 import { ParserException, Parser } from 'canto34';
 
 import lexer from './lexer';
+import translations from '../../translations';
 
 import * as ast from '../ast';
 
@@ -17,7 +18,14 @@ function idToAgent(identifier) {
   );
 }
 
+parser.setLanguage = function(language) {
+  this.translation = (translations[language] || translations.english).parser;
+};
+
 parser.parse = function(program) {
+  if (!this.translation) {
+    this.setLanguage('english');
+  }
   const tokens = lexer.tokenize(program);
   this.initialize(tokens);
   return this.program();
@@ -56,12 +64,12 @@ parser.statement = function() {
 
   // must be a command
   switch (identifier.content) {
-    case 'group':
+    case this.translation.commands.group:
       return this.group(identifier);
-    case 'future':
+    case this.translation.commands.future:
       return this.future(identifier);
-    case 'sequence':
-      throw new ParserException('No support for sequence yet');
+    case this.translation.commands.sequence:
+      throw new ParserException(this.translation.errors.sequenceUnsupported);
     default:
       return this.command(identifier);
   }
@@ -76,7 +84,7 @@ parser.score = function() {
 
   const modifiers = this.scoreModifiers();
 
-  return scoreParser(instrument, score, modifiers);
+  return scoreParser(this.translation, instrument, score, modifiers);
 };
 
 // TODO
@@ -91,6 +99,7 @@ parser.scoreModifiers = function() {
       modifiers.push(operator);
     } else if (this.la1('score modifier')) {
       const modifier = scoreModifierParser(
+        this.translation,
         this.match('score modifier').content
       );
       modifiers.push(modifier);
@@ -98,9 +107,7 @@ parser.scoreModifiers = function() {
       const modifier = this.sustainModifier();
       modifiers.push(modifier);
     } else {
-      throw new ParserException(
-        'Unexpected token: Expecting operator or score modifier'
-      );
+      throw new ParserException(this.translation.errors.expectingOpOrModifier);
     }
   }
   return modifiers;
@@ -211,7 +218,9 @@ parser.command = function(command) {
       const str = this.match('identifier').content;
       args.push(ast.Str(str));
     } else {
-      throw new ParserException('Expected number or string');
+      throw new ParserException(
+        this.translation.errors.expectingNumberOrString
+      );
     }
   }
   // Subtract 1 because canto34 starts at line 1
@@ -231,7 +240,7 @@ parser.group = function(/*command*/) {
     if (this.la1('identifier')) {
       agents.push(this.match('identifier').content);
     } else {
-      throw new ParserException('Expected agent name');
+      throw new ParserException(this.translation.errors.expectingAgentName);
     }
   }
   return ast.Group(groupName, agents);

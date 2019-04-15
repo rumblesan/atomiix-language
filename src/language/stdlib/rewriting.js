@@ -22,6 +22,7 @@ export function modifyScoreString(state, agentName, modifyFunc) {
     character: score.position,
   };
   const newScore = scoreParser(
+    state,
     score.instrument,
     newScoreToken,
     score.modifiers

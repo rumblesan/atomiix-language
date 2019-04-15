@@ -3,6 +3,8 @@ import parser from './index';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 
+parser.setLanguage('english');
+
 test('parses a command', () => {
   const program = 'tempo 120';
   const seq = parser.parse(program);

@@ -8,8 +8,8 @@ import { AtomiixRuntimeError } from '../errors';
 import { expectArgs, expectString, handleGroup } from './util';
 
 export function doze(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentOrGroup = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentOrGroup = expectString(state, name, args[0]);
 
   return handleGroup(state, agentOrGroup, (s, n) => {
     const msgs = [];
@@ -23,8 +23,8 @@ export function doze(state, { name, args }) {
 }
 
 export function wake(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentOrGroup = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentOrGroup = expectString(state, name, args[0]);
 
   return handleGroup(state, agentOrGroup, (s, n) => {
     const msgs = [];
@@ -38,8 +38,8 @@ export function wake(state, { name, args }) {
 }
 
 export function nap(state, { name, args }) {
-  expectArgs(name, args, 2);
-  const agentOrGroup = expectString(name, args[0]);
+  expectArgs(state, name, args, 2);
+  const agentOrGroup = expectString(state, name, args[0]);
 
   const timeArg = args[1];
   const time = timeArg.value;
@@ -58,11 +58,11 @@ export function nap(state, { name, args }) {
 }
 
 export function ungroup(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const groupName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const groupName = expectString(state, name, args[0]);
 
   if (!state.groups[groupName]) {
-    throw new AtomiixRuntimeError(`${name} is not the name of a group`);
+    throw new AtomiixRuntimeError(state.translation.errors.noGroup(groupName));
   }
 
   delete state.groups[groupName];

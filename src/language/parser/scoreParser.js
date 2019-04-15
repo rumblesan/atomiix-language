@@ -5,7 +5,7 @@ import * as astTypes from '../ast/types';
 
 // TODO
 // use modifiers
-export function scoreParser(instrument, score, modifiers) {
+export function scoreParser(translation, instrument, score, modifiers) {
   const scoreString = score.content;
   const first = scoreString.charAt(0);
   const last = scoreString.slice(-1);
@@ -24,7 +24,7 @@ export function scoreParser(instrument, score, modifiers) {
   }
   if (!matched) {
     throw new ParserException(
-      `Score delimiters don't match. Starts with ${first} but ends with ${last}`
+      translation.errors.nonMatchedScoreDelims(first, last)
     );
   }
 
@@ -34,7 +34,7 @@ export function scoreParser(instrument, score, modifiers) {
     case '|':
       if (instrument) {
         throw new ParserException(
-          `Percussive score shouldn't have instrument: ${instrument}`
+          translation.errors.noPercInstrument(instrument)
         );
       }
       scoreStringData = scoreStringParser(scoreChars);
@@ -51,7 +51,7 @@ export function scoreParser(instrument, score, modifiers) {
       );
     case '[':
       if (!instrument) {
-        throw new ParserException('Melodic score should have an instrument');
+        throw new ParserException(translation.errors.missingMelodicInstrument);
       }
       scoreStringData = scoreStringParser(scoreChars);
       return ast.Score(
@@ -67,7 +67,7 @@ export function scoreParser(instrument, score, modifiers) {
       );
     case '{':
       if (!instrument) {
-        throw new ParserException('Concrete score should have an instrument');
+        throw new ParserException(translation.errors.missingConcreteInstrument);
       }
       scoreStringData = scoreStringParser(scoreChars);
       return ast.Score(
@@ -82,7 +82,9 @@ export function scoreParser(instrument, score, modifiers) {
         score.character - 1
       );
     default:
-      throw new ParserException(`${first} is not a supported score delimiters`);
+      throw new ParserException(
+        translation.errors.invalidScoreDelimiter(first)
+      );
   }
 }
 
@@ -123,7 +125,7 @@ export function scoreStringParser(scoreChars) {
   };
 }
 
-export function scoreModifierParser(modifier) {
+export function scoreModifierParser(translation, modifier) {
   const first = modifier.charAt(0);
   const last = modifier.slice(-1);
 
@@ -141,7 +143,7 @@ export function scoreModifierParser(modifier) {
   }
   if (!matched) {
     throw new ParserException(
-      `Score modifier delimiters don't match. Starts with ${first} but ends with ${last}`
+      translation.errors.nonMatchedScoreModDelims(first, last)
     );
   }
 

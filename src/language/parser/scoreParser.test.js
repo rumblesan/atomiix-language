@@ -3,9 +3,11 @@ import { scoreParser, scoreModifierParser } from './scoreParser';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 
+const translation = {};
+
 test('parses a percussive score', () => {
   const score = { content: '|  a b  cd  |', line: 1, character: 1 };
-  const seq = scoreParser('', score, []);
+  const seq = scoreParser(translation, '', score, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
     null,
@@ -22,7 +24,7 @@ test('parses a percussive score', () => {
 
 test('parses a melodic score', () => {
   const score = { content: '[  1 3  57  ]', line: 1, character: 1 };
-  const seq = scoreParser('foo', score, []);
+  const seq = scoreParser(translation, 'foo', score, []);
   const expected = ast.Score(
     astTypes.MELODIC,
     'foo',
@@ -39,7 +41,7 @@ test('parses a melodic score', () => {
 
 test('parses a concrete score', () => {
   const score = { content: '{  1 3  57  }', line: 1, character: 1 };
-  const seq = scoreParser('foo', score, []);
+  const seq = scoreParser(translation, 'foo', score, []);
   const expected = ast.Score(
     astTypes.CONCRETE,
     'foo',
@@ -56,14 +58,14 @@ test('parses a concrete score', () => {
 
 test('parses a panning score modifier', () => {
   const smString = '<1357>';
-  const modifier = scoreModifierParser(smString);
+  const modifier = scoreModifierParser(translation, smString);
   const expected = ast.ScoreModifier(astTypes.PANNING, [1, 3, 5, 7]);
   expect(modifier).toEqual(expected);
 });
 
 test('parses an attack score modifier', () => {
   const smString = '^1358^';
-  const modifier = scoreModifierParser(smString);
+  const modifier = scoreModifierParser(translation, smString);
   const expected = ast.ScoreModifier(astTypes.ATTACK, [1, 3, 5, 8]);
   expect(modifier).toEqual(expected);
 });

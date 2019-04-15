@@ -48,7 +48,7 @@ export function freeAgents(state, programAST) {
 export function reevaluateAgent(state, agentName) {
   const existing = state.agents[agentName];
   if (!existing) {
-    throw new AtomiixRuntimeError(`No agent called ${agentName}`);
+    throw new AtomiixRuntimeError(state.translation.errors.noAgent(agentName));
   }
   return interpretScore(state, existing.agent, existing.score);
 }
@@ -101,7 +101,7 @@ export function interpretStatement(state, statementAST, lineOffset) {
       return interpretGroup(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
-        `${statementAST.type} is not a supported statement type`
+        state.translation.errors.unknownStatement(statementAST.type)
       );
   }
 }
@@ -125,10 +125,18 @@ export function interpretAmplitudeChange(state, { agent }, change) {
 }
 
 export function interpretCommand(state, command, lineOffset) {
-  const commandName = command.name;
+  const name = command.name;
+  const commandName = state.translation.commands[name];
+  if (!commandName) {
+    throw new AtomiixRuntimeError(
+      state.translation.errors.unknownCommand(name)
+    );
+  }
   const cmd = state.stdlib[commandName];
   if (!cmd) {
-    throw new AtomiixRuntimeError(`${commandName} is not an existing command`);
+    throw new AtomiixRuntimeError(
+      state.translation.errors.unknownCommand(name)
+    );
   }
   const msgs = cmd(state, command, lineOffset);
   return msgs;
@@ -164,11 +172,11 @@ export function interpretFuture(state, future, lineOffset) {
 
 export function interpretGroup(state, { name, agents }) {
   if (state.agents[name]) {
-    throw new AtomiixRuntimeError(`${name} is already the name of an agent`);
+    throw new AtomiixRuntimeError(state.translation.errors.agentExists(name));
   }
 
   if (state.groups[name]) {
-    throw new AtomiixRuntimeError(`${name} is already the name of a group`);
+    throw new AtomiixRuntimeError(state.translation.errors.groupExists(name));
   }
 
   const agentNames = agents.map(a => {
@@ -205,7 +213,7 @@ export function interpretScore(state, agent, score) {
       return interpretConcreteScore(state, agent, score);
     default:
       throw new AtomiixRuntimeError(
-        `${scoreType} is not a supported score type`
+        state.translation.errors.unknownScore(scoreType)
       );
   }
 }

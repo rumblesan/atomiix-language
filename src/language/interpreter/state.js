@@ -1,5 +1,6 @@
 import { AtomiixRuntimeError } from '../errors';
 import scales from '../../music/scales';
+import translations from '../../translations';
 import stdlib from '../stdlib';
 import { MarkAgent, UnmarkAgent } from '../../actions/editor';
 
@@ -11,8 +12,9 @@ export function createLogger() {
   };
 }
 
-export function create(logger) {
+export function create(logger, lang) {
   const l = logger || createLogger();
+  const language = lang || 'english';
   return {
     scale: scales.names.major,
     tonic: 60,
@@ -23,13 +25,15 @@ export function create(logger) {
     callbacks: {},
     lastCallbackID: 0,
     logger: l,
+    language,
+    translation: translations[language].interpreter,
   };
 }
 
 export function getAgentInfo(state, agentName) {
   const existing = state.agents[agentName];
   if (!existing) {
-    throw new AtomiixRuntimeError(`No agent called ${agentName}`);
+    throw new AtomiixRuntimeError(state.translation.errors.noAgent(agentName));
   }
   return existing;
 }
@@ -37,7 +41,7 @@ export function getAgentInfo(state, agentName) {
 export function addActiveAgent(state, agent, score, lineOffset) {
   if (state.groups[agent.name]) {
     throw new AtomiixRuntimeError(
-      `${agent.name} is already the name of a group`
+      state.translation.errors.groupExists(agent.name)
     );
   }
   const acs = [];

@@ -5,8 +5,8 @@ import { modifyScoreString } from './rewriting';
 import { expectArgs, expectString, optionalNum } from './util';
 
 export function shake(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
@@ -23,8 +23,8 @@ export function shake(state, { name, args }) {
 }
 
 export function reverse(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
@@ -41,9 +41,9 @@ export function reverse(state, { name, args }) {
 }
 
 export function shiftr(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
-  const shift = optionalNum(name, args[1], 1);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+  const shift = optionalNum(state, name, args[1], 1);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
@@ -61,9 +61,9 @@ export function shiftr(state, { name, args }) {
 }
 
 export function shiftl(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
-  const shift = optionalNum(name, args[1], 1);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+  const shift = optionalNum(state, name, args[1], 1);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
@@ -81,8 +81,8 @@ export function shiftl(state, { name, args }) {
 }
 
 export function up(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
 
   return modifyScoreString(state, agentName, score => {
     if (score.scoreType != astTypes.PERCUSSIVE) {
@@ -93,8 +93,8 @@ export function up(state, { name, args }) {
 }
 
 export function down(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
 
   return modifyScoreString(state, agentName, score => {
     if (score.scoreType != astTypes.PERCUSSIVE) {
@@ -107,8 +107,8 @@ export function down(state, { name, args }) {
 const isUpper = /^[A-Z]/;
 const isLower = /^[a-z]/;
 export function yoyo(state, { name, args }) {
-  expectArgs(name, args, 1);
-  const agentName = expectString(name, args[0]);
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
