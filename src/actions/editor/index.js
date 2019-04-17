@@ -36,6 +36,15 @@ export function UnmarkAgent(agentName) {
   };
 }
 
+export function DisplayAgentState(agentName, agentState) {
+  return {
+    type: EDITORACTION,
+    actionType: t.DISPLAYAGENTSTATE,
+    group: agentName,
+    agentState,
+  };
+}
+
 export function ReplaceScore(agentName, newScoreString) {
   return {
     type: EDITORACTION,

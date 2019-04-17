@@ -9,6 +9,15 @@ export function AgentFinished(name) {
   };
 }
 
+export function AgentState(agentName, agentState) {
+  return {
+    type: INBOUNDACTION,
+    actionType: t.AGENTSTATECHANGE,
+    agentName,
+    agentState,
+  };
+}
+
 export function CallbackTriggered(callbackId, remaining) {
   return {
     type: INBOUNDACTION,

@@ -1,4 +1,5 @@
 import * as inbound from '../actions/inbound';
+import { agentStates } from '../language/interpreter/agents';
 import * as at from '../actions/audio/types';
 import { AtomiixOSCError } from '../language/errors';
 
@@ -42,6 +43,7 @@ export function audioActionToOSC(addresses, action) {
 export const oscDestinations = {
   agentFinished: '/finished',
   callback: '/callback',
+  agentState: '/agent/state',
 };
 
 export function oscToInboundAction(destinations, msg) {
@@ -50,6 +52,8 @@ export function oscToInboundAction(destinations, msg) {
       return oscAgentFinished(msg);
     case destinations.callback:
       return oscCallbackTriggered(msg);
+    case destinations.agentState:
+      return oscAgentStateChanged(msg);
     default:
       throw new AtomiixOSCError(
         `${msg.address} is not a valid incoming address`
@@ -91,7 +95,6 @@ function napAgentOSC(address, { agent, time, timeType, repeats }) {
   ];
   return OSCMessage(address, msgArgs);
 }
-
 
 function addAgentFXOSC(address, { agent, fxList }) {
   const msgArgs = [
@@ -206,6 +209,26 @@ function oscCallbackTriggered(msg) {
   const callbackID = getStringArg(msg, 0);
   const remaining = getNumArg(msg, 1);
   return inbound.CallbackTriggered(callbackID, remaining);
+}
+
+function oscAgentStateChanged(msg) {
+  const agentName = getStringArg(msg, 0);
+  const agentState = getStringArg(msg, 1);
+  let newState = '';
+  switch (agentState) {
+    case 'playing':
+      newState = agentStates.PLAYING;
+      break;
+    case 'sleeping':
+      newState = agentStates.SLEEPING;
+      break;
+    case 'stopped':
+      newState = agentStates.STOPPED;
+      break;
+    default:
+      throw new AtomiixOSCError(`${agentState} is not a valid agent state`);
+  }
+  return inbound.AgentState(agentName, newState);
 }
 
 function getStringArg(msg, argNum) {

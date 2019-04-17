@@ -1,8 +1,9 @@
+import { AgentState, agentStates } from './agents';
 import { AtomiixRuntimeError } from '../errors';
 import scales from '../../music/scales';
 import translations from '../../translations';
 import stdlib from '../stdlib';
-import { MarkAgent, UnmarkAgent } from '../../actions/editor';
+import { MarkAgent } from '../../actions/editor';
 
 export function createLogger() {
   return {
@@ -45,14 +46,15 @@ export function addActiveAgent(state, agent, score, lineOffset) {
     );
   }
   const acs = [];
-  agent.line = agent.line + lineOffset;
-  score.line = score.line + lineOffset;
-  state.agents[agent.name] = {
+  agent.line += lineOffset;
+  score.line += lineOffset;
+  state.agents[agent.name] = AgentState(
     agent,
     score,
-    playing: true,
-    amplitude: 0.5,
-  };
+    true,
+    0.5,
+    agentStates.PLAYING
+  );
   acs.push(
     MarkAgent(
       agent.name,
@@ -70,15 +72,17 @@ export function deactivateAgent(state, agentName) {
   const acs = [];
   const existing = state.agents[agentName];
   if (existing) {
-    acs.push(UnmarkAgent(existing.agent.name));
-    delete state.agents[agentName];
+    existing.playing = false;
+    //delete state.agents[agentName];
   }
   return acs;
 }
 
 export function stopAgent(state, agentName) {
+  const acs = [];
   const existing = state.agents[agentName];
   if (existing) {
     existing.playing = false;
   }
+  return acs;
 }

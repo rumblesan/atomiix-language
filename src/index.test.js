@@ -1,7 +1,7 @@
 import atomiix from './index.js';
 
 import * as th from './test-helpers';
-import { ReplaceLine, MarkAgent, UnmarkAgent } from './actions/editor';
+import { ReplaceLine, MarkAgent } from './actions/editor';
 
 test('basic end to end test', () => {
   const program =
@@ -61,11 +61,7 @@ test('can free agents', () => {
     th.createFreeAgentMsg('foo'),
     th.createFreeAgentMsg('bar'),
   ];
-  const expectedActions = [
-    UnmarkAgent('baz'),
-    UnmarkAgent('foo'),
-    UnmarkAgent('bar'),
-  ];
+  const expectedActions = [];
   expect(audio).toEqual(expectedMessages);
   expect(editor).toEqual(expectedActions);
 });
@@ -169,7 +165,7 @@ test('empty scores will free an agent', () => {
   atomiix.evaluate(initialState, program);
   const { audio, editor } = atomiix.evaluate(initialState, 'baz -> ||');
   const expectedMessages = [th.createFreeAgentMsg('baz')];
-  const expectedActions = [UnmarkAgent('baz')];
+  const expectedActions = [];
   expect(audio).toEqual(expectedMessages);
   expect(editor).toEqual(expectedActions);
 });

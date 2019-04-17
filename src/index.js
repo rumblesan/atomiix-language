@@ -13,6 +13,12 @@ import {
 
 import * as actionTypes from './actions/types';
 import * as editorActions from './actions/editor/types';
+import { agentStates } from './language/interpreter/agents';
+
+const constants = {
+  editorActions,
+  agentStates,
+};
 
 function partitionActions(actions) {
   const out = {
@@ -87,4 +93,5 @@ export default {
   incomingAction,
   actionToOSC,
   oscToAction,
+  constants,
 };
