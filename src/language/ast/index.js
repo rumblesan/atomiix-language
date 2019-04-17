@@ -110,12 +110,12 @@ export function Command(name, args, line, position) {
  *  timing: Number
  *  command: Command
  */
-export function Future(timing, command, line) {
+export function Future(timing, command, token) {
   return {
     type: FUTURE,
     timing,
     command,
-    line,
+    token,
   };
 }
 

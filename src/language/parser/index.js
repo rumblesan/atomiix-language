@@ -192,7 +192,10 @@ parser.future = function(future) {
     const identifier = this.match('identifier');
     command = this.command(identifier);
   }
-  return ast.Future(timing, command, future.line - 1);
+  return ast.Future(timing, command, {
+    line: future.line - 1,
+    character: future.character - 1,
+  });
 };
 
 parser.command = function(command) {

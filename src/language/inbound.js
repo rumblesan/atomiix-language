@@ -1,4 +1,4 @@
-import { DisplayAgentState } from '../actions/editor';
+import { DisplayAgentState, FlashFuture } from '../actions/editor';
 import * as errTypes from './errors/types';
 import * as inboundActions from '../actions/inbound/types';
 import { stopAgent, getAgentInfo } from './interpreter/state';
@@ -52,5 +52,6 @@ function handleCallbackTriggered(state, { callbackId, remaining }) {
   if (remaining < 1) {
     delete state.callbacks[callbackId];
   }
+  out.push(FlashFuture(callbackId));
   return out;
 }

@@ -3,6 +3,7 @@ import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 import * as errTypes from '../errors/types';
 import * as audioActions from '../../actions/audio';
+import * as editorActions from '../../actions/editor';
 
 import { addActiveAgent, deactivateAgent, getAgentInfo } from './state';
 
@@ -143,6 +144,8 @@ export function interpretCommand(state, command, lineOffset) {
 }
 
 export function interpretFuture(state, future, lineOffset) {
+  const token = future.token;
+  token.line += lineOffset;
   const callbackID =
     Math.random()
       .toString(36)
@@ -150,7 +153,7 @@ export function interpretFuture(state, future, lineOffset) {
   state.lastCallbackID += 1;
   state.callbacks[callbackID] = {
     command: ast.Program([future.command]),
-    line: future.line + lineOffset,
+    line: token.line,
   };
   let timeType = 'seconds';
   if (future.timing.type === astTypes.BEAT) {
@@ -166,6 +169,12 @@ export function interpretFuture(state, future, lineOffset) {
       timeType,
       repeats,
       callbackID
+    ),
+    editorActions.MarkFuture(
+      callbackID,
+      token.line,
+      token.character,
+      token.character + 6
     ),
   ];
 }

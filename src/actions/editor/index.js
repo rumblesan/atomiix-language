@@ -28,6 +28,29 @@ export function MarkAgent(
   };
 }
 
+export function MarkFuture(callbackId, line, futureStart, futureFinish) {
+  return {
+    type: EDITORACTION,
+    actionType: t.MARKTEXT,
+    group: callbackId,
+    sections: {
+      future: {
+        line,
+        start: futureStart,
+        finish: futureFinish,
+      },
+    },
+  };
+}
+
+export function FlashFuture(callbackId) {
+  return {
+    type: EDITORACTION,
+    actionType: t.FLASHMARKEDTEXT,
+    group: callbackId,
+  };
+}
+
 export function UnmarkAgent(agentName) {
   return {
     type: EDITORACTION,

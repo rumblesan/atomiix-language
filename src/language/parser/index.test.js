@@ -24,7 +24,12 @@ test('parses a future', () => {
   const program = 'future 1 >> )) baz';
   const seq = parser.parse(program);
   const command = ast.IncreaseAmplitude(ast.Agent('baz', 0, 15));
-  const expected = ast.Program([ast.Future(ast.Num(1), command, 0)]);
+  const expected = ast.Program([
+    ast.Future(ast.Num(1), command, {
+      line: 0,
+      character: 0,
+    }),
+  ]);
   expect(seq).toEqual(expected);
 });
 
@@ -33,7 +38,12 @@ test('parses a future with a beat', () => {
   const program = 'future 1b >> shake baz';
   const seq = parser.parse(program);
   const command = ast.Command('shake', [ast.Str('baz')], 0, 13);
-  const expected = ast.Program([ast.Future(ast.Beat(1), command, 0)]);
+  const expected = ast.Program([
+    ast.Future(ast.Beat(1), command, {
+      line: 0,
+      character: 0,
+    }),
+  ]);
   expect(seq).toEqual(expected);
 });
 
@@ -42,7 +52,12 @@ test('parses a future with a modifier', () => {
   const program = 'future 1b:3 >> shake baz';
   const seq = parser.parse(program);
   const command = ast.Command('shake', [ast.Str('baz')], 0, 15);
-  const expected = ast.Program([ast.Future(ast.Beat(1, 3), command, 0)]);
+  const expected = ast.Program([
+    ast.Future(ast.Beat(1, 3), command, {
+      line: 0,
+      character: 0,
+    }),
+  ]);
   expect(seq).toEqual(expected);
 });
 
