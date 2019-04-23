@@ -207,3 +207,41 @@ export function replace(state, { name, args }) {
     return newScoreString;
   });
 }
+
+export function insert(state, { name, args }) {
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const chars = oldScoreString.slice(1, -1).split('');
+    let newChars;
+    switch (score.scoreType) {
+      case astTypes.PERCUSSIVE:
+        newChars = chars
+          .map(c => {
+            if (c === ' ' && Math.random() > 0.5) {
+              return alpha[Math.ceil(Math.random() * 52)];
+            }
+            return c;
+          })
+          .join('');
+        break;
+      case astTypes.MELODIC:
+      // fallthrough
+      case astTypes.CONCRETE:
+        newChars = chars
+          .map(c => {
+            if (c === ' ' && Math.random() > 0.5) {
+              return Math.ceil(Math.random() * 9);
+            }
+            return c;
+          })
+          .join('');
+    }
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}

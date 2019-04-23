@@ -42,6 +42,7 @@ export default {
       yoyo: 'yoyo',
       swap: 'swap',
       replace: 'replace',
+      insert: 'insert',
       grid: 'grid',
       remind: 'remind',
     },
