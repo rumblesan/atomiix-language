@@ -154,3 +154,37 @@ export function swap(state, { name, args }) {
     return newScoreString;
   });
 }
+
+export function replace(state, { name, args }) {
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const chars = oldScoreString.slice(1, -1).split('');
+    let newChars;
+    switch (score.scoreType) {
+      case astTypes.PERCUSSIVE:
+        newChars = chars
+          .map(c => {
+            if (c === ' ') return c;
+            return String.fromCharCode(Math.ceil(Math.random() * 52) + 64);
+          })
+          .join('');
+        break;
+      case astTypes.MELODIC:
+      // fallthrough
+      case astTypes.CONCRETE:
+        newChars = chars
+          .map(c => {
+            if (c === ' ') return c;
+            return Math.ceil(Math.random() * 9);
+          })
+          .join('');
+    }
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}

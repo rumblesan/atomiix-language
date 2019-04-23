@@ -41,6 +41,7 @@ export default {
       down: 'down',
       yoyo: 'yoyo',
       swap: 'swap',
+      replace: 'replace',
       grid: 'grid',
       remind: 'remind',
     },
