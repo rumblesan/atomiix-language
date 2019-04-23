@@ -40,6 +40,7 @@ export default {
       up: 'up',
       down: 'down',
       yoyo: 'yoyo',
+      swap: 'swap',
       grid: 'grid',
       remind: 'remind',
     },
