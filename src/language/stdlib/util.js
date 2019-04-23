@@ -34,6 +34,13 @@ export function optionalNum(state, name, arg, defaultVal) {
   return expectNum(state, name, arg);
 }
 
+export function optionalString(state, name, arg, defaultVal) {
+  if (arg === undefined) {
+    return defaultVal;
+  }
+  return expectString(state, name, arg);
+}
+
 export function handleGroup(state, name, func) {
   let msgs = [];
   if (state.groups[name]) {

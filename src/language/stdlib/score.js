@@ -2,7 +2,7 @@ import * as astTypes from '../ast/types';
 
 import { modifyScoreString } from './rewriting';
 
-import { expectArgs, expectString, optionalNum } from './util';
+import { expectArgs, expectString, optionalNum, optionalString } from './util';
 
 export function shake(state, { name, args }) {
   expectArgs(state, name, args, 1);
@@ -155,9 +155,12 @@ export function swap(state, { name, args }) {
   });
 }
 
+const alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
 export function replace(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
+  const upOrDown = optionalString(state, name, args[1]);
 
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
@@ -167,12 +170,28 @@ export function replace(state, { name, args }) {
     let newChars;
     switch (score.scoreType) {
       case astTypes.PERCUSSIVE:
-        newChars = chars
-          .map(c => {
-            if (c === ' ') return c;
-            return String.fromCharCode(Math.ceil(Math.random() * 52) + 64);
-          })
-          .join('');
+        if (upOrDown === state.translation.misc.upper) {
+          newChars = chars
+            .map(c => {
+              if (c.charCodeAt(0) < 64 || c.charCodeAt(0) > 90) return c;
+              return String.fromCharCode(Math.ceil(Math.random() * 26) + 64);
+            })
+            .join('');
+        } else if (upOrDown === state.translation.misc.lower) {
+          newChars = chars
+            .map(c => {
+              if (c.charCodeAt(0) < 90 || c.charCodeAt(0) > 116) return c;
+              return String.fromCharCode(Math.ceil(Math.random() * 26) + 90);
+            })
+            .join('');
+        } else {
+          newChars = chars
+            .map(c => {
+              if (c === ' ') return c;
+              return alpha[Math.ceil(Math.random() * 52)];
+            })
+            .join('');
+        }
         break;
       case astTypes.MELODIC:
       // fallthrough

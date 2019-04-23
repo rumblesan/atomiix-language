@@ -62,5 +62,9 @@ export default {
       expectedNum: (command, type) =>
         `${command} expected Number but got ${type}`,
     },
+    misc: {
+      upper: 'upper',
+      lower: 'lower',
+    },
   },
 };
