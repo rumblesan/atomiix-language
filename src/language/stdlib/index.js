@@ -10,6 +10,7 @@ import {
   yoyo,
   swap,
   replace,
+  remove,
   insert,
 } from './score';
 import { grid, remind } from './editor';
@@ -33,6 +34,7 @@ export default {
   swap,
   replace,
   insert,
+  remove,
   grid,
   remind,
 };
