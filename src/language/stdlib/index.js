@@ -12,6 +12,7 @@ import {
   replace,
   remove,
   insert,
+  expand,
 } from './score';
 import { grid, remind } from './editor';
 
@@ -35,6 +36,7 @@ export default {
   replace,
   insert,
   remove,
+  expand,
   grid,
   remind,
 };

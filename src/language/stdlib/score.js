@@ -268,3 +268,25 @@ export function remove(state, { name, args }) {
     return newScoreString;
   });
 }
+
+export function expand(state, { name, args }) {
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+  const size = optionalNum(state, name, args[1], 1);
+
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const newChars = oldScoreString
+      .slice(1, -1)
+      .split('')
+      .map(c => {
+        if (c === ' ') return c;
+        return c + ' '.repeat(size);
+      })
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}

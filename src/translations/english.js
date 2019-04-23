@@ -44,6 +44,7 @@ export default {
       replace: 'replace',
       remove: 'remove',
       insert: 'insert',
+      expand: 'expand',
       grid: 'grid',
       remind: 'remind',
     },
