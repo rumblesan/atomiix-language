@@ -42,6 +42,7 @@ export default {
       yoyo: 'yoyo',
       swap: 'swap',
       order: 'order',
+      invert: 'invert',
       replace: 'replace',
       remove: 'remove',
       insert: 'insert',
@@ -57,6 +58,7 @@ export default {
       unknownStatement: type => `${type} is not a supported statement type`,
       unknownCommand: name => `${name} is not an existing command`,
       unknownScore: type => `${type} is not a supported score type`,
+      expectedMelodic: type => `Expected MELODIC score, not ${type}`,
       unknownScale: (command, name) =>
         `${command} -> ${name} is not a known scale`,
       expectedArgs: (command, num) =>

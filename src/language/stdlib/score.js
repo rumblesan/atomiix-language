@@ -1,4 +1,5 @@
 import * as astTypes from '../ast/types';
+import { AtomiixRuntimeError } from '../errors';
 
 import { modifyScoreString } from './rewriting';
 
@@ -308,6 +309,33 @@ export function expand(state, { name, args }) {
       .map(c => {
         if (c === ' ') return c;
         return c + ' '.repeat(size);
+      })
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}
+
+export function invert(state, { name, args }) {
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    if (score.scoreType !== astTypes.MELODIC) {
+      throw new AtomiixRuntimeError(
+        state.translation.errors.expectedMelodic(score.scoreType)
+      );
+    }
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const newChars = oldScoreString
+      .slice(1, -1)
+      .split('')
+      .map(c => {
+        if (c === ' ') return c;
+        let v = parseInt(c, 10);
+        return `${Math.abs(v - 8)}`;
       })
       .join('');
     const newScoreString = opener + newChars + closer;
