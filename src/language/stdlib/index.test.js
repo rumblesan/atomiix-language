@@ -147,6 +147,42 @@ test('can yoyo an agents score', () => {
   expect(editor).toEqual(expectedActions);
 });
 
+test('can order an agents score', () => {
+  const program = 'baz -> |d a C  b|\norder baz';
+  const initialState = atomiix.init();
+  const { audio, editor } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
+    th.createPercussiveMsg(
+      'baz',
+      [60],
+      [2 / 4, 2 / 4, 3 / 4, 1 / 4],
+      ['d', 'a', 'C', 'b'],
+      [0.25],
+      [5 / 9],
+      [0],
+      0,
+      'inf'
+    ),
+    th.createPercussiveMsg(
+      'baz',
+      [60],
+      [2 / 4, 2 / 4, 3 / 4, 1 / 4],
+      ['C', 'a', 'b', 'd'],
+      [0.25],
+      [5 / 9],
+      [0],
+      0,
+      'inf'
+    ),
+  ];
+  const expectedActions = [
+    MarkAgent('baz', 0, 0, 3, 7, 17),
+    ReplaceScore('baz', '|C a b  d|'),
+  ];
+  expect(audio).toEqual(expectedMessages);
+  expect(editor).toEqual(expectedActions);
+});
+
 test('can kill all agents', () => {
   const program = 'baz -> |D a b  c|\nfoo -> bass[12]\nbar -> |aaa|';
   const initialState = atomiix.init();

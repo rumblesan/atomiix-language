@@ -155,6 +155,30 @@ export function swap(state, { name, args }) {
   });
 }
 
+export function order(state, { name, args }) {
+  expectArgs(state, name, args, 1);
+  const agentName = expectString(state, name, args[0]);
+
+  return modifyScoreString(state, agentName, score => {
+    const oldScoreString = score.scoreString;
+    const opener = oldScoreString[0];
+    const closer = oldScoreString[oldScoreString.length - 1];
+    const chars = oldScoreString.slice(1, -1).split('');
+    const choices = chars
+      .filter(c => c !== ' ')
+      .sort()
+      .reverse();
+    const newChars = chars
+      .map(c => {
+        if (c === ' ') return c;
+        return choices.pop();
+      })
+      .join('');
+    const newScoreString = opener + newChars + closer;
+    return newScoreString;
+  });
+}
+
 const alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 export function replace(state, { name, args }) {

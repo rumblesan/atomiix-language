@@ -41,6 +41,7 @@ export default {
       down: 'down',
       yoyo: 'yoyo',
       swap: 'swap',
+      order: 'order',
       replace: 'replace',
       remove: 'remove',
       insert: 'insert',
