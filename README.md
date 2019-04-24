@@ -33,6 +33,11 @@ echo "foo -> harp[1 6 33 7  ]<28>+3\nbar -> |a    b   c|" | npm run cli
 ```
 
 
+## Issues
+
+For any issues, raise them on the main [Atomiix](https://github.com/rumblesan/atomiix/issues) repository.
+
+
 ## Contact
 
 Drop me an email at guy@rumblesan.com
