@@ -8,6 +8,7 @@ import {
   COMMAND,
   FUTURE,
   GROUP,
+  SEQUENCE,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -109,6 +110,7 @@ export function Command(name, args, line, position) {
 /**
  *  timing: Number
  *  command: Command
+ *  token: ParserToken
  */
 export function Future(timing, command, token) {
   return {
@@ -120,12 +122,24 @@ export function Future(timing, command, token) {
 }
 
 /**
- *  timing: Number
- *  command: Command
+ *  name: string
+ *  agents: [string]
  */
 export function Group(name, agents) {
   return {
     type: GROUP,
+    name,
+    agents,
+  };
+}
+
+/**
+ *  name: string
+ *  agents: [string]
+ */
+export function Sequence(name, agents) {
+  return {
+    type: SEQUENCE,
     name,
     agents,
   };

@@ -100,6 +100,8 @@ export function interpretStatement(state, statementAST, lineOffset) {
       return interpretFuture(state, statementAST, lineOffset);
     case astTypes.GROUP:
       return interpretGroup(state, statementAST, lineOffset);
+    case astTypes.SEQUENCE:
+      return interpretSequence(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
         state.translation.errors.unknownStatement(statementAST.type)
@@ -197,6 +199,10 @@ export function interpretGroup(state, { name, agents }) {
 
   state.groups[name] = agentNames;
   return [];
+}
+
+export function interpretSequence(state /*{ name, agents }*/) {
+  throw new AtomiixRuntimeError(state.translation.errors.sequenceUnsupported());
 }
 
 export function interpretPlay(state, { agent, score }, lineOffset) {

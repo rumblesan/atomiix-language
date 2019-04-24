@@ -69,7 +69,7 @@ parser.statement = function() {
     case this.translation.commands.future:
       return this.future(identifier);
     case this.translation.commands.sequence:
-      throw new ParserException(this.translation.errors.sequenceUnsupported);
+      return this.sequence(identifier);
     default:
       return this.command(identifier);
   }
@@ -196,6 +196,20 @@ parser.future = function(future) {
     line: future.line - 1,
     character: future.character - 1,
   });
+};
+
+parser.sequence = function(/*command*/) {
+  const sequenceName = this.match('identifier').content;
+  this.match('play arrow');
+  let agents = [];
+  while (!(this.eof() || this.la1('newline'))) {
+    if (this.la1('identifier')) {
+      agents.push(this.match('identifier').content);
+    } else {
+      throw new ParserException(this.translation.errors.expectingAgentName);
+    }
+  }
+  return ast.Sequence(sequenceName, agents);
 };
 
 parser.command = function(command) {
