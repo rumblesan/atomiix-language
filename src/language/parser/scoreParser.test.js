@@ -39,6 +39,23 @@ test('parses a melodic score', () => {
   expect(seq).toEqual(expected);
 });
 
+test('parses a melodic score with chords', () => {
+  const score = { content: '[a 1 d  5b  ]', line: 1, character: 1 };
+  const seq = scoreParser(translation, 'foo', score, []);
+  const expected = ast.Score(
+    astTypes.MELODIC,
+    'foo',
+    ['a', 1, 'd', 5, 'b'],
+    [2, 2, 3, 1, 3],
+    0,
+    [],
+    '[a 1 d  5b  ]',
+    0,
+    0
+  );
+  expect(seq).toEqual(expected);
+});
+
 test('parses a concrete score', () => {
   const score = { content: '{  1 3  57  }', line: 1, character: 1 };
   const seq = scoreParser(translation, 'foo', score, []);

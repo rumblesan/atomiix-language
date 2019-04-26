@@ -5,7 +5,13 @@ import * as errTypes from '../errors/types';
 import * as audioActions from '../../actions/audio';
 import * as editorActions from '../../actions/editor';
 
-import { addActiveAgent, deactivateAgent, getAgentInfo } from './state';
+import {
+  addActiveAgent,
+  deactivateAgent,
+  getAgentInfo,
+  setChord,
+  getChord,
+} from './state';
 
 import { AtomiixRuntimeError } from '../errors';
 
@@ -102,6 +108,8 @@ export function interpretStatement(state, statementAST, lineOffset) {
       return interpretGroup(state, statementAST, lineOffset);
     case astTypes.SEQUENCE:
       return interpretSequence(state, statementAST, lineOffset);
+    case astTypes.CHORD:
+      return interpretChord(state, statementAST, lineOffset);
     default:
       throw new AtomiixRuntimeError(
         state.translation.errors.unknownStatement(statementAST.type)
@@ -205,6 +213,11 @@ export function interpretSequence(state /*{ name, agents }*/) {
   throw new AtomiixRuntimeError(state.translation.errors.sequenceUnsupported());
 }
 
+export function interpretChord(state, { name, notes }) {
+  setChord(state, name, notes);
+  return [];
+}
+
 export function interpretPlay(state, { agent, score }, lineOffset) {
   let msgs = [];
   if (score.durations.length > 0) {
@@ -262,7 +275,13 @@ export function interpretPercussiveScore(state, agent, score) {
 }
 
 export function interpretMelodicScore(state, agent, score) {
-  const scoreNotes = score.values.map(i => intervalToNote(state, i));
+  const scoreNotes = score.values.map(i => {
+    if (typeof i === 'number') {
+      return intervalToNote(state, i);
+    }
+    const notes = getChord(state, i);
+    return notes.map(i => intervalToNote(state, i));
+  });
   const {
     notes,
     durations,
@@ -346,10 +365,20 @@ export function interpretModifiers(
       // TODO handle * and / operators
       switch (m.operator) {
         case '+':
-          notes = notes.map(n => n + m.value);
+          notes = notes.map(n => {
+            if (typeof n === 'number') {
+              return n + m.value;
+            }
+            return n.map(n => n + m.value);
+          });
           break;
         case '-':
-          notes = notes.map(n => n - m.value);
+          notes = notes.map(n => {
+            if (typeof n === 'number') {
+              return n - m.value;
+            }
+            return n.map(n => n - m.value);
+          });
           break;
         case '*':
           timestretch = m.value;

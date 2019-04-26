@@ -23,6 +23,7 @@ export function create(logger, lang) {
     stdlib,
     agents: {},
     groups: {},
+    chords: {},
     callbacks: {},
     lastCallbackID: 0,
     logger: l,
@@ -85,4 +86,17 @@ export function stopAgent(state, agentName) {
     existing.playing = false;
   }
   return acs;
+}
+
+export function setChord(state, name, notes) {
+  state.chords[name] = notes;
+}
+
+export function getChord(state, name) {
+  if (state.chords[name]) {
+    return state.chords[name];
+  }
+  throw new AtomiixRuntimeError(
+    state.translation.errors.chordDoesntExist(name)
+  );
 }
