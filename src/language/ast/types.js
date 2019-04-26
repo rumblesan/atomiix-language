@@ -9,6 +9,7 @@ export const COMMAND = 'COMMAND';
 export const FUTURE = 'FUTURE';
 export const GROUP = 'GROUP';
 export const SEQUENCE = 'SEQUENCE';
+export const CHORD = 'CHORD';
 
 export const AGENT = 'AGENT';
 

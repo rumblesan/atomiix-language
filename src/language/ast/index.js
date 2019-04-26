@@ -9,6 +9,7 @@ import {
   FUTURE,
   GROUP,
   SEQUENCE,
+  CHORD,
   AGENT,
   SCORE,
   PERCUSSIVE,
@@ -142,6 +143,18 @@ export function Sequence(name, agents) {
     type: SEQUENCE,
     name,
     agents,
+  };
+}
+
+/**
+ *  name: string
+ *  notes: [number]
+ */
+export function Chord(name, notes) {
+  return {
+    type: CHORD,
+    name,
+    notes,
   };
 }
 
