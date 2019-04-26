@@ -57,7 +57,13 @@ export function scoreParser(translation, instrument, score, modifiers) {
       return ast.Score(
         astTypes.MELODIC,
         instrument,
-        scoreStringData.chars.map(n => parseInt(n, 10)),
+        scoreStringData.chars.map(c => {
+          let v = parseInt(c, 10);
+          if (isNaN(v)) {
+            return c;
+          }
+          return v;
+        }),
         scoreStringData.durations,
         scoreStringData.offset,
         modifiers,

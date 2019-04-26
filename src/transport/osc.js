@@ -165,10 +165,16 @@ function playMelodicOSC(address, action) {
     action.repeats === 'inf'
       ? { type: 'bang' }
       : { type: 'integer', value: action.repeats };
+  const noteArr = action.notes.map(n => {
+    if (typeof n === 'number') {
+      return { type: 'integer', value: n };
+    }
+    return { type: 'array', value: n };
+  });
   const msgArgs = [
     { type: 'string', value: patternType },
     { type: 'string', value: action.agent },
-    { type: 'array', value: action.notes },
+    { type: 'array', value: noteArr },
     { type: 'array', value: action.durations },
     { type: 'string', value: action.instrument },
     { type: 'array', value: action.sustain },

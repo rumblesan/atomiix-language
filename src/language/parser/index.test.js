@@ -127,3 +127,10 @@ test('parses an agent with score modifiers', () => {
   ]);
   expect(seq).toEqual(expected);
 });
+
+test('parses a chord', () => {
+  const program = 'a -> (357)';
+  const seq = parser.parse(program);
+  const expected = ast.Program([ast.Chord('a', [3, 5, 7])]);
+  expect(seq).toEqual(expected);
+});

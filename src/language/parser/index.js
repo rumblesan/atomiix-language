@@ -48,8 +48,13 @@ parser.statement = function() {
 
   if (!this.eof() && this.la1('play arrow')) {
     this.match('play arrow');
-    const score = this.score();
-    return ast.Play(idToAgent(identifier), score);
+
+    if (!this.eof() && this.la1('open paren')) {
+      return this.chord(identifier);
+    } else {
+      const score = this.score();
+      return ast.Play(idToAgent(identifier), score);
+    }
   } else if (!this.eof() && this.la1('double right arrow')) {
     return this.addEffectsChain(idToAgent(identifier));
   } else if (!this.eof() && this.la1('double left arrow')) {
@@ -210,6 +215,20 @@ parser.sequence = function(/*command*/) {
     }
   }
   return ast.Sequence(sequenceName, agents);
+};
+
+parser.chord = function(identifier) {
+  const name = identifier.content;
+  if (name.length !== 1) {
+    throw new ParserException(this.translation.errors.invalidChordName);
+  }
+  this.match('open paren');
+  const num = this.match('number').content;
+  this.match('close paren');
+
+  const notes = `${Math.floor(num)}`.split('').map(n => parseInt(n, 10));
+
+  return ast.Chord(name, notes);
 };
 
 parser.command = function(command) {
