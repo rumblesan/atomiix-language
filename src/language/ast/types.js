@@ -12,6 +12,7 @@ export const SEQUENCE = 'SEQUENCE';
 export const CHORD = 'CHORD';
 
 export const AGENT = 'AGENT';
+export const NAME = 'NAME';
 
 export const SCORE = 'SCORE';
 export const PERCUSSIVE = 'PERCUSSIVE';

@@ -23,7 +23,7 @@ test('parses a future', () => {
   // this isn't a real program, but should be fine for the moment
   const program = 'future 1 >> )) baz';
   const seq = parser.parse(program);
-  const command = ast.IncreaseAmplitude(ast.Agent('baz', 0, 15));
+  const command = ast.IncreaseAmplitude(ast.Name('baz', 0, 15));
   const expected = ast.Program([
     ast.Future(ast.Num(1), command, {
       line: 0,

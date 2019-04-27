@@ -18,6 +18,15 @@ function idToAgent(identifier) {
   );
 }
 
+// Subtract 1 because canto34 starts at line 1
+function idToName(identifier) {
+  return ast.Name(
+    identifier.content,
+    identifier.line - 1,
+    identifier.character - 1
+  );
+}
+
 parser.setLanguage = function(language) {
   this.translation = (translations[language] || translations.english).parser;
 };
@@ -56,15 +65,15 @@ parser.statement = function() {
       return ast.Play(idToAgent(identifier), score);
     }
   } else if (!this.eof() && this.la1('double right arrow')) {
-    return this.addEffectsChain(idToAgent(identifier));
+    return this.addEffectsChain(idToName(identifier));
   } else if (!this.eof() && this.la1('double left arrow')) {
-    return this.removeEffectsChain(idToAgent(identifier));
+    return this.removeEffectsChain(idToName(identifier));
   } else if (!this.eof() && this.la1('increase amplitude')) {
     this.match('increase amplitude');
-    return ast.IncreaseAmplitude(idToAgent(identifier));
+    return ast.IncreaseAmplitude(idToName(identifier));
   } else if (!this.eof() && this.la1('decrease amplitude')) {
     this.match('decrease amplitude');
-    return ast.DecreaseAmplitude(idToAgent(identifier));
+    return ast.DecreaseAmplitude(idToName(identifier));
   }
 
   // must be a command
@@ -136,17 +145,17 @@ parser.scoreOperator = function() {
   return ast.ScoreOperator(operator, number);
 };
 
-parser.addEffectsChain = function(agent) {
+parser.addEffectsChain = function(name) {
   let effects = [];
   while (!this.eof() && this.la1('double right arrow')) {
     this.match('double right arrow');
     const effectName = this.match('identifier').content;
     effects.push(ast.Effect(effectName));
   }
-  return ast.AddFXChain(agent, effects);
+  return ast.AddFXChain(name, effects);
 };
 
-parser.removeEffectsChain = function(agent) {
+parser.removeEffectsChain = function(name) {
   let effects = [];
   while (!this.eof() && this.la1('double left arrow')) {
     this.match('double left arrow');
@@ -160,7 +169,7 @@ parser.removeEffectsChain = function(agent) {
     const effectName = this.match('identifier').content;
     effects.push(ast.Effect(effectName));
   }
-  return ast.RemoveFXChain(agent, effects);
+  return ast.RemoveFXChain(name, effects);
 };
 
 parser.future = function(future) {
@@ -188,11 +197,11 @@ parser.future = function(future) {
   if (this.la1('increase amplitude')) {
     this.match('increase amplitude');
     const identifier = this.match('identifier');
-    command = ast.IncreaseAmplitude(idToAgent(identifier));
+    command = ast.IncreaseAmplitude(idToName(identifier));
   } else if (this.la1('decrease amplitude')) {
     this.match('decrease amplitude');
     const identifier = this.match('identifier');
-    command = ast.DecreaseAmplitude(idToAgent(identifier));
+    command = ast.DecreaseAmplitude(idToName(identifier));
   } else if (this.la1('identifier')) {
     const identifier = this.match('identifier');
     command = this.command(identifier);
@@ -203,7 +212,7 @@ parser.future = function(future) {
   });
 };
 
-parser.sequence = function(/*command*/) {
+parser.sequence = function() {
   const sequenceName = this.match('identifier').content;
   this.match('play arrow');
   let agents = [];

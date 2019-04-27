@@ -5,6 +5,7 @@ import * as astTypes from '../ast/types';
 import * as errTypes from '../errors/types';
 import * as audioActions from '../../actions/audio';
 import * as editorActions from '../../actions/editor';
+import { handleGroup } from '../stdlib/util';
 
 import {
   addActiveAgent,
@@ -118,22 +119,38 @@ export function interpretStatement(state, statementAST, lineOffset) {
   }
 }
 
-export function interpretAddFX(state, { agent, effects }) {
-  return [audioActions.AddAgentFX(agent.name, effects.map(e => e.name))];
+export function interpretAddFX(state, { name, effects }) {
+  const agentOrGroupName = name.value;
+  return handleGroup(state, agentOrGroupName, (s, n) => {
+    const agentInfo = getAgentInfo(s, n);
+    return [
+      audioActions.AddAgentFX(agentInfo.agent.name, effects.map(e => e.name)),
+    ];
+  });
 }
 
-export function interpretRemoveFX(state, { agent, effects }) {
-  return [audioActions.RemoveAgentFX(agent.name, effects.map(e => e.name))];
+export function interpretRemoveFX(state, { name, effects }) {
+  const agentOrGroupName = name.value;
+  return handleGroup(state, agentOrGroupName, (s, n) => {
+    const agentInfo = getAgentInfo(s, n);
+    return [
+      audioActions.RemoveAgentFX(
+        agentInfo.agent.name,
+        effects.map(e => e.name)
+      ),
+    ];
+  });
 }
 
-export function interpretAmplitudeChange(state, { agent }, change) {
-  const agentInfo = state.agents[agent.name];
-  if (!agentInfo) {
-    // TODO warning?
-    return;
-  }
-  agentInfo.amplitude = agentInfo.amplitude + change;
-  return [audioActions.SetAgentAmplitude(agent.name, agentInfo.amplitude)];
+export function interpretAmplitudeChange(state, { name }, change) {
+  const agentOrGroupName = name.value;
+  return handleGroup(state, agentOrGroupName, (s, n) => {
+    const agentInfo = getAgentInfo(s, n);
+    agentInfo.amplitude = agentInfo.amplitude + change;
+    return [
+      audioActions.SetAgentAmplitude(agentInfo.agent.name, agentInfo.amplitude),
+    ];
+  });
 }
 
 export function interpretCommand(state, command, lineOffset) {

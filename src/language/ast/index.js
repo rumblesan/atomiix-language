@@ -11,6 +11,7 @@ import {
   SEQUENCE,
   CHORD,
   AGENT,
+  NAME,
   SCORE,
   PERCUSSIVE,
   MELODIC,
@@ -47,48 +48,48 @@ export function Play(agent, score) {
 }
 
 /**
- *  agent: Agent
+ *  name: Name
  *  effects: [Effect]
  */
-export function AddFXChain(agent, effects) {
+export function AddFXChain(name, effects) {
   return {
     type: ADDFXCHAIN,
-    agent,
+    name,
     effects,
   };
 }
 
 /**
- *  agent: Agent
+ *  name: Name
  *  effects: [Effect]
  */
-export function RemoveFXChain(agent, effects) {
+export function RemoveFXChain(name, effects) {
   return {
     type: RMFXCHAIN,
-    agent,
+    name,
     effects,
   };
 }
 
 /**
- *  agent: Agent
+ *  name: Name
  *  effects: [Effect]
  */
-export function IncreaseAmplitude(agent) {
+export function IncreaseAmplitude(name) {
   return {
     type: INCRAMP,
-    agent,
+    name,
   };
 }
 
 /**
- *  agent: Agent
+ *  name: Name
  *  effects: [Effect]
  */
-export function DecreaseAmplitude(agent) {
+export function DecreaseAmplitude(name) {
   return {
     type: DECRAMP,
-    agent,
+    name,
   };
 }
 
@@ -167,6 +168,20 @@ export function Agent(name, line, position) {
   return {
     type: AGENT,
     name,
+    line,
+    position,
+  };
+}
+
+/**
+ *  name: Identifier
+ *  line: integer
+ *  position: integer
+ */
+export function Name(value, line, position) {
+  return {
+    type: NAME,
+    value,
     line,
     position,
   };
