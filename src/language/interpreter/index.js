@@ -1,4 +1,5 @@
 import scales from '../../music/scales';
+import { agentStates } from './agents';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 import * as errTypes from '../errors/types';
@@ -223,9 +224,15 @@ export function interpretPlay(state, { agent, score }, lineOffset) {
   if (score.durations.length > 0) {
     msgs = msgs.concat(interpretScore(state, agent, score));
     msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
-  } else {
+  } else if (
+    state.agents[agent.name] &&
+    state.agents[agent.name].state !== agentStates.STOPPED
+  ) {
     msgs.push(audioActions.FreeAgent(agent.name));
     msgs = msgs.concat(deactivateAgent(state, agent.name));
+  } else {
+    msgs = msgs.concat(interpretScore(state, agent, score));
+    msgs = msgs.concat(addActiveAgent(state, agent, score, lineOffset));
   }
   return msgs;
 }

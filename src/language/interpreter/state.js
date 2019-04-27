@@ -74,6 +74,7 @@ export function deactivateAgent(state, agentName) {
   const existing = state.agents[agentName];
   if (existing) {
     existing.playing = false;
+    existing.state = agentStates.STOPPED;
     //delete state.agents[agentName];
   }
   return acs;
