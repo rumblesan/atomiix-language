@@ -9,6 +9,7 @@ import {
   audioActionToOSC,
   oscToInboundAction,
   oscDestinations,
+  oscMessagesToBundle,
 } from './transport/osc';
 
 import * as actionTypes from './actions/types';
@@ -80,6 +81,12 @@ function actionToOSC(audioActions) {
   return audioActions.map(m => audioActionToOSC(oscAddresses, m));
 }
 
+function actionsToOSCBundle(audioActions) {
+  return oscMessagesToBundle(
+    audioActions.map(m => audioActionToOSC(oscAddresses, m))
+  );
+}
+
 function oscToAction(msg) {
   return oscToInboundAction(oscDestinations, msg);
 }
@@ -92,6 +99,7 @@ export default {
   handleAction: handleInboundAction,
   incomingAction,
   actionToOSC,
+  actionsToOSCBundle,
   oscToAction,
   constants,
 };

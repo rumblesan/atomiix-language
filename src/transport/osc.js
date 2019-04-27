@@ -61,6 +61,14 @@ export function oscToInboundAction(destinations, msg) {
   }
 }
 
+export function oscMessagesToBundle(messages, timetag = null) {
+  return {
+    oscType: 'bundle',
+    timetag,
+    elements: messages,
+  };
+}
+
 function OSCMessage(address, args) {
   return {
     oscType: 'message',
