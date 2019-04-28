@@ -161,7 +161,7 @@ function playPercussiveOSC(address, action) {
     { type: 'array', value: action.sustain },
     { type: 'array', value: action.attack },
     { type: 'array', value: action.panning },
-    { type: 'integer', value: action.offset },
+    { type: 'float', value: action.offset },
     repeats,
   ];
   return OSCMessage(address, msgArgs);
@@ -188,7 +188,7 @@ function playMelodicOSC(address, action) {
     { type: 'array', value: action.sustain },
     { type: 'array', value: action.attack },
     { type: 'array', value: action.panning },
-    { type: 'integer', value: action.offset },
+    { type: 'float', value: action.offset },
     repeats,
   ];
   return OSCMessage(address, msgArgs);
@@ -208,7 +208,7 @@ function playConcreteOSC(address, action) {
     { type: 'array', value: action.durations },
     { type: 'string', value: action.instrument },
     { type: 'array', value: action.panning },
-    { type: 'integer', value: action.offset },
+    { type: 'float', value: action.offset },
     repeats,
   ];
   return OSCMessage(address, msgArgs);
