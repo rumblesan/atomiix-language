@@ -113,10 +113,10 @@ function addAgentFXOSC(address, { agent, fxList }) {
 }
 
 function removeAgentFXOSC(address, { agent, fxList }) {
-  const msgArgs = [
-    { type: 'string', value: agent },
-    { type: 'array', value: fxList },
-  ];
+  const msgArgs = [{ type: 'string', value: agent }];
+  if (fxList.length > 0) {
+    msgArgs.push({ type: 'array', value: fxList });
+  }
   return OSCMessage(address, msgArgs);
 }
 
