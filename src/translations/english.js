@@ -22,7 +22,6 @@ export default {
       nonMatchedScoreModDelims: (first, last) =>
         `Score modifier delimiters don't match. Starts with ${first} but ends with ${last}`,
       invalidChordName: 'Chord names must be single letters',
-      chordDoesntExist: name => `No chord named ${name}`,
     },
   },
   interpreter: {
@@ -69,6 +68,7 @@ export default {
         `${command} expected String but got ${type}`,
       expectedNum: (command, type) =>
         `${command} expected Number but got ${type}`,
+      chordDoesntExist: name => `No chord named ${name}`,
     },
     misc: {
       upper: 'upper',

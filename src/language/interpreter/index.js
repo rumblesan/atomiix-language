@@ -80,8 +80,8 @@ export function interpret(state, programAST, lineOffset = 0) {
     } catch (err) {
       if (err.name === errTypes.AtomiixRuntimeErrorName) {
         err.setLineNumber(lineOffset + i);
-        throw err;
       }
+      throw err;
     }
     if (outputMsgs) {
       actions = actions.concat(outputMsgs);
