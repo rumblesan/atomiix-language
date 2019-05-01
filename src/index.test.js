@@ -159,17 +159,6 @@ test('can doze and wake agents', () => {
   expect(editor).toEqual(expectedActions);
 });
 
-test('empty scores will free an agent', () => {
-  const program = 'baz -> |  a b  c|';
-  const initialState = atomiix.init();
-  atomiix.evaluate(initialState, program);
-  const { audio, editor } = atomiix.evaluate(initialState, 'baz -> ||');
-  const expectedMessages = [th.createFreeAgentMsg('baz')];
-  const expectedActions = [];
-  expect(audio).toEqual(expectedMessages);
-  expect(editor).toEqual(expectedActions);
-});
-
 test('can create a grid', () => {
   const program = '\n\ngrid 8\n';
   const initialState = atomiix.init();
