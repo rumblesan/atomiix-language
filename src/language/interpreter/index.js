@@ -145,7 +145,10 @@ export function interpretAmplitudeChange(state, { name }, change) {
   const agentOrGroupName = name.value;
   return handleGroup(state, agentOrGroupName, (s, n) => {
     const agentInfo = getAgentInfo(s, n);
-    agentInfo.amplitude = agentInfo.amplitude + change;
+    agentInfo.amplitude = Math.min(
+      2,
+      Math.max(0, agentInfo.amplitude + change)
+    );
     return [
       audioActions.SetAgentAmplitude(agentInfo.agent.name, agentInfo.amplitude),
     ];
