@@ -1,6 +1,6 @@
 {
   "name": "@atomiix/atomiix",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A live coding language based on Ixilang",
   "main": "lib/atomiix.min.js",
   "license": "BSD-3-Clause",
