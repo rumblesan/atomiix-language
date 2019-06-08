@@ -156,12 +156,10 @@ export function interpretAmplitudeChange(state, { name }, change) {
 }
 
 export function interpretCommand(state, command, lineOffset) {
-  const name = command.name;
-  const commandName = state.translation.commands[name];
-  if (!commandName) {
-    throw new AtomiixRuntimeError(
-      state.translation.errors.unknownCommand(name)
-    );
+  let commandName = command.name;
+  const translatedCommandName = state.translation.commands[commandName];
+  if (translatedCommandName) {
+    commandName = translatedCommandName;
   }
   const cmd = state.stdlib[commandName];
   if (!cmd) {
