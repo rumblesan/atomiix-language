@@ -1,3 +1,4 @@
+// things that specifically change something visually in the editor 
 import { ReplaceLine, DisplayInfo } from '../../actions/editor';
 import { expectArgs, expectNum } from './util';
 import stdlib from './index';

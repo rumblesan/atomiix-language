@@ -1,3 +1,4 @@
+// things that affect the entire session in ixi
 import * as audioActions from '../../actions/audio';
 
 import { reevaluateAgent } from '../interpreter';

@@ -1,3 +1,4 @@
+// defines expected arguments for functions like shake or yoyo - avoids duplication within individual functions
 import * as astTypes from '../ast/types';
 import { AtomiixRuntimeError } from '../errors';
 

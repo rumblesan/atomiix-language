@@ -1,3 +1,4 @@
+// main file - loading everything when the plugin starts in atom and you load an ixi file
 import parser from './language/parser';
 import { interpret, freeAgents } from './language/interpreter';
 import { handleInboundAction } from './language/inbound';

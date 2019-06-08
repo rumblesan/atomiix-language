@@ -1,3 +1,4 @@
+// agent control commands - sleeping, waking, dozing etc
 import * as audioActions from '../../actions/audio';
 import * as astTypes from '../ast/types';
 
