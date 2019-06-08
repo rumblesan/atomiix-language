@@ -10,7 +10,7 @@ export function shake(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-// this function is from rewriting.js!
+  // this function is from rewriting.js!
   return modifyScoreString(state, agentName, score => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
