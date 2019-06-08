@@ -50,6 +50,7 @@ export default {
       expand: 'expand',
       grid: 'grid',
       remind: 'remind',
+      dave: 'dave',
     },
     errors: {
       noAgent: name => `No agent called ${name}`,
