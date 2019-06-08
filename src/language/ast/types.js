@@ -1,3 +1,4 @@
+// making it so you can refer to variable names instead of strings
 export const PROGRAM = 'PROGRAM';
 
 export const PLAY = 'PLAY';

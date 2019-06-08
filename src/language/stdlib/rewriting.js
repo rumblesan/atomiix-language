@@ -6,6 +6,7 @@ import { scoreParser } from '../parser/scoreParser';
 
 import { ReplaceScore } from '../../actions/editor';
 
+// this function figures out what needs to change when a command modifies the score of an agent
 export function modifyScoreString(state, agentName, modifyFunc) {
   let msgs = [];
 
@@ -36,6 +37,7 @@ export function modifyScoreString(state, agentName, modifyFunc) {
   return msgs;
 }
 
+// not currently used - all below functions will allow real-time/live changes to post-score modifiers 
 export function writeScoreModifiers(modifiers) {
   return modifiers
     .map(m => {
