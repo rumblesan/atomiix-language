@@ -29,7 +29,6 @@
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",
     "jest": "24.1.0",
-    "osc-min": "rumblesan/node-osc-min#uint-timestamp",
     "prettier": "1.16.4",
     "webpack": "4.29.5",
     "webpack-cli": "3.2.3"
