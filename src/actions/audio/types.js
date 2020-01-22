@@ -11,3 +11,5 @@ export const FUTURECALLBACK = 'FUTURECALLBACK';
 export const PLAYPERCUSSIVE = 'PLAYPERCUSSIVE';
 export const PLAYMELODIC = 'PLAYMELODIC';
 export const PLAYCONCRETE = 'PLAYCONCRETE';
+
+export const QUERY = 'QUERY';

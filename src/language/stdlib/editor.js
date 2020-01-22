@@ -1,5 +1,6 @@
-// things that specifically change something visually in the editor 
+// things that specifically change something visually in the editor
 import { ReplaceLine, DisplayInfo } from '../../actions/editor';
+import { QueryInfo } from '../../actions/audio';
 import { expectArgs, expectNum } from './util';
 import stdlib from './index';
 
@@ -15,6 +16,14 @@ export function grid(state, { name, args, line }, lineOffset) {
 }
 
 export function remind() {
-  const text = Object.keys(stdlib).join('\n');
+  const text = Object.keys(stdlib);
   return [DisplayInfo(text)];
+}
+
+export function instr() {
+  return [QueryInfo('instruments')];
+}
+
+export function effects() {
+  return [QueryInfo('effects')];
 }

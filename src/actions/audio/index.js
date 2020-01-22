@@ -65,6 +65,14 @@ export function SetTempo(tempo, glide) {
   };
 }
 
+export function QueryInfo(category) {
+  return {
+    type: AUDIOACTION,
+    actionType: t.QUERY,
+    category,
+  };
+}
+
 // Only an audio action because it uses the audio engine for timing
 export function FutureCallback(time, timeType, repeats, callbackID) {
   return {

@@ -120,12 +120,22 @@ arguments
 * repeats: integer
 * callbackID: string
 
+### Querying
+
+Query SuperCollider for information about available instruments or effects.
+
+address
+* /query
+
+arguments
+* category: string
+
 
 ## Inbound
 
 The messages that SuperCollider will send to JavaScript.
 
-## Agent Finished
+### Agent Finished
 
 Sent when an agent finishes the number of repeats
 
@@ -135,7 +145,7 @@ address
 arguments
 * agentName: string
 
-## Callback Fired
+### Callback Fired
 
 Sent when a callbacks time is up. Can be sent multiple times for a callback with repeats.
 
@@ -145,3 +155,13 @@ address
 arguments
 * callbackID: string
 * remaining: integer
+
+### Queried Information
+
+Sent when the editor has queried for information.
+
+address
+* /query/response
+
+arguments
+* info: [string]

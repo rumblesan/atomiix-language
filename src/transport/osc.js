@@ -11,6 +11,7 @@ export const oscAddresses = {
   rmFX: '/agent/effects/remove',
   tempo: '/tempo',
   callback: '/callback',
+  query: '/query',
 };
 
 export function audioActionToOSC(addresses, action) {
@@ -29,6 +30,8 @@ export function audioActionToOSC(addresses, action) {
       return setAgentAmpOSC(addresses.agentAmplitude, action);
     case at.SETTEMPO:
       return setTempoOSC(addresses.tempo, action);
+    case at.QUERY:
+      return queryOSC(addresses.query, action);
     case at.FUTURECALLBACK:
       return futureCallbackOSC(addresses.callback, action);
     case at.PLAYPERCUSSIVE:
@@ -133,6 +136,11 @@ function setTempoOSC(address, { tempo, glide }) {
   if (glide) {
     msgArgs.push({ type: 'float', value: glide });
   }
+  return OSCMessage(address, msgArgs);
+}
+
+function queryOSC(address, { category }) {
+  const msgArgs = [{ type: 'string', value: category }];
   return OSCMessage(address, msgArgs);
 }
 
