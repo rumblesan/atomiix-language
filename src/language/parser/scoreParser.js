@@ -1,4 +1,4 @@
-import { ParserException } from 'canto34';
+import { ParserException } from '@rumblesan/virgil';
 
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';

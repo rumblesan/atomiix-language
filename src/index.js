@@ -51,8 +51,8 @@ function handleErr(state, err) {
 
 function evaluate(state, code, lineOffset = 0) {
   try {
-    const ast = parser.parse(code);
-    const actions = interpret(state, ast, lineOffset);
+    const parsed = parser.parse(code);
+    const actions = interpret(state, parsed.ast, lineOffset);
     return partitionActions(actions);
   } catch (err) {
     return handleErr(state, err);
@@ -61,8 +61,8 @@ function evaluate(state, code, lineOffset = 0) {
 
 function free(state, code) {
   try {
-    const ast = parser.parse(code);
-    const actions = freeAgents(state, ast);
+    const parsed = parser.parse(code);
+    const actions = freeAgents(state, parsed.ast);
     return partitionActions(actions);
   } catch (err) {
     return handleErr(state, err);

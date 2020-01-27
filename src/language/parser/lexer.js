@@ -1,8 +1,8 @@
-import * as canto34 from 'canto34';
+import { Lexer, StandardTokenTypes } from '@rumblesan/virgil';
 
-const types = canto34.StandardTokenTypes;
+const types = StandardTokenTypes;
 
-const lexer = new canto34.Lexer({ languageName: 'atomiix' });
+const lexer = new Lexer();
 
 const comment = () => ({
   name: 'comment',
