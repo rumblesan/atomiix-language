@@ -46,26 +46,33 @@ function handleErr(state, err) {
       state.logger.error(err.formattedMessage());
       break;
   }
-  return { audio: [], editor: [] };
 }
 
 function evaluate(state, code, lineOffset = 0) {
   try {
-    const ast = parser.parse(code);
-    const actions = interpret(state, ast, lineOffset);
+    const parsed = parser.parse(code);
+    if (parsed.errors.length < 0) {
+      return { errors: parsed.errors };
+    }
+    const actions = interpret(state, parsed.ast, lineOffset);
     return partitionActions(actions);
   } catch (err) {
-    return handleErr(state, err);
+    handleErr(state, err);
+    return { audio: [], editor: [], errors: [err] };
   }
 }
 
 function free(state, code) {
   try {
-    const ast = parser.parse(code);
-    const actions = freeAgents(state, ast);
+    const parsed = parser.parse(code);
+    if (parsed.errors.length < 0) {
+      return { errors: parsed.errors };
+    }
+    const actions = freeAgents(state, parsed.ast);
     return partitionActions(actions);
   } catch (err) {
-    return handleErr(state, err);
+    handleErr(state, err);
+    return { audio: [], editor: [], errors: [err] };
   }
 }
 
@@ -74,7 +81,8 @@ function incomingAction(state, incoming) {
     const actions = handleInboundAction(state, incoming);
     return partitionActions(actions);
   } catch (err) {
-    return handleErr(state, err);
+    handleErr(state, err);
+    return { audio: [], editor: [], errors: [err] };
   }
 }
 

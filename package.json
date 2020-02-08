@@ -34,7 +34,7 @@
     "webpack-cli": "3.2.3"
   },
   "dependencies": {
-    "canto34": "2.0.1"
+    "@rumblesan/virgil": "0.0.4"
   },
   "jest": {
     "modulePaths": [

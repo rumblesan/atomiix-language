@@ -1,4 +1,4 @@
-import { ParserException, Parser } from 'canto34';
+import { ParserException, Parser } from '@rumblesan/virgil';
 
 import lexer from './lexer';
 import translations from '../../translations';
@@ -9,7 +9,7 @@ import { scoreParser, scoreModifierParser } from './scoreParser';
 
 const parser = new Parser();
 
-// Subtract 1 because canto34 starts at line 1
+// Subtract 1 because lexer counts start at line 1
 function idToAgent(identifier) {
   return ast.Agent(
     identifier.content,
@@ -18,7 +18,7 @@ function idToAgent(identifier) {
   );
 }
 
-// Subtract 1 because canto34 starts at line 1
+// Subtract 1 because lexer counts start at line 1
 function idToName(identifier) {
   return ast.Name(
     identifier.content,
@@ -35,9 +35,15 @@ parser.parse = function(program) {
   if (!this.translation) {
     this.setLanguage('english');
   }
-  const tokens = lexer.tokenize(program);
-  this.initialize(tokens);
-  return this.program();
+  const result = lexer.tokenize(program);
+  const errors = result.errors;
+
+  this.initialize(result.tokens);
+  const ast = this.program();
+  return {
+    errors,
+    ast,
+  };
 };
 
 parser.program = function() {
@@ -268,7 +274,7 @@ parser.command = function(command) {
       );
     }
   }
-  // Subtract 1 because canto34 starts at line 1
+  // Subtract 1 because virgil starts at line 1
   return ast.Command(
     command.content,
     args,
