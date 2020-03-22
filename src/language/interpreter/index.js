@@ -164,7 +164,7 @@ export function interpretCommand(state, command, lineOffset) {
   const cmd = state.stdlib[commandName];
   if (!cmd) {
     throw new AtomiixRuntimeError(
-      state.translation.errors.unknownCommand(name)
+      state.translation.errors.unknownCommand(commandName)
     );
   }
   const msgs = cmd(state, command, lineOffset);
