@@ -272,11 +272,13 @@ export function interpretPercussiveScore(state, agent, score) {
   } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
   const instruments = score.values;
   const quantphase = score.offset / 4;
+  const sampleBank = score.instrument;
 
   const ps = ast.PercussiveScore(
     notes,
     durations,
     instruments,
+    sampleBank,
     sustain,
     attack,
     panning,

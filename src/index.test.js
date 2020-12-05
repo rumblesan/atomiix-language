@@ -14,6 +14,7 @@ test('basic end to end test', () => {
       [60],
       [2 / 4, 3 / 4, 11 / 4],
       ['a', 'b', 'c'],
+      0,
       [0.25],
       [5 / 9],
       [0],
@@ -76,6 +77,7 @@ test('can add effects', () => {
       [60],
       [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
+      0,
       [0.25],
       [5 / 9],
       [0],
@@ -99,6 +101,7 @@ test('can remove effects', () => {
       [60],
       [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
+      0,
       [0.25],
       [5 / 9],
       [0],
@@ -122,6 +125,7 @@ test('can remove all effects', () => {
       [60],
       [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
+      0,
       [0.25],
       [5 / 9],
       [0],
@@ -145,6 +149,7 @@ test('can doze and wake agents', () => {
       [60],
       [2 / 4, 3 / 4, 3 / 4],
       ['a', 'b', 'c'],
+      0,
       [0.25],
       [5 / 9],
       [0],
@@ -189,6 +194,29 @@ test('parse a melodic score with chords', () => {
     ),
   ];
   const expectedActions = [MarkAgent('foo', 1, 0, 3, 11, 19)];
+  expect(audio).toEqual(expectedMessages);
+  expect(editor).toEqual(expectedActions);
+});
+
+test('parse a percussive score with different sample bank', () => {
+  const program = 'foo -> bank1|a b c d |';
+  const initialState = atomiix.init();
+  const { audio, editor } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
+    th.createPercussiveMsg(
+      'foo',
+      [60],
+      [1 / 2, 1 / 2, 1 / 2, 1 / 2],
+      ['a', 'b', 'c', 'd'],
+      1,
+      [0.25],
+      [5 / 9],
+      [0],
+      0,
+      'inf'
+    ),
+  ];
+  const expectedActions = [MarkAgent('foo', 0, 0, 3, 12, 22)];
   expect(audio).toEqual(expectedMessages);
   expect(editor).toEqual(expectedActions);
 });

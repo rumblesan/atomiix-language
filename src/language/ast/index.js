@@ -227,6 +227,7 @@ export function Score(
  *  notes: [integer]
  *  durations: [integer]
  *  instruments: [string]
+ *  sampleBank: integer
  *  sustain: [integer]
  *  attack: [integer]
  *  panning: [integer]
@@ -237,6 +238,7 @@ export function PercussiveScore(
   notes,
   durations,
   instruments,
+  sampleBank,
   sustain,
   attack,
   panning,
@@ -247,6 +249,7 @@ export function PercussiveScore(
     type: SCORE,
     scoreType: PERCUSSIVE,
     notes,
+    sampleBank,
     durations,
     instruments,
     sustain,
