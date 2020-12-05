@@ -217,7 +217,8 @@ test('can invert an agents score', () => {
       [5 / 9],
       [0],
       0,
-      'inf'
+      'inf',
+      0
     ),
     th.createMelodicMsg(
       'baz',
@@ -228,7 +229,8 @@ test('can invert an agents score', () => {
       [5 / 9],
       [0],
       0,
-      'inf'
+      'inf',
+      0
     ),
   ];
   const expectedActions = [

@@ -199,8 +199,8 @@ function playMelodicOSC(address, action) {
     { type: 'array', value: action.attack },
     { type: 'array', value: action.panning },
     { type: 'float', value: action.offset },
-    { type: 'integer', value: action.midiChannel },
     repeats,
+    { type: 'integer', value: action.midiChannel },
   ];
   return OSCMessage(address, msgArgs);
 }

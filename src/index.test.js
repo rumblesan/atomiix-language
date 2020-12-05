@@ -31,7 +31,8 @@ test('basic end to end test', () => {
       [2 / 9, 3 / 9],
       [0],
       0,
-      'inf'
+      'inf',
+      0
     ),
     th.createConcreteMsg(
       'bar',
@@ -195,7 +196,8 @@ test('parse a melodic score with chords', () => {
       [2 / 9, 3 / 9],
       [0],
       0,
-      'inf'
+      'inf',
+      0
     ),
   ];
   const expectedActions = [MarkAgent('foo', 1, 0, 3, 11, 19)];

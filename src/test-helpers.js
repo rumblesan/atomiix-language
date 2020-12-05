@@ -37,7 +37,8 @@ export function createMelodicMsg(
   attack,
   panning,
   offset,
-  repeats
+  repeats,
+  midiChannel
 ) {
   return {
     type: 'AUDIOACTION',
@@ -51,6 +52,7 @@ export function createMelodicMsg(
     panning,
     offset,
     repeats,
+    midiChannel,
   };
 }
 

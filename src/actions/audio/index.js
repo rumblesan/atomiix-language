@@ -111,6 +111,7 @@ export function PlayMelodicScore(agent, score) {
     notes: score.notes,
     durations: score.durations,
     instrument: score.instrument,
+    midiChannel: score.midiChannel,
     sustain: score.sustain,
     attack: score.attack,
     panning: score.panning,
