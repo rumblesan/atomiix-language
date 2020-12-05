@@ -170,7 +170,8 @@ function playPercussiveOSC(address, action) {
     { type: 'array', value: action.attack },
     { type: 'array', value: action.panning },
     { type: 'float', value: action.offset },
-    { type: 'integer', value: action.sampleBank },
+    { type: 'string', value: action.bankName },
+    { type: 'integer', value: action.bankNumber },
     repeats,
   ];
   return OSCMessage(address, msgArgs);
@@ -198,6 +199,7 @@ function playMelodicOSC(address, action) {
     { type: 'array', value: action.attack },
     { type: 'array', value: action.panning },
     { type: 'float', value: action.offset },
+    { type: 'integer', value: action.midiChannel },
     repeats,
   ];
   return OSCMessage(address, msgArgs);
