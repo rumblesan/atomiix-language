@@ -13,10 +13,10 @@ export default {
       expectingAgentName: 'Unexpected token: Expecting agent name',
       nonMatchedScoreDelims: (first, last) =>
         `Score delimiters don't match. Starts with ${first} but ends with ${last}`,
-      noPercInstrument: instrument =>
-        `Percussive score shouldn't have instrument: ${instrument}`,
       missingMelodicInstrument: 'Melodic score should have an instrument',
       missingConcreteInstrument: 'Concrete score should have an instrument',
+      invalidPercussiveSampleBank: name =>
+        `${name} is not a valid sample bank name. Should look like 'bank0', 'bank3', 'bank99'`,
       invalidScoreDelimiter: delim =>
         `${delim} is not a supported score delimiter`,
       nonMatchedScoreModDelims: (first, last) =>

@@ -93,6 +93,7 @@ export function PlayPercussiveScore(agent, score) {
     notes: score.notes,
     durations: score.durations,
     instruments: score.instruments,
+    sampleBank: score.sampleBank,
     sustain: score.sustain,
     attack: score.attack,
     panning: score.panning,

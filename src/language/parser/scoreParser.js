@@ -3,6 +3,12 @@ import { ParserException } from '@rumblesan/virgil';
 import * as ast from '../ast';
 import * as astTypes from '../ast/types';
 
+const sampleBankRE = /^bank([0-9]+)$/;
+
+function parseSampleBank(name) {
+  return parseInt(sampleBankRE.exec(name)[1], 10);
+}
+
 // TODO
 // use modifiers
 export function scoreParser(translation, instrument, score, modifiers) {
@@ -32,15 +38,15 @@ export function scoreParser(translation, instrument, score, modifiers) {
   let scoreStringData;
   switch (first) {
     case '|':
-      if (instrument) {
+      if (instrument && !sampleBankRE.test(instrument)) {
         throw new ParserException(
-          translation.errors.noPercInstrument(instrument)
+          translation.errors.invalidPercussiveSampleBank(instrument)
         );
       }
       scoreStringData = scoreStringParser(scoreChars);
       return ast.Score(
         astTypes.PERCUSSIVE,
-        null,
+        parseSampleBank(instrument || 'bank0'),
         scoreStringData.chars,
         scoreStringData.durations,
         scoreStringData.offset,

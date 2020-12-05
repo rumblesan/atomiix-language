@@ -10,7 +10,7 @@ test('parses a percussive score', () => {
   const seq = scoreParser(translation, '', score, []);
   const expected = ast.Score(
     astTypes.PERCUSSIVE,
-    null,
+    0,
     ['a', 'b', 'c', 'd'],
     [2, 3, 1, 5],
     2,
