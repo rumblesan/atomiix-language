@@ -302,7 +302,7 @@ export function interpretPercussiveScore(state, agent, score) {
 const midiInstrumentRE = /^midi([0-9]+)$/;
 
 function parseMidiChannel(instrument) {
-  return parseInt(percussionInstrumentRE.exec(instrument)[1], 10);
+  return parseInt(midiInstrumentRE.exec(instrument)[1], 10);
 }
 
 export function interpretMelodicScore(state, agent, score) {

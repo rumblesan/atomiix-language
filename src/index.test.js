@@ -182,6 +182,29 @@ test('can create a grid', () => {
   expect(editor).toEqual(expectedActions);
 });
 
+test('parse a melodic score with a midi instrument', () => {
+  const program = 'foo -> midi2[1 5]';
+  const initialState = atomiix.init();
+  const { audio, editor } = atomiix.evaluate(initialState, program);
+  const expectedMessages = [
+    th.createMelodicMsg(
+      'foo',
+      [60, 67],
+      [2 / 4, 1 / 4],
+      'midi',
+      [0.25],
+      [5 / 9],
+      [0],
+      0,
+      'inf',
+      2
+    ),
+  ];
+  const expectedActions = [MarkAgent('foo', 0, 0, 3, 12, 17)];
+  expect(audio).toEqual(expectedMessages);
+  expect(editor).toEqual(expectedActions);
+});
+
 test('parse a melodic score with chords', () => {
   const program = 'a -> (35)\nfoo -> harp[a1 a 5]^23^+2(4~2)';
   const initialState = atomiix.init();
