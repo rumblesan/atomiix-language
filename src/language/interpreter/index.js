@@ -299,6 +299,12 @@ export function interpretPercussiveScore(state, agent, score) {
   return [msg];
 }
 
+const midiInstrumentRE = /^midi([0-9]+)$/;
+
+function parseMidiChannel(instrument) {
+  return parseInt(percussionInstrumentRE.exec(instrument)[1], 10);
+}
+
 export function interpretMelodicScore(state, agent, score) {
   const scoreNotes = score.values.map(i => {
     if (typeof i === 'number') {
@@ -315,13 +321,21 @@ export function interpretMelodicScore(state, agent, score) {
     panning,
     repeats,
   } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
-  const instrument = score.instrument;
+
+  let instrument = score.instrument;
+  let midiChannel = 0;
+  if (midiInstrumentRE.test(score.instrument)) {
+    instrument = 'midi';
+    midiChannel = parseMidiChannel(score.instrument);
+  }
+
   const quantphase = score.offset / 4;
 
   const ms = ast.MelodicScore(
     notes,
     durations,
     instrument,
+    midiChannel,
     sustain,
     attack,
     panning,
