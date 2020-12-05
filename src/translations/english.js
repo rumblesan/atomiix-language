@@ -15,8 +15,8 @@ export default {
         `Score delimiters don't match. Starts with ${first} but ends with ${last}`,
       missingMelodicInstrument: 'Melodic score should have an instrument',
       missingConcreteInstrument: 'Concrete score should have an instrument',
-      invalidPercussiveSampleBank: name =>
-        `${name} is not a valid sample bank name. Should look like 'bank0', 'bank3', 'bank99'`,
+      invalidPercussionBank: name =>
+        `${name} is not a valid percussion bank name. Should look like 'bank0', 'midi2', 'bank99'`,
       invalidScoreDelimiter: delim =>
         `${delim} is not a supported score delimiter`,
       nonMatchedScoreModDelims: (first, last) =>

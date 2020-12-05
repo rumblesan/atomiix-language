@@ -259,6 +259,15 @@ export function interpretScore(state, agent, score) {
   }
 }
 
+const percussionInstrumentRE = /^(midi|bank)([0-9]+)$/;
+
+function parsePercussionInstrument(instrument) {
+  const split = percussionInstrumentRE.exec(instrument);
+  const name = split[1];
+  const number = parseInt(split[2], 10);
+  return [name, number];
+}
+
 export function interpretPercussiveScore(state, agent, score) {
   // TODO does note pull anything from the default state tonic?
   const scoreNotes = [60];
@@ -272,13 +281,14 @@ export function interpretPercussiveScore(state, agent, score) {
   } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
   const instruments = score.values;
   const quantphase = score.offset / 4;
-  const sampleBank = score.instrument;
+  const [bankName, bankNumber] = parsePercussionInstrument(score.instrument);
 
   const ps = ast.PercussiveScore(
     notes,
     durations,
     instruments,
-    sampleBank,
+    bankName,
+    bankNumber,
     sustain,
     attack,
     panning,
