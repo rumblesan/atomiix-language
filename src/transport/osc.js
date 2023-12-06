@@ -12,6 +12,7 @@ export const oscAddresses = {
   tempo: '/tempo',
   callback: '/callback',
   query: '/query',
+  midi: '/midi',
 };
 
 export function audioActionToOSC(addresses, action) {
@@ -32,6 +33,8 @@ export function audioActionToOSC(addresses, action) {
       return setTempoOSC(addresses.tempo, action);
     case at.QUERY:
       return queryOSC(addresses.query, action);
+    case at.MIDI:
+      return midiOSC(addresses.midi, action);
     case at.FUTURECALLBACK:
       return futureCallbackOSC(addresses.callback, action);
     case at.PLAYPERCUSSIVE:
@@ -141,6 +144,14 @@ function setTempoOSC(address, { tempo, glide }) {
 
 function queryOSC(address, { category }) {
   const msgArgs = [{ type: 'string', value: category }];
+  return OSCMessage(address, msgArgs);
+}
+
+function midiOSC(address, { command, args }) {
+  const msgArgs = [
+    { type: 'string', value: command },
+    { type: 'array', value: args },
+  ];
   return OSCMessage(address, msgArgs);
 }
 

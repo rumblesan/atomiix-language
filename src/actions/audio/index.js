@@ -73,6 +73,15 @@ export function QueryInfo(category) {
   };
 }
 
+export function MIDIAction(command, args) {
+  return {
+    type: AUDIOACTION,
+    actionType: t.MIDI,
+    command,
+    args,
+  };
+}
+
 // Only an audio action because it uses the audio engine for timing
 export function FutureCallback(time, timeType, repeats, callbackID) {
   return {

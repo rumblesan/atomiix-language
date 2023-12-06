@@ -22,6 +22,7 @@ export default {
       nonMatchedScoreModDelims: (first, last) =>
         `Score modifier delimiters don't match. Starts with ${first} but ends with ${last}`,
       invalidChordName: 'Chord names must be single letters',
+      invalidMIDICommand: name => `${name} is an unknown MIDI command`,
     },
   },
   interpreter: {

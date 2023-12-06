@@ -19,6 +19,7 @@ import {
   dave,
 } from './score';
 import { grid, remind } from './editor';
+import { midi } from './midi';
 
 export default {
   doze,
@@ -44,6 +45,7 @@ export default {
   remove,
   expand,
   grid,
+  midi,
   remind,
   dave,
 };

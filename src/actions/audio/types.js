@@ -13,3 +13,5 @@ export const PLAYMELODIC = 'PLAYMELODIC';
 export const PLAYCONCRETE = 'PLAYCONCRETE';
 
 export const QUERY = 'QUERY';
+
+export const MIDI = 'MIDI';
