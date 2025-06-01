@@ -19,8 +19,8 @@
     "cli": "babel-node scripts/atomiix-cli.js"
   },
   "devDependencies": {
-    "@babel/node": "7.2.2",
     "@babel/core": "7.3.4",
+    "@babel/node": "7.2.2",
     "@babel/preset-env": "7.3.4",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.1.0",
@@ -28,10 +28,10 @@
     "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-prettier": "3.0.1",
-    "jest": "24.1.0",
+    "jest": "^29.7.0",
     "prettier": "1.16.4",
-    "webpack": "4.29.5",
-    "webpack-cli": "3.2.3"
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "@rumblesan/virgil": "0.0.4"
