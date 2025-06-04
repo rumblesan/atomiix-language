@@ -1,9 +1,9 @@
 // main file - loading everything when the plugin starts in atom and you load an ixi file
-import parser from './language/parser';
-import { interpret, freeAgents } from './language/interpreter';
-import { handleInboundAction } from './language/inbound';
-import * as errTypes from './language/errors/types';
-import { create as init } from './language/interpreter/state';
+import parser from './language/parser/index.js';
+import { interpret, freeAgents } from './language/interpreter/index.js';
+import { handleInboundAction } from './language/inbound.js';
+import * as errTypes from './language/errors/types.js';
+import { create as init } from './language/interpreter/state.js';
 
 import {
   oscAddresses,
@@ -11,11 +11,11 @@ import {
   oscToInboundAction,
   oscDestinations,
   oscMessagesToBundle,
-} from './transport/osc';
+} from './transport/osc.js';
 
-import * as actionTypes from './actions/types';
-import * as editorActions from './actions/editor/types';
-import { agentStates } from './language/interpreter/agents';
+import * as actionTypes from './actions/types.js';
+import * as editorActions from './actions/editor/types.js';
+import { agentStates } from './language/interpreter/agents.js';
 
 const constants = {
   editorActions,
@@ -27,7 +27,7 @@ function partitionActions(actions) {
     audio: [],
     editor: [],
   };
-  actions.forEach(m => {
+  actions.forEach((m) => {
     if (m.type === actionTypes.AUDIOACTION) {
       out.audio.push(m);
     } else if (m.type === actionTypes.EDITORACTION) {
@@ -87,12 +87,12 @@ function incomingAction(state, incoming) {
 }
 
 function actionToOSC(audioActions) {
-  return audioActions.map(m => audioActionToOSC(oscAddresses, m));
+  return audioActions.map((m) => audioActionToOSC(oscAddresses, m));
 }
 
 function actionsToOSCBundle(audioActions) {
   return oscMessagesToBundle(
-    audioActions.map(m => audioActionToOSC(oscAddresses, m))
+    audioActions.map((m) => audioActionToOSC(oscAddresses, m))
   );
 }
 

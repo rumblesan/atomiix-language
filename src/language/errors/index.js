@@ -1,4 +1,4 @@
-import { AtomiixRuntimeErrorName, AtomiixOSCErrorName } from './types';
+import { AtomiixRuntimeErrorName, AtomiixOSCErrorName } from './types.js';
 
 export class AtomiixRuntimeError extends Error {
   constructor(message, lineNumber, inCallback) {

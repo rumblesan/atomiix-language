@@ -1,9 +1,9 @@
-import { DisplayAgentState, FlashFuture } from '../actions/editor';
-import * as errTypes from './errors/types';
-import * as inboundActions from '../actions/inbound/types';
-import { stopAgent, getAgentInfo } from './interpreter/state';
-import { agentStates } from './interpreter/agents';
-import { interpret } from './interpreter';
+import { DisplayAgentState, FlashFuture } from '../actions/editor/index.js';
+import * as errTypes from './errors/types.js';
+import * as inboundActions from '../actions/inbound/types.js';
+import { stopAgent, getAgentInfo } from './interpreter/state.js';
+import { agentStates } from './interpreter/agents.js';
+import { interpret } from './interpreter/index.js';
 
 export function handleInboundAction(state, action) {
   switch (action.actionType) {

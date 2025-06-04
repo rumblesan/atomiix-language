@@ -1,7 +1,8 @@
+import { expect, test } from 'vitest';
 import atomiix from '../../index.js';
 
-import * as th from '../../test-helpers';
-import { ReplaceScore, MarkAgent } from '../../actions/editor';
+import * as th from '../../test-helpers.js';
+import { ReplaceScore, MarkAgent } from '../../actions/editor/index.js';
 
 test('can reverse an agents score', () => {
   const program = 'baz -> |  a b  c|\nreverse baz';

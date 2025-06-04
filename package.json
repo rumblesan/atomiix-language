@@ -2,51 +2,28 @@
   "name": "@atomiix/atomiix",
   "version": "1.7.0",
   "description": "A live coding language based on Ixilang",
-  "main": "lib/atomiix.min.js",
+  "main": "src/index.js",
+  "type": "module",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/rumblesan/atomiix/issues"
   },
   "repository": "rumblesan/atomiix",
   "scripts": {
-    "lint": "eslint src",
-    "build": "webpack-cli --mode production",
-    "build:dev": "webpack-cli --progress --colors --watch --mode development",
-    "test": "jest",
-    "posttest": "npm run lint",
-    "test:watch": "jest test --watch",
-    "prepublish": "npm run build",
-    "cli": "babel-node scripts/atomiix-cli.js"
+    "lint": "prettier --check src && eslint src",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "posttest": "npm run lint"
   },
   "devDependencies": {
-    "@babel/core": "7.3.4",
-    "@babel/node": "7.2.2",
-    "@babel/preset-env": "7.3.4",
-    "babel-eslint": "10.0.1",
-    "babel-jest": "24.1.0",
-    "babel-loader": "8.0.5",
-    "eslint": "5.14.1",
-    "eslint-config-prettier": "4.0.0",
-    "eslint-plugin-prettier": "3.0.1",
-    "jest": "^29.7.0",
-    "prettier": "1.16.4",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1"
+    "@eslint/js": "9.28.0",
+    "eslint": "9.28.0",
+    "globals": "16.2.0",
+    "prettier": "3.5.3",
+    "vitest": "3.2.0"
   },
   "dependencies": {
-    "@rumblesan/virgil": "0.0.4"
-  },
-  "jest": {
-    "modulePaths": [
-      "src"
-    ]
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env"
-      ]
-    ]
+    "@rumblesan/virgil": "0.0.10"
   },
   "prettier": {
     "trailingComma": "es5",

@@ -1,10 +1,10 @@
-import * as astTypes from '../ast/types';
+import * as astTypes from '../ast/types.js';
 
-import { reevaluateAgent } from '../interpreter';
-import { getAgentInfo } from '../interpreter/state';
-import { scoreParser } from '../parser/scoreParser';
+import { reevaluateAgent } from '../interpreter/index.js';
+import { getAgentInfo } from '../interpreter/state.js';
+import { scoreParser } from '../parser/scoreParser.js';
 
-import { ReplaceScore } from '../../actions/editor';
+import { ReplaceScore } from '../../actions/editor/index.js';
 
 // this function figures out what needs to change when a command modifies the score of an agent
 export function modifyScoreString(state, agentName, modifyFunc) {
@@ -37,10 +37,10 @@ export function modifyScoreString(state, agentName, modifyFunc) {
   return msgs;
 }
 
-// not currently used - all below functions will allow real-time/live changes to post-score modifiers 
+// not currently used - all below functions will allow real-time/live changes to post-score modifiers
 export function writeScoreModifiers(modifiers) {
   return modifiers
-    .map(m => {
+    .map((m) => {
       switch (m.type) {
         case astTypes.SCOREOPERATOR:
           return writeScoreOperator(m);

@@ -1,4 +1,4 @@
-import english from './english';
+import english from './english.js';
 
 export default {
   english,

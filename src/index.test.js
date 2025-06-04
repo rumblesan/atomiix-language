@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import atomiix from './index.js';
 
 import * as th from './test-helpers';

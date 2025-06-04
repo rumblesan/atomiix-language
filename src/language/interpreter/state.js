@@ -1,15 +1,15 @@
-import { AgentState, agentStates } from './agents';
-import { AtomiixRuntimeError } from '../errors';
-import scales from '../../music/scales';
-import translations from '../../translations';
-import stdlib from '../stdlib';
-import { MarkAgent } from '../../actions/editor';
+import { AgentState, agentStates } from './agents.js';
+import { AtomiixRuntimeError } from '../errors/index.js';
+import scales from '../../music/scales.js';
+import translations from '../../translations/index.js';
+import stdlib from '../stdlib/index.js';
+import { MarkAgent } from '../../actions/editor/index.js';
 
 export function createLogger() {
   return {
-    info: console.log, // eslint-disable-line no-console
-    warn: console.log, // eslint-disable-line no-console
-    error: console.log, // eslint-disable-line no-console
+    info: console.log,
+    warn: console.log,
+    error: console.log,
   };
 }
 

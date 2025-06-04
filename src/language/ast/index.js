@@ -23,7 +23,7 @@ import {
   BEAT,
   NUMBER,
   STRING,
-} from './types';
+} from './types.js';
 
 /**
  *  value: [Statement]

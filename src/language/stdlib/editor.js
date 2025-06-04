@@ -1,8 +1,8 @@
 // things that specifically change something visually in the editor
-import { ReplaceLine, DisplayInfo } from '../../actions/editor';
-import { QueryInfo } from '../../actions/audio';
-import { expectArgs, expectNum } from './util';
-import stdlib from './index';
+import { ReplaceLine, DisplayInfo } from '../../actions/editor/index.js';
+import { QueryInfo } from '../../actions/audio/index.js';
+import { expectArgs, expectNum } from './util.js';
+import stdlib from './index.js';
 
 export function grid(state, { name, args, line }, lineOffset) {
   let msgs = [];

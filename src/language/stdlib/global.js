@@ -1,18 +1,18 @@
 // things that affect the entire session in ixi
-import * as audioActions from '../../actions/audio';
+import * as audioActions from '../../actions/audio/index.js';
 
-import { reevaluateAgent } from '../interpreter';
-import { getAgentInfo } from '../interpreter/state';
-import { AtomiixRuntimeError } from '../errors';
+import { reevaluateAgent } from '../interpreter/index.js';
+import { getAgentInfo } from '../interpreter/state.js';
+import { AtomiixRuntimeError } from '../errors/index.js';
 
-import { expectArgs, expectString, expectNum } from './util';
+import { expectArgs, expectString, expectNum } from './util.js';
 
-import scales from '../../music/scales';
+import scales from '../../music/scales.js';
 
 export function kill(state, { name, args }) {
   expectArgs(state, name, args, 0);
 
-  return Object.keys(state.agents).map(name => {
+  return Object.keys(state.agents).map((name) => {
     state.agents[name].playing = false;
     return audioActions.FreeAgent(name);
   });
@@ -33,7 +33,7 @@ export function scalepush(state, command) {
   scale(state, command);
   let msgs = [];
 
-  Object.keys(state.agents).forEach(name => {
+  Object.keys(state.agents).forEach((name) => {
     const agentInfo = getAgentInfo(state, name);
     if (agentInfo.playing) {
       msgs = msgs.concat(reevaluateAgent(state, name));

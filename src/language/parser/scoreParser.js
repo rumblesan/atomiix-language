@@ -1,7 +1,7 @@
 import { ParserException } from '@rumblesan/virgil';
 
-import * as ast from '../ast';
-import * as astTypes from '../ast/types';
+import * as ast from '../ast/index.js';
+import * as astTypes from '../ast/types.js';
 
 // TODO
 // use modifiers
@@ -52,7 +52,7 @@ export function scoreParser(translation, instrument, score, modifiers) {
       return ast.Score(
         astTypes.MELODIC,
         instrument,
-        scoreStringData.chars.map(c => {
+        scoreStringData.chars.map((c) => {
           let v = parseInt(c, 10);
           if (isNaN(v)) {
             return c;
@@ -74,7 +74,7 @@ export function scoreParser(translation, instrument, score, modifiers) {
       return ast.Score(
         astTypes.CONCRETE,
         instrument,
-        scoreStringData.chars.map(n => parseInt(n, 10)),
+        scoreStringData.chars.map((n) => parseInt(n, 10)),
         scoreStringData.durations,
         scoreStringData.offset,
         modifiers,
@@ -149,7 +149,7 @@ export function scoreModifierParser(translation, modifier) {
   }
 
   const smString = modifier.slice(1, -1);
-  const values = smString.split('').map(c => parseInt(c, 10));
+  const values = smString.split('').map((c) => parseInt(c, 10));
 
   return ast.ScoreModifier(modifierType, values);
 }

@@ -1,7 +1,7 @@
-import * as inbound from '../actions/inbound';
-import { agentStates } from '../language/interpreter/agents';
-import * as at from '../actions/audio/types';
-import { AtomiixOSCError } from '../language/errors';
+import * as inbound from '../actions/inbound/index.js';
+import { agentStates } from '../language/interpreter/agents.js';
+import * as at from '../actions/audio/types.js';
+import { AtomiixOSCError } from '../language/errors/index.js';
 
 export const oscAddresses = {
   playPattern: '/play/pattern',
@@ -183,7 +183,7 @@ function playMelodicOSC(address, action) {
     action.repeats === 'inf'
       ? { type: 'bang' }
       : { type: 'integer', value: action.repeats };
-  const noteArr = action.notes.map(n => {
+  const noteArr = action.notes.map((n) => {
     if (typeof n === 'number') {
       return { type: 'integer', value: n };
     }

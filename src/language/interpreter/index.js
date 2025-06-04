@@ -1,10 +1,10 @@
-import scales from '../../music/scales';
-import * as ast from '../ast';
-import * as astTypes from '../ast/types';
-import * as errTypes from '../errors/types';
-import * as audioActions from '../../actions/audio';
-import * as editorActions from '../../actions/editor';
-import { handleGroup } from '../stdlib/util';
+import scales from '../../music/scales.js';
+import * as ast from '../ast/index.js';
+import * as astTypes from '../ast/types.js';
+import * as errTypes from '../errors/types.js';
+import * as audioActions from '../../actions/audio/index.js';
+import * as editorActions from '../../actions/editor/index.js';
+import { handleGroup } from '../stdlib/util.js';
 
 import {
   addActiveAgent,
@@ -12,9 +12,9 @@ import {
   getAgentInfo,
   setChord,
   getChord,
-} from './state';
+} from './state.js';
 
-import { AtomiixRuntimeError } from '../errors';
+import { AtomiixRuntimeError } from '../errors/index.js';
 
 export function intervalToNote(state, interval) {
   return state.tonic + scales.notes[state.scale][interval];
@@ -46,7 +46,7 @@ export function getAgentNames(state, programAST) {
 export function freeAgents(state, programAST) {
   const { agentNames } = getAgentNames(state, programAST);
   let actions = [];
-  agentNames.forEach(n => {
+  agentNames.forEach((n) => {
     actions.push(audioActions.FreeAgent(n));
     actions = actions.concat(deactivateAgent(state, n));
   });
@@ -123,7 +123,10 @@ export function interpretAddFX(state, { name, effects }) {
   return handleGroup(state, agentOrGroupName, (s, n) => {
     const agentInfo = getAgentInfo(s, n);
     return [
-      audioActions.AddAgentFX(agentInfo.agent.name, effects.map(e => e.name)),
+      audioActions.AddAgentFX(
+        agentInfo.agent.name,
+        effects.map((e) => e.name)
+      ),
     ];
   });
 }
@@ -135,7 +138,7 @@ export function interpretRemoveFX(state, { name, effects }) {
     return [
       audioActions.RemoveAgentFX(
         agentInfo.agent.name,
-        effects.map(e => e.name)
+        effects.map((e) => e.name)
       ),
     ];
   });
@@ -175,9 +178,7 @@ export function interpretFuture(state, future, lineOffset) {
   const token = future.token;
   token.line += lineOffset;
   const callbackID =
-    Math.random()
-      .toString(36)
-      .substring(7) + state.lastCallbackID;
+    Math.random().toString(36).substring(7) + state.lastCallbackID;
   state.lastCallbackID += 1;
   state.callbacks[callbackID] = {
     command: ast.Program([future.command]),
@@ -216,7 +217,7 @@ export function interpretGroup(state, { name, agents }) {
     throw new AtomiixRuntimeError(state.translation.errors.groupExists(name));
   }
 
-  const agentNames = agents.map(a => {
+  const agentNames = agents.map((a) => {
     // call getAgentInfo to make sure agent exists
     // but just return the name
     getAgentInfo(state, a);
@@ -271,14 +272,8 @@ function parsePercussionInstrument(instrument) {
 export function interpretPercussiveScore(state, agent, score) {
   // TODO does note pull anything from the default state tonic?
   const scoreNotes = [60];
-  const {
-    notes,
-    durations,
-    sustain,
-    attack,
-    panning,
-    repeats,
-  } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
+  const { notes, durations, sustain, attack, panning, repeats } =
+    interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
   const instruments = score.values;
   const quantphase = score.offset / 4;
   const [bankName, bankNumber] = parsePercussionInstrument(score.instrument);
@@ -306,21 +301,15 @@ function parseMidiChannel(instrument) {
 }
 
 export function interpretMelodicScore(state, agent, score) {
-  const scoreNotes = score.values.map(i => {
+  const scoreNotes = score.values.map((i) => {
     if (typeof i === 'number') {
       return intervalToNote(state, i);
     }
     const notes = getChord(state, i);
-    return notes.map(i => intervalToNote(state, i));
+    return notes.map((i) => intervalToNote(state, i));
   });
-  const {
-    notes,
-    durations,
-    sustain,
-    attack,
-    panning,
-    repeats,
-  } = interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
+  const { notes, durations, sustain, attack, panning, repeats } =
+    interpretModifiers(state, scoreNotes, score.durations, score.modifiers);
 
   let instrument = score.instrument;
   let midiChannel = 0;
@@ -355,7 +344,7 @@ export function interpretConcreteScore(state, agent, score) {
     score.durations,
     score.modifiers
   );
-  const amplitudes = score.values.map(v => v / 10);
+  const amplitudes = score.values.map((v) => v / 10);
   const instrument = score.instrument;
   const quantphase = score.offset / 4;
 
@@ -391,7 +380,7 @@ export function interpretModifiers(
     if (m.type === astTypes.SCOREMODIFIER) {
       switch (m.modifierType) {
         case astTypes.PANNING:
-          panning = m.values.map(n => (n - 1) / 4 - 1);
+          panning = m.values.map((n) => (n - 1) / 4 - 1);
           break;
         case astTypes.SUSTAIN:
           sustain = [(1 / m.noteLength) * (m.multiplier || 1)];
@@ -404,19 +393,19 @@ export function interpretModifiers(
       // TODO handle * and / operators
       switch (m.operator) {
         case '+':
-          notes = notes.map(n => {
+          notes = notes.map((n) => {
             if (typeof n === 'number') {
               return n + m.value;
             }
-            return n.map(n => n + m.value);
+            return n.map((n) => n + m.value);
           });
           break;
         case '-':
-          notes = notes.map(n => {
+          notes = notes.map((n) => {
             if (typeof n === 'number') {
               return n - m.value;
             }
-            return n.map(n => n - m.value);
+            return n.map((n) => n - m.value);
           });
           break;
         case '*':
@@ -438,8 +427,8 @@ export function interpretModifiers(
   durations[durations.length - 1] += silences;
   // make everything quarter notes
   // then multiply my timestretch
-  durations = durations.map(n => n / 4).map(n => n * timestretch);
-  attack = attack.map(n => n / 9);
+  durations = durations.map((n) => n / 4).map((n) => n * timestretch);
+  attack = attack.map((n) => n / 9);
   return {
     notes,
     durations,

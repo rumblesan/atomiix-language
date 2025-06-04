@@ -1,11 +1,11 @@
 import { ParserException, Parser } from '@rumblesan/virgil';
 
-import lexer from './lexer';
-import translations from '../../translations';
+import lexer from './lexer.js';
+import translations from '../../translations/index.js';
 
-import * as ast from '../ast';
+import * as ast from '../ast/index.js';
 
-import { scoreParser, scoreModifierParser } from './scoreParser';
+import { scoreParser, scoreModifierParser } from './scoreParser.js';
 
 const parser = new Parser();
 
@@ -27,11 +27,11 @@ function idToName(identifier) {
   );
 }
 
-parser.setLanguage = function(language) {
+parser.setLanguage = function (language) {
   this.translation = (translations[language] || translations.english).parser;
 };
 
-parser.parse = function(program) {
+parser.parse = function (program) {
   if (!this.translation) {
     this.setLanguage('english');
   }
@@ -46,7 +46,7 @@ parser.parse = function(program) {
   };
 };
 
-parser.program = function() {
+parser.program = function () {
   const statements = [];
   while (!this.eof()) {
     if (this.la1('newline')) {
@@ -58,7 +58,7 @@ parser.program = function() {
   return ast.Program(statements);
 };
 
-parser.statement = function() {
+parser.statement = function () {
   const identifier = this.match('identifier');
 
   if (!this.eof() && this.la1('play arrow')) {
@@ -95,7 +95,7 @@ parser.statement = function() {
   }
 };
 
-parser.score = function() {
+parser.score = function () {
   let instrument = '';
   if (this.la1('identifier')) {
     instrument = this.match('identifier').content;
@@ -111,7 +111,7 @@ parser.score = function() {
 // handle the following modifiers
 // * note length
 // * whatever the tilde does
-parser.scoreModifiers = function() {
+parser.scoreModifiers = function () {
   const modifiers = [];
   while (!this.eof() && !this.la1('newline')) {
     if (this.la1('operator')) {
@@ -133,7 +133,7 @@ parser.scoreModifiers = function() {
   return modifiers;
 };
 
-parser.sustainModifier = function() {
+parser.sustainModifier = function () {
   let multiplier = null;
   this.match('open paren');
   const noteLength = this.match('number').content;
@@ -145,13 +145,13 @@ parser.sustainModifier = function() {
   return ast.ScoreSustainModifier(noteLength, multiplier);
 };
 
-parser.scoreOperator = function() {
+parser.scoreOperator = function () {
   const operator = this.match('operator').content;
   const number = this.match('number').content;
   return ast.ScoreOperator(operator, number);
 };
 
-parser.addEffectsChain = function(name) {
+parser.addEffectsChain = function (name) {
   let effects = [];
   while (!this.eof() && this.la1('double right arrow')) {
     this.match('double right arrow');
@@ -161,7 +161,7 @@ parser.addEffectsChain = function(name) {
   return ast.AddFXChain(name, effects);
 };
 
-parser.removeEffectsChain = function(name) {
+parser.removeEffectsChain = function (name) {
   let effects = [];
   while (!this.eof() && this.la1('double left arrow')) {
     this.match('double left arrow');
@@ -178,7 +178,7 @@ parser.removeEffectsChain = function(name) {
   return ast.RemoveFXChain(name, effects);
 };
 
-parser.future = function(future) {
+parser.future = function (future) {
   let timing;
   let command;
   if (this.la1('number')) {
@@ -218,7 +218,7 @@ parser.future = function(future) {
   });
 };
 
-parser.sequence = function() {
+parser.sequence = function () {
   const sequenceName = this.match('identifier').content;
   this.match('play arrow');
   let agents = [];
@@ -232,7 +232,7 @@ parser.sequence = function() {
   return ast.Sequence(sequenceName, agents);
 };
 
-parser.chord = function(identifier) {
+parser.chord = function (identifier) {
   const name = identifier.content;
   if (name.length !== 1) {
     throw new ParserException(this.translation.errors.invalidChordName);
@@ -241,12 +241,12 @@ parser.chord = function(identifier) {
   const num = this.match('number').content;
   this.match('close paren');
 
-  const notes = `${Math.floor(num)}`.split('').map(n => parseInt(n, 10));
+  const notes = `${Math.floor(num)}`.split('').map((n) => parseInt(n, 10));
 
   return ast.Chord(name, notes);
 };
 
-parser.command = function(command) {
+parser.command = function (command) {
   let args = [];
   while (!(this.eof() || this.la1('newline'))) {
     if (this.la1('number')) {
@@ -283,7 +283,7 @@ parser.command = function(command) {
   );
 };
 
-parser.group = function(/*command*/) {
+parser.group = function (/*command*/) {
   const groupName = this.match('identifier').content;
   this.match('play arrow');
   let agents = [];

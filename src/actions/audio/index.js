@@ -1,5 +1,5 @@
-import { AUDIOACTION } from '../types';
-import * as t from './types';
+import { AUDIOACTION } from '../types.js';
+import * as t from './types.js';
 
 export function AgentMethod(agent, method) {
   return {

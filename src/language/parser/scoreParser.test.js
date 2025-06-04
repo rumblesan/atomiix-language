@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import { scoreParser, scoreModifierParser } from './scoreParser';
 
 import * as ast from '../ast';

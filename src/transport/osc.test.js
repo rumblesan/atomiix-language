@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import * as th from '../test-helpers';
 import * as inbound from '../actions/inbound';
 import {
@@ -24,7 +26,10 @@ function PlayMelodicOSC(
     args: [
       { type: 'string', value: 'melodic' },
       { type: 'string', value: agentName },
-      { type: 'array', value: notes.map(n => ({ type: 'integer', value: n })) },
+      {
+        type: 'array',
+        value: notes.map((n) => ({ type: 'integer', value: n })),
+      },
       { type: 'array', value: durations },
       { type: 'string', value: instrument },
       { type: 'array', value: sustain },
@@ -41,7 +46,10 @@ function AddFXMessage(name, fxList) {
   return {
     oscType: 'message',
     address: '/agent/effects/add',
-    args: [{ type: 'string', value: name }, { type: 'array', value: fxList }],
+    args: [
+      { type: 'string', value: name },
+      { type: 'array', value: fxList },
+    ],
   };
 }
 

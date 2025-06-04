@@ -1,6 +1,6 @@
 // collects everything so it can be exported
-import { doze, wake, nap } from './control';
-import { kill, scale, scalepush, tonic, tempo } from './global';
+import { doze, wake, nap } from './control.js';
+import { kill, scale, scalepush, tonic, tempo } from './global.js';
 import {
   shake,
   reverse,
@@ -17,8 +17,8 @@ import {
   insert,
   expand,
   dave,
-} from './score';
-import { grid, remind } from './editor';
+} from './score.js';
+import { grid, remind } from './editor.js';
 
 export default {
   doze,

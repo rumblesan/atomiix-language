@@ -1,5 +1,5 @@
-import { INBOUNDACTION } from '../types';
-import * as t from './types';
+import { INBOUNDACTION } from '../types.js';
+import * as t from './types.js';
 
 export function AgentFinished(name) {
   return {

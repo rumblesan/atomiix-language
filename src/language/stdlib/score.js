@@ -1,17 +1,22 @@
 // basically all the score functions are in this file
-import * as astTypes from '../ast/types';
-import { AtomiixRuntimeError } from '../errors';
+import * as astTypes from '../ast/types.js';
+import { AtomiixRuntimeError } from '../errors/index.js';
 
-import { modifyScoreString } from './rewriting';
+import { modifyScoreString } from './rewriting.js';
 
-import { expectArgs, expectString, optionalNum, optionalString } from './util';
+import {
+  expectArgs,
+  expectString,
+  optionalNum,
+  optionalString,
+} from './util.js';
 
 export function shake(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
   // this function is from rewriting.js!
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
@@ -29,15 +34,11 @@ export function reverse(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
-    const newChars = oldScoreString
-      .slice(1, -1)
-      .split('')
-      .reverse()
-      .join('');
+    const newChars = oldScoreString.slice(1, -1).split('').reverse().join('');
     const newScoreString = opener + newChars + closer;
     return newScoreString;
   });
@@ -48,7 +49,7 @@ export function shiftr(state, { name, args }) {
   const agentName = expectString(state, name, args[0]);
   const shift = optionalNum(state, name, args[1], 1);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     if (oldScoreString.length < 4) {
       return oldScoreString;
@@ -68,7 +69,7 @@ export function shiftl(state, { name, args }) {
   const agentName = expectString(state, name, args[0]);
   const shift = optionalNum(state, name, args[1], 1);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     if (oldScoreString.length < 4) {
       return oldScoreString;
@@ -87,7 +88,7 @@ export function up(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     if (score.scoreType != astTypes.PERCUSSIVE) {
       return score.scoreString;
     }
@@ -99,7 +100,7 @@ export function down(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     if (score.scoreType != astTypes.PERCUSSIVE) {
       return score.scoreString;
     }
@@ -113,14 +114,14 @@ export function yoyo(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const newChars = oldScoreString
       .slice(1, -1)
       .split('')
-      .map(c => {
+      .map((c) => {
         if (isUpper.test(c)) {
           return c.toLowerCase();
         } else if (isLower.test(c)) {
@@ -139,16 +140,16 @@ export function swap(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const chars = oldScoreString.slice(1, -1).split('');
     const choices = chars
-      .filter(c => c !== ' ')
+      .filter((c) => c !== ' ')
       .sort(() => 0.5 - Math.random());
     const newChars = chars
-      .map(c => {
+      .map((c) => {
         if (c === ' ') return c;
         return choices.pop();
       })
@@ -162,17 +163,17 @@ export function order(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const chars = oldScoreString.slice(1, -1).split('');
     const choices = chars
-      .filter(c => c !== ' ')
+      .filter((c) => c !== ' ')
       .sort()
       .reverse();
     const newChars = chars
-      .map(c => {
+      .map((c) => {
         if (c === ' ') return c;
         return choices.pop();
       })
@@ -186,17 +187,17 @@ export function dave(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const chars = oldScoreString.slice(1, -1).split('');
     const choices = chars
-      .filter(c => c !== ' ')
+      .filter((c) => c !== ' ')
       .sort()
       .reverse();
     const newChars = chars
-      .map(c => {
+      .map((c) => {
         if (c === ' ') return c;
         return choices.pop();
       })
@@ -213,7 +214,7 @@ export function replace(state, { name, args }) {
   const agentName = expectString(state, name, args[0]);
   const upOrDown = optionalString(state, name, args[1]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
@@ -223,21 +224,21 @@ export function replace(state, { name, args }) {
       case astTypes.PERCUSSIVE:
         if (upOrDown === state.translation.misc.upper) {
           newChars = chars
-            .map(c => {
+            .map((c) => {
               if (c.charCodeAt(0) < 64 || c.charCodeAt(0) > 90) return c;
               return String.fromCharCode(Math.ceil(Math.random() * 26) + 64);
             })
             .join('');
         } else if (upOrDown === state.translation.misc.lower) {
           newChars = chars
-            .map(c => {
+            .map((c) => {
               if (c.charCodeAt(0) < 90 || c.charCodeAt(0) > 116) return c;
               return String.fromCharCode(Math.ceil(Math.random() * 26) + 90);
             })
             .join('');
         } else {
           newChars = chars
-            .map(c => {
+            .map((c) => {
               if (c === ' ') return c;
               return alpha[Math.ceil(Math.random() * 52)];
             })
@@ -248,7 +249,7 @@ export function replace(state, { name, args }) {
       // fallthrough
       case astTypes.CONCRETE:
         newChars = chars
-          .map(c => {
+          .map((c) => {
             if (c === ' ') return c;
             return Math.ceil(Math.random() * 9);
           })
@@ -263,7 +264,7 @@ export function insert(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
@@ -272,7 +273,7 @@ export function insert(state, { name, args }) {
     switch (score.scoreType) {
       case astTypes.PERCUSSIVE:
         newChars = chars
-          .map(c => {
+          .map((c) => {
             if (c === ' ' && Math.random() > 0.5) {
               return alpha[Math.ceil(Math.random() * 52)];
             }
@@ -284,7 +285,7 @@ export function insert(state, { name, args }) {
       // fallthrough
       case astTypes.CONCRETE:
         newChars = chars
-          .map(c => {
+          .map((c) => {
             if (c === ' ' && Math.random() > 0.5) {
               return Math.ceil(Math.random() * 9);
             }
@@ -301,14 +302,14 @@ export function remove(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const newChars = oldScoreString
       .slice(1, -1)
       .split('')
-      .map(c => {
+      .map((c) => {
         if (c !== ' ' && Math.random() > 0.5) {
           return ' ';
         }
@@ -325,14 +326,14 @@ export function expand(state, { name, args }) {
   const agentName = expectString(state, name, args[0]);
   const size = optionalNum(state, name, args[1], 1);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     const oldScoreString = score.scoreString;
     const opener = oldScoreString[0];
     const closer = oldScoreString[oldScoreString.length - 1];
     const newChars = oldScoreString
       .slice(1, -1)
       .split('')
-      .map(c => {
+      .map((c) => {
         if (c === ' ') return c;
         return c + ' '.repeat(size);
       })
@@ -346,7 +347,7 @@ export function invert(state, { name, args }) {
   expectArgs(state, name, args, 1);
   const agentName = expectString(state, name, args[0]);
 
-  return modifyScoreString(state, agentName, score => {
+  return modifyScoreString(state, agentName, (score) => {
     if (score.scoreType !== astTypes.MELODIC) {
       throw new AtomiixRuntimeError(
         state.translation.errors.expectedMelodic(score.scoreType)
@@ -358,7 +359,7 @@ export function invert(state, { name, args }) {
     const newChars = oldScoreString
       .slice(1, -1)
       .split('')
-      .map(c => {
+      .map((c) => {
         if (c === ' ') return c;
         let v = parseInt(c, 10);
         return `${Math.abs(v - 8)}`;

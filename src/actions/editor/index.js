@@ -1,5 +1,5 @@
-import { EDITORACTION } from '../types';
-import * as t from './types';
+import { EDITORACTION } from '../types.js';
+import * as t from './types.js';
 
 // keeps track of what line an agent is on - sends to atom to deal with
 export function MarkAgent(

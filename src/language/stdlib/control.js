@@ -1,12 +1,12 @@
 // agent control commands - sleeping, waking, dozing etc
-import * as audioActions from '../../actions/audio';
-import * as astTypes from '../ast/types';
+import * as audioActions from '../../actions/audio/index.js';
+import * as astTypes from '../ast/types.js';
 
-import { getAgentInfo } from '../interpreter/state';
+import { getAgentInfo } from '../interpreter/state.js';
 
-import { AtomiixRuntimeError } from '../errors';
+import { AtomiixRuntimeError } from '../errors/index.js';
 
-import { expectArgs, expectString, handleGroup } from './util';
+import { expectArgs, expectString, handleGroup } from './util.js';
 
 export function doze(state, { name, args }) {
   expectArgs(state, name, args, 1);

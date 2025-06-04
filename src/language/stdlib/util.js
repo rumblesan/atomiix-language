@@ -1,6 +1,6 @@
 // defines expected arguments for functions like shake or yoyo - avoids duplication within individual functions
-import * as astTypes from '../ast/types';
-import { AtomiixRuntimeError } from '../errors';
+import * as astTypes from '../ast/types.js';
+import { AtomiixRuntimeError } from '../errors/index.js';
 
 export function expectArgs(state, name, args, num) {
   if (args.length < num) {
@@ -45,7 +45,7 @@ export function optionalString(state, name, arg, defaultVal) {
 export function handleGroup(state, name, func) {
   let msgs = [];
   if (state.groups[name]) {
-    state.groups[name].forEach(agentName => {
+    state.groups[name].forEach((agentName) => {
       msgs = msgs.concat(func(state, agentName));
     });
     return msgs;

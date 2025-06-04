@@ -1,6 +1,7 @@
-import parser from '../parser';
+import { expect, test } from 'vitest';
+import parser from '../parser/index.js';
 
-import { writeScoreModifiers } from './rewriting';
+import { writeScoreModifiers } from './rewriting.js';
 
 test('can recreate the score modifiers string correctly', () => {
   // this isn't a real program, but should be fine for the moment

@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import parser from './index';
 
 import * as ast from '../ast';
